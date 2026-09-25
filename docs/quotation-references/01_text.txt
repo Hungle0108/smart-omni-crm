@@ -1,0 +1,538 @@
+PART word/document.xml
+[1] BẢNG BÁO GIÁ
+[2] NỀN TẢNG ĐIỀU HÀNH SỐ VÀ TRỢ LÝ TRÍ TUỆ NHÂN TẠO SMART IVIER
+[3] Phục vụ công tác quản lý, điều hành và hỗ trợ cán bộ cấp phường
+[4] Kính gửi
+[5] ỦY BAN NHÂN DÂN PHƯỜNG TÂN THUẬN
+[6] Đơn vị báo giá
+[7] CÔNG TY CỔ PHẦN CÔNG NGHỆ IVITECH
+[8] Thời hạn cung cấp
+[9] 12 tháng kể từ ngày nghiệm thu đưa hệ thống vào sử dụng
+[10] Ngày báo giá
+[11] 15/08/2026
+[13] A. TỔNG QUAN CÁC GÓI DỊCH VỤ
+[14] Smart iVier là nền tảng điều hành số và trợ lý trí tuệ nhân tạo dùng chung cho đơn vị, được quản trị tập trung, phân quyền theo người dùng/nhóm nghiệp vụ và có thể khai thác kho tri thức riêng của phường/xã. 
+[15] Giải pháp được thiết kế theo mô hình phân tầng: Gói 1 là nền tảng lõi bắt buộc, các gói còn lại là các lớp mở rộng độc lập. Quý cơ quan có thể triển khai từng bước theo lộ trình và khả năng cân đối ngân sách hằng năm.
+[16] Gói
+[17] Tên gói dịch vụ
+[18] Điều kiện
+[19] Năm đầu tiên (VNĐ)
+[20] Gia hạn từ năm 2 (VNĐ)
+[21] 1
+[22] Nền tảng Điều hành số (10 tài khoản quản trị cấp cao)
+[23] Gói lõi bắt buộc
+[24] 499.000.000
+[25] 349.000.000
+[26] 2
+[27] Mở rộng 100 người dùng nghiệp vụ + dung lượng
+[28] Miễn phí: triển khai thử nghiệm Bàn làm việc số
+[29] Bán kèm Gói 1
+[30] 379.000.000
+[31] 329.000.000
+[32] 3
+[33] Chatbot AI & kênh tương tác số thời gian thực
+[34] Độc lập
+[35] 499.000.000
+[36] 429.000.000
+[37] 4
+[38] Zalo Mini App phản ánh hiện trường & kinh tế số
+[39] Độc lập
+[40] 479.000.000
+[41] 229.000.000
+[43] Cộng khi mua rời từng gói
+[45] 1.856.000.000
+[46] 1.336.000.000
+[47] 1-4
+[48] ƯU ĐÃI TRỌN BỘ (Gói 1 + 2 + 3 + 4)
+[49] Khuyến nghị
+[50] 1.629.000.000
+[51] 1.149.000.000
+[52] Mức ưu đãi trọn bộ: tiết kiệm 227.000.000 VNĐ trong năm đầu tiên và 187.000.000 VNĐ mỗi năm gia hạn, do bốn hệ thống dùng chung hạ tầng, kho tri thức và đầu mối hỗ trợ kỹ thuật.
+[53] Chi phí gia hạn thấp hơn năm đầu vì đã hoàn tất các hạng mục đầu tư một lần: triển khai, xây dựng kết nối API, phát triển Mini App và chuẩn hóa kho tri thức. Từ năm thứ hai, Quý cơ quan chỉ chi trả chi phí vận hành, hạn mức tài nguyên và hỗ trợ kỹ thuật.
+[54] B. GÓI 1 — NỀN TẢNG ĐIỀU HÀNH SỐ
+[55] GIÁ TRỊ GÓI — NĂM ĐẦU TIÊN
+[56] 499.000.000 VNĐ
+[57] Gia hạn từ năm thứ hai: 349.000.000 VNĐ / năm. Bằng chữ (năm đầu): Bốn trăm chín mươi chín triệu đồng.
+[58] Đây là lớp nền tảng của toàn bộ giải pháp, phục vụ trực tiếp cho lãnh đạo và bộ phận quản trị. Gói 1 tạo ra trục dữ liệu dùng chung để các gói 2, 3, 4 kết nối vào, do đó là điều kiện bắt buộc khi triển khai các gói còn lại.
+[59] B.1. Phạm vi chức năng
+[60] Bảng điều hành KPI (dashboard) phục vụ lãnh đạo: chỉ tiêu kinh tế — xã hội, tiến độ nhiệm vụ được giao, tình hình tiếp nhận và giải quyết hồ sơ thủ tục hành chính, thu ngân sách, phản ánh của người dân.
+[61] Cảnh báo tự động theo ngưỡng: nhiệm vụ sắp đến hạn hoặc quá hạn, hồ sơ trễ hẹn, chỉ tiêu chưa đạt tiến độ.
+[62] Giao việc và theo dõi tiến độ nhiệm vụ theo phòng chuyên môn và theo cán bộ.
+[63] Kho dữ liệu dùng chung cấp xã: văn bản, quy trình, biểu mẫu, số liệu báo cáo được chuẩn hóa và phân quyền.
+[64] Tích hợp API với các ứng dụng chính quyền số: hệ thống quản lý văn bản và điều hành, Cổng dịch vụ công, hệ thống một cửa điện tử (bao gồm 03 kết nối trong gói và chỉ thực hiện kết nối được khi Phường hoặc Sở KHCN yêu cầu các đơn vị mở cổng để iViTech kết nối).
+[65] Kiến trúc API mở cho phép kết nối bổ sung với các ứng dụng khác của tỉnh và trung ương khi được cơ quan chủ quản cho phép.
+[66] Trợ lý AI hỗ trợ lãnh đạo: tóm tắt hồ sơ, tổng hợp báo cáo, tra cứu số liệu bằng câu hỏi tự nhiên trên dashboard.
+[67] Quản trị người dùng, phân quyền, nhật ký hệ thống và giám sát mức tiêu thụ tài nguyên.
+[68] B.2. Hạn mức tài nguyên bao gồm trong gói
+[69] STT
+[70] Loại tài nguyên
+[71] Hạn mức bao gồm
+[72] Ghi chú
+[73] 1
+[74] Tài khoản quản trị cấp cao
+[75] 10 tài khoản
+[76] Lãnh đạo, Chánh Văn phòng, Trưởng phòng, TTPVHCC
+[77] 2
+[78] Kết nối API hệ thống chính quyền số
+[79] 03 kết nối
+[80] Kết nối thứ 4 trở đi báo giá riêng
+[81] 3
+[82] Bộ chỉ tiêu KPI trên dashboard
+[83] 40 chỉ tiêu
+[84] Cấu hình theo yêu cầu của đơn vị
+[85] 4
+[86] Dung lượng lưu trữ dữ liệu
+[87] 200 GB
+[88] Giới hạn dung lượng của gói lõi
+[89] 5
+[90] Số tài liệu lập chỉ mục
+[91] 5.000 tài liệu
+[92] ≈ 250.000 trang A4
+[93] 6
+[94] Hạn mức xử lý AI
+[95] 200 triệu token / năm
+[96] ≈ 60.000 lượt, ~6.000 lượt/tài khoản/năm
+[97] 7
+[98] Lưu nhật ký và sao lưu
+[99] 90 ngày
+[100] Sao lưu tự động hằng ngày
+[101] 8
+[102] Cam kết thời gian hoạt động
+[103] 99,0% / tháng
+[104] Ngoài thời gian bảo trì có thông báo trước
+[105] Vượt hạn mức dung lượng hoặc tài nguyên AI, Quý cơ quan có thể mua bổ sung theo bảng tại Mục F. Hệ thống cảnh báo tự động khi đạt 80% hạn mức và không tự phát sinh chi phí khi đạt 100%.
+[106] B.3. Bảng giá chi tiết — năm đầu tiên
+[107] STT
+[108] Hạng mục
+[109] ĐVT / Thời hạn
+[110] Thành tiền (VNĐ)
+[111] 1
+[112] Bản quyền nền tảng Điều hành số, 10 tài khoản quản trị cấp cao
+[113] 01 gói / 12 tháng
+[114] 140.000.000
+[115] 2
+[116] Phân hệ Dashboard KPI điều hành và cảnh báo tự động
+[117] 01 gói / 12 tháng
+[118] 95.000.000
+[119] 3
+[120] Xây dựng 03 kết nối API với ứng dụng chính quyền số
+[121] 01 gói
+[122] 85.000.000
+[123] 4
+[124] Hạn mức tài nguyên xử lý AI 200 triệu token/năm
+[125] 01 gói / 12 tháng
+[126] 45.000.000
+[127] 5
+[128] Dung lượng lưu trữ 200 GB và 5.000 tài liệu lập chỉ mục
+[129] 01 gói / 12 tháng
+[130] 30.000.000
+[131] 6
+[132] Hạ tầng cloud, cơ sở dữ liệu, sao lưu và giám sát vận hành
+[133] 01 gói / 12 tháng
+[134] 40.000.000
+[135] 7
+[136] Triển khai, cấu hình, đào tạo và chuyển giao
+[137] 01 gói
+[138] 34.000.000
+[139] 8
+[140] Bảo trì, hỗ trợ kỹ thuật và cập nhật phiên bản
+[141] 01 gói / 12 tháng
+[142] 30.000.000
+[144] TỔNG GIÁ TRỊ GÓI 1 — NĂM ĐẦU TIÊN
+[146] 499.000.000
+[147] C. GÓI 2 (BỔ SUNG) — MỞ RỘNG 100 NGƯỜI DÙNG NGHIỆP VỤ
+[148] GIÁ TRỊ GÓI — NĂM ĐẦU TIÊN
+[149] 379.000.000 VNĐ
+[150] Gia hạn từ năm thứ hai: 329.000.000 VNĐ / năm. Bằng chữ (năm đầu): Ba trăm bảy mươi chín triệu đồng.
+[151] Gói 2 mở rộng nền tảng xuống toàn bộ đội ngũ cán bộ, công chức. Nếu Gói 1 phục vụ lãnh đạo ra quyết định thì Gói 2 phục vụ cán bộ trực tiếp xử lý công việc hằng ngày. Gói 2 chỉ triển khai kèm Gói 1.
+[152] C.1. Phạm vi chức năng
+[153] Cấp 100 tài khoản cho cán bộ, công chức các phòng chuyên môn và Trung tâm Phục vụ hành chính công.
+[154] Trợ lý soạn thảo văn bản hành chính: thông báo, công văn, kế hoạch, tờ trình, báo cáo theo mẫu và thể thức quy định.
+[155] Trợ lý tra cứu pháp luật: hỏi đáp theo Điều — Khoản — Điểm, gợi ý căn cứ pháp lý liên quan để cán bộ đối chiếu.
+[156] Trợ lý chuyên môn theo lĩnh vực: tư pháp — hộ tịch, đất đai — đô thị, văn hóa — xã hội, tài chính — ngân sách.
+[157] Trợ lý báo cáo — thống kê: tổng hợp dữ liệu đầu vào, lập cấu trúc báo cáo tuần, tháng, quý.
+[158] Trợ lý hỏi đáp trên kho tài liệu nội bộ, có trích dẫn nguồn và phân quyền truy cập theo phòng ban.
+[159] Không gian làm việc cá nhân: lưu lịch sử, mẫu prompt dùng chung, thư viện văn bản đã soạn.
+[160] C.2. Hạn mức tài nguyên bổ sung
+[161] STT
+[162] Loại tài nguyên
+[163] Hạn mức bao gồm
+[164] Ghi chú
+[165] 1
+[166] Tài khoản người dùng bổ sung
+[167] 100 tài khoản
+[168] Cộng dồn với 10 tài khoản của Gói 1
+[169] 2
+[170] Trợ lý AI chuyên môn
+[171] 10 trợ lý
+[172] Cấu hình theo nghiệp vụ của đơn vị
+[173] 3
+[174] Dung lượng lưu trữ bổ sung
+[175] 300 GB
+[176] Nâng tổng dung lượng lên 500 GB
+[177] 4
+[178] Số tài liệu lập chỉ mục bổ sung
+[179] 15.000 tài liệu
+[180] Nâng tổng lên 20.000 tài liệu
+[181] 5
+[182] Hạn mức xử lý AI bổ sung
+[183] 800 triệu token / năm
+[184] Nâng tổng lên 1,0 tỷ token / năm
+[185] 6
+[186] Quy đổi mức sử dụng
+[187] ≈ 240.000 lượt / năm
+[188] ~10 lượt / người / ngày làm việc
+[189] C.3. Bảng giá chi tiết — năm đầu tiên
+[190] STT
+[191] Hạng mục
+[192] ĐVT / Thời hạn
+[193] Thành tiền (VNĐ)
+[194] 1
+[195] Bản quyền mở rộng 100 tài khoản người dùng nghiệp vụ
+[196] 01 gói / 12 tháng
+[197] 115.000.000
+[198] 2
+[199] Phân hệ 10 Trợ lý AI chuyên môn (soạn thảo, pháp luật, báo cáo...)
+[200] 01 gói / 12 tháng
+[201] 95.000.000
+[202] 3
+[203] Hạn mức tài nguyên xử lý AI bổ sung 800 triệu token/năm
+[204] 01 gói / 12 tháng
+[205] 100.000.000
+[206] 4
+[207] Dung lượng lưu trữ bổ sung 300 GB và 15.000 tài liệu
+[208] 01 gói / 12 tháng
+[209] 35.000.000
+[210] 5
+[211] Triển khai mở rộng, cấu hình trợ lý và đào tạo cán bộ
+[212] 01 gói
+[213] 20.000.000
+[214] 6
+[215] Hỗ trợ kỹ thuật và cập nhật phiên bản cho người dùng mở rộng
+[216] 01 gói / 12 tháng
+[217] 14.000.000
+[219] TỔNG GIÁ TRỊ GÓI 2 — NĂM ĐẦU TIÊN
+[221] 379.000.000
+[222] D. GÓI 3 — CHATBOT AI & KÊNH TƯƠNG TÁC SỐ THỜI GIAN THỰC
+[223] GIÁ TRỊ GÓI — NĂM ĐẦU TIÊN
+[224] 499.000.000 VNĐ
+[225] Gia hạn từ năm thứ hai: 429.000.000 VNĐ / năm. Bằng chữ (năm đầu): Bốn trăm chín mươi chín triệu đồng.
+[226] Chatbot AI hoạt động liên tục 24/7 trên nhiều kênh, trả lời tức thời cho người dân và doanh nghiệp về thủ tục hành chính, tiếp nhận phản ánh và chuyển tiếp cho cán bộ khi cần. Mục tiêu là giảm tải cho bộ phận một cửa và rút ngắn thời gian chờ của người dân.
+[227] D.1. Phạm vi chức năng
+[228] Hỏi đáp tự động về thủ tục hành chính: thành phần hồ sơ, trình tự thực hiện, thời hạn giải quyết, lệ phí, cơ quan tiếp nhận.
+[229] Hỏi đáp trên kho văn bản và tri thức do đơn vị cung cấp, có trích dẫn nguồn để người dân đối chiếu.
+[230] Tra cứu tình trạng hồ sơ theo mã biên nhận (khi được kết nối với hệ thống một cửa qua Gói 1).
+[231] Tiếp nhận, phân loại và tóm tắt phản ánh — kiến nghị; chuyển tiếp cho bộ phận chuyên môn theo cấu hình.
+[232] Chuyển tiếp sang cán bộ trực khi câu hỏi vượt phạm vi tri thức đã cấu hình, có lưu vết toàn bộ hội thoại.
+[233] Bảng thống kê thời gian thực: số lượt hội thoại, nhóm câu hỏi phổ biến, tỷ lệ trả lời thành công, câu hỏi chưa có đáp án.
+[234] Công cụ quản trị nội dung cho phép cán bộ tự cập nhật, bổ sung và duyệt tri thức mà không cần can thiệp kỹ thuật.
+[235] D.2. Hạn mức tài nguyên bao gồm trong gói
+[236] STT
+[237] Loại tài nguyên
+[238] Hạn mức bao gồm
+[239] Ghi chú
+[240] 1
+[241] Kênh triển khai
+[242] 04 kênh
+[243] Cổng TTĐT, Zalo OA, Facebook Messenger, Mini App
+[244] 2
+[245] Số lượt hội thoại
+[246] 300.000 lượt / năm
+[247] ≈ 25.000 lượt / tháng
+[248] 3
+[249] Số tin nhắn xử lý
+[250] 1.500.000 tin / năm
+[251] Bình quân 05 tin / lượt hội thoại
+[252] 4
+[253] Hạn mức xử lý AI quy đổi
+[254] 1,2 tỷ token / năm
+[255] 300.000 lượt × 4.000 token
+[256] 5
+[257] Dung lượng kho tri thức
+[258] 300 GB
+[259] Thủ tục, văn bản, hỏi đáp thường gặp
+[260] 6
+[261] Số tài liệu lập chỉ mục
+[262] 10.000 tài liệu
+[263] Bao gồm bộ thủ tục hành chính cấp xã
+[264] 7
+[265] Phiên đồng thời
+[266] 200 phiên
+[267] Đáp ứng giờ cao điểm
+[268] 8
+[269] Lưu lịch sử hội thoại
+[270] 12 tháng
+[271] Phục vụ thống kê, kiểm tra và cải tiến
+[272] 9
+[273] Tài khoản quản trị nội dung
+[274] 05 tài khoản
+[275] Duyệt và cập nhật tri thức
+[276] D.3. Bảng giá chi tiết — năm đầu tiên
+[277] STT
+[278] Hạng mục
+[279] ĐVT / Thời hạn
+[280] Thành tiền (VNĐ)
+[281] 1
+[282] Bản quyền nền tảng Chatbot AI đa kênh (Web, Zalo OA, Facebook, Mini App)
+[283] 01 gói / 12 tháng
+[284] 140.000.000
+[285] 2
+[286] Hạn mức 300.000 lượt hội thoại/năm (tương đương 1,2 tỷ token xử lý)
+[287] 01 gói / 12 tháng
+[288] 155.000.000
+[289] 3
+[290] Xây dựng và huấn luyện kho tri thức thủ tục hành chính, kịch bản hội thoại
+[291] 01 gói
+[292] 65.000.000
+[293] 4
+[294] Dung lượng 300 GB, 10.000 tài liệu và lưu lịch sử hội thoại 12 tháng
+[295] 01 gói / 12 tháng
+[296] 50.000.000
+[297] 5
+[298] Kết nối, tích hợp và cấu hình 04 kênh tương tác
+[299] 01 gói
+[300] 45.000.000
+[301] 6
+[302] Vận hành, giám sát chất lượng trả lời và tinh chỉnh định kỳ
+[303] 01 gói / 12 tháng
+[304] 44.000.000
+[306] TỔNG GIÁ TRỊ GÓI 3 — NĂM ĐẦU TIÊN
+[308] 499.000.000
+[309] E. GÓI 4 — ZALO MINI APP PHẢN ÁNH HIỆN TRƯỜNG & KINH TẾ SỐ
+[310] GIÁ TRỊ GÓI — NĂM ĐẦU TIÊN
+[311] 479.000.000 VNĐ
+[312] Gia hạn từ năm thứ hai: 229.000.000 VNĐ / năm. Bằng chữ (năm đầu): Bốn trăm bảy mươi chín triệu đồng.
+[313] Ứng dụng chạy trực tiếp trên Zalo, người dân không cần cài đặt phần mềm mới. Đây là kênh để người dân tham gia giám sát đô thị, môi trường và là nơi hộ kinh doanh, tiểu thương chợ tiếp cận thương mại điện tử ở quy mô địa bàn.
+[314] E.1. Phạm vi chức năng
+[315] Phân hệ Phản ánh hiện trường:
+[316] Người dân gửi phản ánh kèm ảnh, video và định vị GPS tự động, không cần đăng ký tài khoản mới.
+[317] Ba nhóm lĩnh vực: đô thị (hạ tầng, giao thông, trật tự xây dựng, chiếu sáng), môi trường (rác thải, nước thải, ô nhiễm, cây xanh), kinh tế số (hoạt động chợ, hộ kinh doanh, thương mại điện tử).
+[318] Trí tuệ nhân tạo tự động phân loại lĩnh vực, tóm tắt nội dung, phát hiện phản ánh trùng lặp và đề xuất bộ phận xử lý.
+[319] Bản đồ số hiển thị vị trí và trạng thái các điểm phản ánh trên địa bàn.
+[320] Quy trình khép kín: tiếp nhận — phân công — xử lý — phản hồi kết quả — người dân đánh giá mức độ hài lòng.
+[321] Thông báo tự động tới người dân qua Zalo khi phản ánh chuyển trạng thái.
+[322] Phân hệ Kinh tế số:
+[323] Gian hàng số cho hộ kinh doanh và tiểu thương chợ trên địa bàn: thông tin, hình ảnh, danh mục hàng hóa, liên hệ.
+[324] Danh bạ thương mại điện tử cấp phường, hỗ trợ người dân tìm kiếm dịch vụ và hàng hóa tại chỗ.
+[325] Thông tin niêm yết giá, lịch hoạt động chợ, thông báo của ban quản lý chợ.
+[326] Thống kê phục vụ công tác quản lý hoạt động kinh doanh trên địa bàn.
+[327] Kết nối với Gói 1: toàn bộ số liệu phản ánh và hoạt động kinh tế số được đẩy lên dashboard KPI để lãnh đạo theo dõi theo thời gian thực.
+[328] E.2. Hạn mức tài nguyên bao gồm trong gói
+[329] STT
+[330] Loại tài nguyên
+[331] Hạn mức bao gồm
+[332] Ghi chú
+[333] 1
+[334] Zalo Mini App riêng của đơn vị
+[335] 01 ứng dụng
+[336] Theo nhận diện thương hiệu của phường/xã
+[337] 2
+[338] Nhóm lĩnh vực phản ánh
+[339] 03 nhóm
+[340] Đô thị, Môi trường, Kinh tế số
+[341] 3
+[342] Lượt phản ánh xử lý
+[343] 30.000 lượt / năm
+[344] Kèm ảnh, video và định vị GPS
+[345] 4
+[346] Dung lượng lưu ảnh và video
+[347] 500 GB
+[348] Lưu trữ 12 tháng
+[349] 5
+[350] Hạn mức AI phân loại, tóm tắt
+[351] 100 triệu token / năm
+[352] Phân loại, tóm tắt, phát hiện trùng lặp
+[353] 6
+[354] Gian hàng số
+[355] 500 gian hàng
+[356] Hộ kinh doanh, tiểu thương chợ
+[357] 7
+[358] Tin nhắn thông báo ZNS
+[359] 20.000 tin / năm
+[360] Phản hồi kết quả xử lý tới người dân
+[361] 8
+[362] Tài khoản cán bộ xử lý
+[363] 20 tài khoản
+[364] Phân công theo lĩnh vực
+[365] E.3. Bảng giá chi tiết — năm đầu tiên
+[366] STT
+[367] Hạng mục
+[368] ĐVT / Thời hạn
+[369] Thành tiền (VNĐ)
+[370] 1
+[371] Phát triển và tùy biến Zalo Mini App theo nhận diện của đơn vị
+[372] 01 gói
+[373] 175.000.000
+[374] 2
+[375] Phân hệ Phản ánh hiện trường (ảnh, video, GPS, bản đồ số, quy trình xử lý)
+[376] 01 gói / 12 tháng
+[377] 105.000.000
+[378] 3
+[379] Phân hệ Kinh tế số (gian hàng số, danh bạ TMĐT, quản lý chợ)
+[380] 01 gói / 12 tháng
+[381] 75.000.000
+[382] 4
+[383] Hạn mức AI phân loại, tóm tắt phản ánh 100 triệu token/năm
+[384] 01 gói / 12 tháng
+[385] 25.000.000
+[386] 5
+[387] Dung lượng lưu ảnh, video phản ánh 500 GB và 20.000 tin ZNS
+[388] 01 gói / 12 tháng
+[389] 45.000.000
+[390] 6
+[391] Đăng ký, kiểm duyệt ứng dụng trên Zalo, đào tạo và chuyển giao
+[392] 01 gói
+[393] 30.000.000
+[394] 7
+[395] Vận hành, hỗ trợ kỹ thuật và cập nhật phiên bản
+[396] 01 gói / 12 tháng
+[397] 24.000.000
+[399] TỔNG GIÁ TRỊ GÓI 4 — NĂM ĐẦU TIÊN
+[401] 479.000.000
+[402] F. DUNG LƯỢNG BỔ SUNG
+[403] Trong trường hợp Quý cơ quan sử dụng hết hạn mức tài nguyên trước khi kết thúc chu kỳ 12 tháng, có thể mua bổ sung theo bảng dưới đây. Dung lượng bổ sung được cộng dồn vào hạn mức hiện có và có hiệu lực đến hết chu kỳ thuê bao đang chạy.
+[404] F.1. Các gói dung lượng bổ sung trọn gói
+[405] Mã
+[406] Nội dung dung lượng bổ sung
+[407] Áp dụng cho
+[408] Đơn giá (VNĐ)
+[409] A1
+[410] Bổ sung 100 GB lưu trữ và 5.000 tài liệu lập chỉ mục
+[411] Gói 1 / 2 / 3 / 4
+[412] 7.000.000
+[413] A2
+[414] Bổ sung 200 triệu token xử lý AI (≈ 60.000 lượt hỏi — đáp)
+[415] Gói 1 / 2
+[416] 39.000.000
+[417] A3
+[418] Bổ sung 50.000 lượt hội thoại chatbot
+[419] Gói 3
+[420] 46.000.000
+[421] A4
+[422] Bổ sung 10 tài khoản người dùng kèm 60 triệu token
+[423] Gói 1 / 2
+[424] 17.000.000
+[425] A5
+[426] Bổ sung 10.000 lượt phản ánh và 10.000 tin nhắn ZNS
+[427] Gói 4
+[428] 12.000.000
+[429] A6
+[430] Gói DATA PLUS: 500 GB + 500 triệu token + 50.000 lượt hội thoại
+[431] Gói 1 / 2 / 3
+[432] 159.000.000
+[433] Gói A6 (DATA PLUS) dành cho trường hợp cần mở rộng đồng thời cả ba loại tài nguyên. Nếu mua lẻ cùng khối lượng (A1 × 5 + A2 × 2,5 + A3) tổng chi phí là 178.500.000 VNĐ; gói A6 giúp tiết kiệm 19.500.000 VNĐ, tương đương gần 11%.
+[434] F.2. Đơn giá lẻ theo mức sử dụng thực tế
+[435] Áp dụng khi Quý cơ quan lựa chọn quyết toán theo mức tiêu thụ thực tế phát sinh, đối soát vào cuối mỗi quý.
+[436] Mã
+[437] Đơn vị tính
+[438] Áp dụng cho
+[439] Đơn giá (VNĐ)
+[440] R1
+[441] 1.000 token xử lý AI
+[442] Gói 1 / 2 / 4
+[443] 200
+[444] R2
+[445] 01 GB lưu trữ / 12 tháng
+[446] Tất cả các gói
+[447] 65.000
+[448] R3
+[449] 01 lượt hội thoại chatbot
+[450] Gói 3
+[451] 900
+[452] R4
+[453] 01 tin nhắn thông báo ZNS
+[454] Gói 4
+[455] 1.100
+[456] F.3. Chính sách quản lý dung lượng
+[457] Hệ thống theo dõi mức tiêu thụ tài nguyên theo thời gian thực, hiển thị công khai trên trang quản trị của đơn vị.
+[458] Khi mức sử dụng đạt 80% hạn mức, hệ thống tự động gửi cảnh báo tới tài khoản quản trị và đầu mối kỹ thuật của iViTech.
+[459] Khi đạt 100% hạn mức, hệ thống không tự động phát sinh chi phí. iViTech thông báo và chỉ triển khai bổ sung sau khi Quý cơ quan có văn bản đồng ý.
+[460] Dung lượng chưa sử dụng hết trong chu kỳ được bảo lưu tối đa 10% sang chu kỳ kế tiếp nếu Quý cơ quan gia hạn dịch vụ.
+[461] Đơn giá dung lượng bổ sung được giữ nguyên trong suốt chu kỳ thuê bao đang có hiệu lực.
+[462] G. LỘ TRÌNH TRIỂN KHAI VÀ ĐIỀU KIỆN THƯƠNG MẠI
+[463] G.1. Phương án lựa chọn theo ngân sách
+[464] PA
+[465] Phạm vi triển khai
+[466] Năm đầu (VNĐ)
+[467] Gia hạn/năm (VNĐ)
+[468] 1
+[469] Tối thiểu: Gói 1
+[470] 499.000.000
+[471] 349.000.000
+[472] 2
+[473] Cơ bản: Gói 1 + Gói 2 (toàn bộ cán bộ được dùng)
+[474] 878.000.000
+[475] 678.000.000
+[476] 3
+[477] Hướng ra người dân: Gói 1 + Gói 3
+[478] 998.000.000
+[479] 778.000.000
+[480] 4
+[481] Đầy đủ: Gói 1 + 2 + 3 + 4 (ưu đãi trọn bộ)
+[482] 1.629.000.000
+[483] 1.149.000.000
+[484] Quý cơ quan có thể triển khai theo lộ trình nhiều năm: năm thứ nhất triển khai Gói 1 và Gói 2 để ổn định nội bộ, năm thứ hai bổ sung Gói 3 và Gói 4 để mở rộng ra phía người dân. Khi bổ sung gói mới ở năm sau, mức ưu đãi trọn bộ vẫn được áp dụng trên phần chênh lệch.
+[485] G.2. Tiến độ triển khai dự kiến
+[486] Giai đoạn
+[487] Nội dung
+[488] Kết quả bàn giao
+[489] Tuần 1 — 2
+[490] Khảo sát, phân tích nghiệp vụ, thống nhất bộ chỉ tiêu KPI
+[491] Tài liệu mô tả yêu cầu và cấu hình được phê duyệt
+[492] Tuần 3 — 6
+[493] Cài đặt, cấu hình nền tảng, xây dựng kết nối API
+[494] Hệ thống Gói 1 chạy trên môi trường thử nghiệm
+[495] Tuần 5 — 8
+[496] Chuẩn hóa kho dữ liệu, cấu hình trợ lý AI, kịch bản chatbot
+[497] Kho tri thức và trợ lý sẵn sàng vận hành
+[498] Tuần 7 — 10
+[499] Phát triển và kiểm duyệt Zalo Mini App (nếu có Gói 4)
+[500] Mini App được Zalo phê duyệt, sẵn sàng công bố
+[501] Tuần 9 — 10
+[502] Đào tạo quản trị và đào tạo sử dụng cho cán bộ
+[503] Biên bản đào tạo, bộ tài liệu hướng dẫn
+[504] Tuần 11 — 14
+[505] Vận hành thử, hiệu chỉnh theo góp ý
+[506] Biên bản nghiệm thu, đưa vào sử dụng chính thức
+[507] G.3. Điều kiện thương mại
+[508] Hiệu lực báo giá
+[509] 30 ngày kể từ ngày phát hành báo giá.
+[510] Thời gian triển khai
+[511] 10 — 14 tuần tùy phạm vi gói lựa chọn, kể từ ngày hợp đồng có hiệu lực và Quý cơ quan bàn giao đủ dữ liệu đầu vào.
+[512] Thời hạn dịch vụ
+[513] 12 tháng kể từ ngày nghiệm thu đưa hệ thống vào sử dụng, gia hạn theo năm.
+[514] Thuế
+[515] Giá trong báo giá chưa bao gồm thuế GTGT. Việc áp dụng thuế suất hoặc đối tượng không chịu thuế GTGT đối với từng hạng mục sẽ được xác định theo quy định hiện hành tại thời điểm ký hợp đồng.
+[516] Thanh toán
+[517] Theo tiến độ triển khai và biên bản nghiệm thu được hai bên thống nhất trong hợp đồng.
+[518] Điều kiện gói
+[519] Gói 2 chỉ triển khai kèm Gói 1. Gói 3 và Gói 4 có thể triển khai độc lập, tuy nhiên chỉ phát huy đầy đủ giá trị khi có Gói 1 làm trục dữ liệu.
+[520] Dữ liệu đầu vào
+[521] Quý cơ quan chịu trách nhiệm cung cấp và phê duyệt tài liệu, dữ liệu được phép đưa vào hệ thống.
+[522] Bảo mật dữ liệu
+[523] Toàn bộ dữ liệu được lưu trữ và xử lý trên hạ tầng đặt tại Việt Nam, không chia sẻ với bên thứ ba, không sử dụng để huấn luyện mô hình dùng chung.
+[524] Hỗ trợ kỹ thuật
+[525] Giờ hành chính các ngày làm việc; tiếp nhận sự cố nghiêm trọng 24/7. Cam kết thời gian hoạt động hệ thống tối thiểu 99,0%/tháng.
+[526] Gia hạn
+[527] Đơn giá gia hạn được giữ nguyên trong 02 chu kỳ liên tiếp nếu không thay đổi phạm vi dịch vụ và hạn mức tài nguyên.
+[528] Tích hợp bên thứ ba
+[529] Kết nối API thứ 4 trở đi và tích hợp với hệ thống chưa mô tả trong báo giá sẽ được khảo sát, báo giá riêng.
+[530] G.4. Phạm vi chưa bao gồm
+[531] Mua sắm thiết bị phần cứng, đường truyền Internet chuyên dụng hoặc hạ tầng đặt tại chỗ ngoài phạm vi mô tả.
+[532] Chi phí duy trì tài khoản Zalo Official Account, tên miền, chứng thư số và các dịch vụ do bên thứ ba cung cấp.
+[533] Số hóa khối lượng lớn tài liệu giấy, nhập liệu thủ công hoặc làm sạch dữ liệu chuyên sâu ngoài phạm vi triển khai ban đầu.
+[534] Tích hợp sâu với các hệ thống nghiệp vụ bên thứ ba chưa có API hoặc chưa được cơ quan chủ quản cho phép kết nối.
+[535] Các yêu cầu phát triển mới làm thay đổi đáng kể phạm vi chức năng so với mô tả trong báo giá này.
+[536] G.5. Nguyên tắc sử dụng trí tuệ nhân tạo
+[537] Hệ thống được thiết kế như công cụ hỗ trợ cán bộ trong quá trình tra cứu, tổng hợp, soạn thảo và tham mưu. Kết quả do trí tuệ nhân tạo tạo ra cần được cán bộ có thẩm quyền kiểm tra, đối chiếu và chịu trách nhiệm trước khi sử dụng trong hoạt động nghiệp vụ hoặc ban hành văn bản.
+[538] ĐẠI DIỆN KHÁCH HÀNG
+[539] (Ký, ghi rõ họ tên)
+[540] ĐẠI DIỆN iViTech
+[541] (Ký, ghi rõ họ tên, đóng dấu)
+PART word/footnotes.xml
+PART word/endnotes.xml
+PART word/header1.xml
+[1] iViTech  |  Smart iVier
+[2] GovTech - HRTech - EdTech
+PART word/footer1.xml
+[1] 2

@@ -1,0 +1,13 @@
+[hidden],.list-filter-hidden{display:none!important}
+.list-tools{display:flex;align-items:end;gap:12px;flex-wrap:wrap;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:0 0 18px}
+.list-tools>label{flex:1;min-width:220px;margin:0;font-size:12px;color:var(--sub)}
+.list-tools input[type=search]{margin-top:5px}
+.list-tools details{position:relative;min-width:220px;padding:9px 12px;border:1px solid var(--line);border-radius:8px}
+.list-tools summary{cursor:pointer;font-size:13px}
+.list-filter-options{position:absolute;z-index:5;top:100%;left:0;min-width:290px;max-width:420px;max-height:320px;overflow:auto;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px;box-shadow:0 6px 20px #0002}
+.list-filter-options label{display:flex;gap:8px;align-items:center;margin:0;padding:7px;font-size:13px;overflow-wrap:anywhere}
+.list-filter-options input{width:auto}
+.access-row>div{min-width:0}.access-row button{flex-shrink:0;align-self:center}
+@media print{.list-tools{display:none}}
+
+.filter-explanation{width:100%;color:var(--sub);font-size:11px}

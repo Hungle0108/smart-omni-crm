@@ -1,0 +1,1905 @@
+{
+  "reviewed_at": "2026-09-21T17:26:29.267Z",
+  "sources": [
+    {
+      "source": "C:/Users/Nguyet/Downloads/iVier CRM (4).txt",
+      "snapshot": "docs/review-20260922/iVier CRM (4).txt",
+      "sha256": "e8e3b3f0dda079e9fd09c29d19053ab66444302c1e3005192a8e863640f76724",
+      "lines": 1528
+    },
+    {
+      "source": "C:/Users/Nguyet/Downloads/iVier CRM (5).txt",
+      "snapshot": "docs/review-20260922/iVier CRM (5).txt",
+      "sha256": "db06e11045e1e9f56b35c17cfc1454fbb12f1d6012168f7eed28c3ed2f12235e",
+      "lines": 5204
+    }
+  ],
+  "code": [
+    {
+      "path": "app/server.js",
+      "sha256": "87162da3c4a238167dd4e705264c43353592b021cc44a72131f941508f238fc3"
+    },
+    {
+      "path": "app/features.js",
+      "sha256": "da622b11bdaf82a446e791fa8a219421070591482e6361ce5b4d79a08b8ab1d1"
+    },
+    {
+      "path": "app/customer-progress.js",
+      "sha256": "41fd2d595c3ad9a2591d93abba2af3fcda101dd0c04a1aa104a40f11cfd9f958"
+    },
+    {
+      "path": "app/progress-ui.js",
+      "sha256": "888b6e3728c2c54924d6a56356662d3d1d0341ca7d8850ec46f3f2ecef9096d8"
+    },
+    {
+      "path": "app/zalo-oa.js",
+      "sha256": "5ce4d34ab08ce3edfd1e0acb1b4c987d849975694e53ece5abe566bf10f431ad"
+    },
+    {
+      "path": "app/zalo-provider.js",
+      "sha256": "9abd4652940238758d7054fd0831ee060dc7cc03b32882d4b8c3d2c0f463977a"
+    },
+    {
+      "path": "app/zalo-ui.js",
+      "sha256": "1b41992d1661e4f6009c731eaffb15ad3a9c63e053676702a8bd31fd11c5cb70"
+    },
+    {
+      "path": "app/workspace-ui.js",
+      "sha256": "93f88916b19804418dc994846bf49952b4e75adb4782719d72d0c366b4f0c4e7"
+    },
+    {
+      "path": "app/features-ui.js",
+      "sha256": "bbd57e5b4e7b956be8aaadcb092856f6822aa5b0041c8ce09be6895c107a28bb"
+    },
+    {
+      "path": "app/app.html",
+      "sha256": "64bad84d8ebaab6971afaf84943dd49f7b0855d051c4a8e683bf8854305dd2bf"
+    }
+  ],
+  "database": {
+    "audit": {
+      "sql": "CREATE TABLE audit(\n  id INTEGER PRIMARY KEY, at TEXT NOT NULL, user_id INTEGER, action TEXT NOT NULL,\n  entity TEXT, detail TEXT)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "user_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "action",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "entity",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "detail",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": []
+    },
+    "conversations": {
+      "sql": "CREATE TABLE conversations(\n  id INTEGER PRIMARY KEY, customer_id INTEGER NOT NULL REFERENCES customers(id),\n  channel TEXT NOT NULL, assignee_id INTEGER REFERENCES users(id),\n  bot_active INTEGER NOT NULL DEFAULT 1, status TEXT NOT NULL DEFAULT 'OPEN', last_at TEXT, zalo_oa_id TEXT, zalo_uid TEXT)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "channel",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "assignee_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "bot_active",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "last_at",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "zalo_oa_id",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "zalo_uid",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "users",
+          "from": "assignee_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 1,
+          "seq": 0,
+          "table": "customers",
+          "from": "customer_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "customer_delivery": {
+      "sql": "CREATE TABLE customer_delivery(customer_id INTEGER PRIMARY KEY REFERENCES customers(id),platform TEXT NOT NULL DEFAULT '',address TEXT NOT NULL DEFAULT '',services TEXT NOT NULL DEFAULT '[]')",
+      "columns": [
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "platform",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "address",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "services",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "customers",
+          "from": "customer_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "customers": {
+      "sql": "CREATE TABLE customers(\n  id INTEGER PRIMARY KEY, kind TEXT NOT NULL CHECK(kind IN ('org','person')),\n  name TEXT NOT NULL, tax_code TEXT, phone TEXT, email TEXT, org_type TEXT,\n  interest TEXT DEFAULT '', has_pkg1 INTEGER NOT NULL DEFAULT 0,\n  owner_id INTEGER REFERENCES users(id), team_id INTEGER REFERENCES teams(id),\n  created_at TEXT NOT NULL, is_sample INTEGER NOT NULL DEFAULT 1, needs_followup INTEGER NOT NULL DEFAULT 1, do_not_contact INTEGER NOT NULL DEFAULT 0)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "kind",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "tax_code",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "phone",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "email",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "org_type",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "interest",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "has_pkg1",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "owner_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "team_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "created_at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "is_sample",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "needs_followup",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "do_not_contact",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "teams",
+          "from": "team_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 1,
+          "seq": 0,
+          "table": "users",
+          "from": "owner_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "knowledge": {
+      "sql": "CREATE TABLE knowledge(id INTEGER PRIMARY KEY,title TEXT NOT NULL,keywords TEXT NOT NULL,body TEXT NOT NULL,status TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1,approved_body TEXT,approved_keywords TEXT,approved_version INTEGER,author_id INTEGER REFERENCES users(id),reviewer_id INTEGER REFERENCES users(id),updated_at TEXT,review_note TEXT)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "title",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "keywords",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "body",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "version",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "approved_body",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "approved_keywords",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "approved_version",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "author_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "reviewer_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "updated_at",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "review_note",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "users",
+          "from": "reviewer_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 1,
+          "seq": 0,
+          "table": "users",
+          "from": "author_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "knowledge_history": {
+      "sql": "CREATE TABLE knowledge_history(id INTEGER PRIMARY KEY,knowledge_id INTEGER REFERENCES knowledge(id),version INTEGER,body TEXT,keywords TEXT,action TEXT,user_id INTEGER,at TEXT)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "knowledge_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "version",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "body",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "keywords",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "action",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "user_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "at",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "knowledge",
+          "from": "knowledge_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "messages": {
+      "sql": "CREATE TABLE messages(\n  id INTEGER PRIMARY KEY, conv_id INTEGER NOT NULL REFERENCES conversations(id),\n  sender TEXT NOT NULL, user_id INTEGER, body TEXT NOT NULL, at TEXT NOT NULL, client_key TEXT, metadata TEXT)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "conv_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "sender",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "user_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "body",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "client_key",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "metadata",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "message_idempotency",
+          "unique": 1,
+          "origin": "c",
+          "partial": 1
+        }
+      ],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "conversations",
+          "from": "conv_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "notes": {
+      "sql": "CREATE TABLE notes(id INTEGER PRIMARY KEY,customer_id INTEGER REFERENCES customers(id),body TEXT NOT NULL,user_id INTEGER REFERENCES users(id),at TEXT NOT NULL)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "body",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "user_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "users",
+          "from": "user_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 1,
+          "seq": 0,
+          "table": "customers",
+          "from": "customer_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "opp_history": {
+      "sql": "CREATE TABLE opp_history(\n  id INTEGER PRIMARY KEY, opp_id INTEGER NOT NULL REFERENCES opportunities(id),\n  from_stage TEXT, to_stage TEXT NOT NULL, reason TEXT, user_id INTEGER, at TEXT NOT NULL)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "opp_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "from_stage",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "to_stage",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "reason",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "user_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "opportunities",
+          "from": "opp_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "opportunities": {
+      "sql": "CREATE TABLE opportunities(\n  id INTEGER PRIMARY KEY, customer_id INTEGER NOT NULL REFERENCES customers(id),\n  title TEXT NOT NULL, stage TEXT NOT NULL, est_value INTEGER DEFAULT 0,\n  owner_id INTEGER REFERENCES users(id), expected_close TEXT,\n  final_value INTEGER, closed_at TEXT, lost_reason TEXT,\n  contract_signed INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "title",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "stage",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "est_value",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "owner_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "expected_close",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "final_value",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "closed_at",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "lost_reason",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "contract_signed",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "created_at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "users",
+          "from": "owner_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 1,
+          "seq": 0,
+          "table": "customers",
+          "from": "customer_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "products": {
+      "sql": "CREATE TABLE products(\n  code TEXT PRIMARY KEY, name TEXT NOT NULL, family TEXT NOT NULL,\n  first_year INTEGER, renewal INTEGER, needs_pkg1 INTEGER NOT NULL DEFAULT 0, note TEXT DEFAULT '')",
+      "columns": [
+        {
+          "name": "code",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "family",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "first_year",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "renewal",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "needs_pkg1",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "note",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_products_1",
+          "unique": 1,
+          "origin": "pk",
+          "partial": 0
+        }
+      ],
+      "foreign_keys": []
+    },
+    "quote_history": {
+      "sql": "CREATE TABLE quote_history(id INTEGER PRIMARY KEY,quote_id INTEGER REFERENCES quotes(id),action TEXT,user_id INTEGER,at TEXT,content TEXT)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "quote_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "action",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "user_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "at",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "content",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "quotes",
+          "from": "quote_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "quote_items": {
+      "sql": "CREATE TABLE quote_items(\n  id INTEGER PRIMARY KEY, quote_id INTEGER NOT NULL REFERENCES quotes(id) ON DELETE CASCADE,\n  code TEXT NOT NULL, name TEXT NOT NULL, qty INTEGER NOT NULL DEFAULT 1,\n  first_year INTEGER, renewal INTEGER)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "quote_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "code",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "qty",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "first_year",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "renewal",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "quotes",
+          "from": "quote_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "CASCADE",
+          "match": "NONE"
+        }
+      ]
+    },
+    "quote_templates": {
+      "sql": "CREATE TABLE quote_templates(id TEXT PRIMARY KEY,name TEXT,family TEXT,intro TEXT,terms TEXT,version INTEGER DEFAULT 1)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "family",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "intro",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "terms",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "version",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_quote_templates_1",
+          "unique": 1,
+          "origin": "pk",
+          "partial": 0
+        }
+      ],
+      "foreign_keys": []
+    },
+    "quotes": {
+      "sql": "CREATE TABLE quotes(\n  id INTEGER PRIMARY KEY, code TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1,\n  parent_id INTEGER REFERENCES quotes(id),\n  customer_id INTEGER NOT NULL REFERENCES customers(id), opp_id INTEGER REFERENCES opportunities(id),\n  template TEXT NOT NULL, discount_pct REAL NOT NULL DEFAULT 0,\n  activation_date TEXT, status TEXT NOT NULL DEFAULT 'DRAFT',\n  owner_id INTEGER REFERENCES users(id), approver_id INTEGER REFERENCES users(id),\n  approved_at TEXT, reject_note TEXT, sent_at TEXT, send_key TEXT UNIQUE,\n  snapshot TEXT, created_at TEXT NOT NULL, policy TEXT, template_id TEXT)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "code",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "version",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "parent_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "opp_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "template",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "discount_pct",
+          "type": "REAL",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "activation_date",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "owner_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "approver_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "approved_at",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "reject_note",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "sent_at",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "send_key",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "snapshot",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "created_at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "policy",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "template_id",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_quotes_1",
+          "unique": 1,
+          "origin": "u",
+          "partial": 0
+        }
+      ],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "users",
+          "from": "approver_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 1,
+          "seq": 0,
+          "table": "users",
+          "from": "owner_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 2,
+          "seq": 0,
+          "table": "opportunities",
+          "from": "opp_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 3,
+          "seq": 0,
+          "table": "customers",
+          "from": "customer_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 4,
+          "seq": 0,
+          "table": "quotes",
+          "from": "parent_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "schema_migrations": {
+      "sql": "CREATE TABLE schema_migrations(version TEXT PRIMARY KEY, at TEXT)",
+      "columns": [
+        {
+          "name": "version",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "at",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_schema_migrations_1",
+          "unique": 1,
+          "origin": "pk",
+          "partial": 0
+        }
+      ],
+      "foreign_keys": []
+    },
+    "settings": {
+      "sql": "CREATE TABLE settings(key TEXT PRIMARY KEY, value TEXT)",
+      "columns": [
+        {
+          "name": "key",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "value",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_settings_1",
+          "unique": 1,
+          "origin": "pk",
+          "partial": 0
+        }
+      ],
+      "foreign_keys": []
+    },
+    "task_template_applications": {
+      "sql": "CREATE TABLE task_template_applications(request_key TEXT PRIMARY KEY,customer_id INTEGER NOT NULL,template_id INTEGER NOT NULL,at TEXT NOT NULL)",
+      "columns": [
+        {
+          "name": "request_key",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "template_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_task_template_applications_1",
+          "unique": 1,
+          "origin": "pk",
+          "partial": 0
+        }
+      ],
+      "foreign_keys": []
+    },
+    "task_templates": {
+      "sql": "CREATE TABLE task_templates(id INTEGER PRIMARY KEY,team_id INTEGER NOT NULL,name TEXT NOT NULL,items TEXT NOT NULL,UNIQUE(team_id,name))",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "team_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "items",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_task_templates_1",
+          "unique": 1,
+          "origin": "u",
+          "partial": 0
+        }
+      ],
+      "foreign_keys": []
+    },
+    "task_updates": {
+      "sql": "CREATE TABLE task_updates(id INTEGER PRIMARY KEY,task_id INTEGER NOT NULL REFERENCES tasks(id),user_id INTEGER,body TEXT NOT NULL,at TEXT NOT NULL)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "task_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "user_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "body",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "tasks",
+          "from": "task_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "tasks": {
+      "sql": "CREATE TABLE tasks(\n  id INTEGER PRIMARY KEY, title TEXT NOT NULL, customer_id INTEGER REFERENCES customers(id),\n  assignee_id INTEGER REFERENCES users(id), due_at TEXT, status TEXT NOT NULL DEFAULT 'OPEN',\n  created_at TEXT NOT NULL, kind TEXT NOT NULL DEFAULT 'Công việc', priority TEXT NOT NULL DEFAULT 'Bình thường', note TEXT NOT NULL DEFAULT '', completed_at TEXT, parent_id INTEGER REFERENCES tasks(id), started_at TEXT, archived_at TEXT)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "title",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "assignee_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "due_at",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "created_at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "kind",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "priority",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "note",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "completed_at",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "parent_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "started_at",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "archived_at",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "tasks",
+          "from": "parent_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 1,
+          "seq": 0,
+          "table": "users",
+          "from": "assignee_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 2,
+          "seq": 0,
+          "table": "customers",
+          "from": "customer_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "teams": {
+      "sql": "CREATE TABLE teams(id INTEGER PRIMARY KEY, name TEXT NOT NULL)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": []
+    },
+    "users": {
+      "sql": "CREATE TABLE users(\n  id INTEGER PRIMARY KEY, username TEXT UNIQUE NOT NULL, name TEXT NOT NULL,\n  role TEXT NOT NULL CHECK(role IN ('sales','leader','director','admin')),\n  team_id INTEGER REFERENCES teams(id), expertise TEXT DEFAULT '',\n  active INTEGER NOT NULL DEFAULT 1, salt TEXT NOT NULL, pwd TEXT NOT NULL)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "username",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "role",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "team_id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "expertise",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "active",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "salt",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "pwd",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_users_1",
+          "unique": 1,
+          "origin": "u",
+          "partial": 0
+        }
+      ],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "teams",
+          "from": "team_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "zalo_connection": {
+      "sql": "CREATE TABLE zalo_connection(id INTEGER PRIMARY KEY CHECK(id=1), config TEXT NOT NULL, enabled INTEGER NOT NULL DEFAULT 0, verified INTEGER NOT NULL DEFAULT 0, name TEXT, last_received TEXT, issue TEXT)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "config",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "enabled",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "verified",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "last_received",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "issue",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": []
+    },
+    "zalo_contacts": {
+      "sql": "CREATE TABLE zalo_contacts(oa_id TEXT NOT NULL, uid TEXT NOT NULL, customer_id INTEGER NOT NULL REFERENCES customers(id), conv_id INTEGER NOT NULL UNIQUE REFERENCES conversations(id), PRIMARY KEY(oa_id,uid))",
+      "columns": [
+        {
+          "name": "oa_id",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 1
+        },
+        {
+          "name": "uid",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 2
+        },
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "conv_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_zalo_contacts_2",
+          "unique": 1,
+          "origin": "pk",
+          "partial": 0
+        },
+        {
+          "seq": 1,
+          "name": "sqlite_autoindex_zalo_contacts_1",
+          "unique": 1,
+          "origin": "u",
+          "partial": 0
+        }
+      ],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "conversations",
+          "from": "conv_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 1,
+          "seq": 0,
+          "table": "customers",
+          "from": "customer_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    "zalo_echoes": {
+      "sql": "CREATE TABLE zalo_echoes(oa_id TEXT NOT NULL,provider_id TEXT NOT NULL,conv_id INTEGER NOT NULL,body TEXT NOT NULL,PRIMARY KEY(oa_id,provider_id))",
+      "columns": [
+        {
+          "name": "oa_id",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 1
+        },
+        {
+          "name": "provider_id",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 2
+        },
+        {
+          "name": "conv_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "body",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_zalo_echoes_1",
+          "unique": 1,
+          "origin": "pk",
+          "partial": 0
+        }
+      ],
+      "foreign_keys": []
+    },
+    "zalo_events": {
+      "sql": "CREATE TABLE zalo_events(event_key TEXT PRIMARY KEY, received_at TEXT NOT NULL)",
+      "columns": [
+        {
+          "name": "event_key",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "received_at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_zalo_events_1",
+          "unique": 1,
+          "origin": "pk",
+          "partial": 0
+        }
+      ],
+      "foreign_keys": []
+    },
+    "zalo_outbox": {
+      "sql": "CREATE TABLE zalo_outbox(id INTEGER PRIMARY KEY, message_id INTEGER UNIQUE NOT NULL REFERENCES messages(id), oa_id TEXT NOT NULL, uid TEXT NOT NULL, client_key TEXT NOT NULL UNIQUE, status TEXT NOT NULL, provider_id TEXT, error TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "notnull": 0,
+          "pk": 1
+        },
+        {
+          "name": "message_id",
+          "type": "INTEGER",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "oa_id",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "uid",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "client_key",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "provider_id",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "error",
+          "type": "TEXT",
+          "notnull": 0,
+          "pk": 0
+        },
+        {
+          "name": "created_at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        },
+        {
+          "name": "updated_at",
+          "type": "TEXT",
+          "notnull": 1,
+          "pk": 0
+        }
+      ],
+      "indexes": [
+        {
+          "seq": 0,
+          "name": "zalo_outbox_status",
+          "unique": 0,
+          "origin": "c",
+          "partial": 0
+        },
+        {
+          "seq": 1,
+          "name": "sqlite_autoindex_zalo_outbox_2",
+          "unique": 1,
+          "origin": "u",
+          "partial": 0
+        },
+        {
+          "seq": 2,
+          "name": "sqlite_autoindex_zalo_outbox_1",
+          "unique": 1,
+          "origin": "u",
+          "partial": 0
+        }
+      ],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "messages",
+          "from": "message_id",
+          "to": "id",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    }
+  },
+  "oa": {
+    "config_rows": 0,
+    "live_conversations": 0
+  }
+}

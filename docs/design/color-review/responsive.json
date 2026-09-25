@@ -1,0 +1,35 @@
+{
+  "tablet": [
+    {
+      "page": "#/tasks",
+      "scroll": 768,
+      "width": 768
+    },
+    {
+      "page": "#/customers",
+      "scroll": 768,
+      "width": 768
+    }
+  ],
+  "mobile": [
+    {
+      "page": "#/tasks",
+      "scroll": 390,
+      "width": 390
+    },
+    {
+      "page": "#/customers",
+      "scroll": 390,
+      "width": 390
+    }
+  ],
+  "profileMobile": {
+    "width": 390,
+    "scroll": 390
+  },
+  "taskFormMobile": {
+    "width": 390,
+    "dialogLeft": 15,
+    "dialogRight": 360
+  }
+}

@@ -1,0 +1,3815 @@
+OMNI CRM – DATABASE SCHEMA v2.0
+Phạm vi: CRM Core + Sales + Omnichannel + Chatbot + AI + Knowledge Hub + Automation + AuditDatabase đề xuất: PostgreSQLMục đích: Làm đặc tả dữ liệu chính thức để Claude triển khai migration, ORM model, API và service layer.
+
+1. MỤC TIÊU THIẾT KẾ
+Database của Omni CRM phải đáp ứng đồng thời:
+Quản lý khách hàng và danh bạ.
+Quản lý Lead.
+Quản lý hoạt động tiếp xúc.
+Quản lý bán hàng.
+Quản lý Opportunity/Pipeline.
+Quản lý báo giá.
+Quản lý hợp đồng.
+Quản lý thanh toán.
+Quản lý Task/Meeting.
+Quản lý giao tiếp đa kênh.
+Quản lý Chatbot.
+Quản lý Human Handoff.
+Quản lý AI Assistant.
+Quản lý AI Insight.
+Quản lý Knowledge Base/RAG.
+Quản lý Workflow/Automation.
+Quản lý Notification.
+Quản lý Audit.
+Hỗ trợ mở rộng SaaS/multi-tenant trong tương lai.
+
+2. NGUYÊN TẮC KIẾN TRÚC DỮ LIỆU
+2.1. Một nguồn dữ liệu khách hàng duy nhất
+Không được tạo:
+danh bạ riêng cho Chatbot;
+danh bạ riêng cho Messaging;
+danh bạ riêng cho AI.
+Tất cả phải liên kết về:
+organizations
+contacts
+
+
+3. NGUYÊN TẮC CUSTOMER 360°
+Các domain:
+CRM
+Sales
+Messaging
+Chatbot
+AI
+Knowledge
+Task
+Meeting
+Quote
+Contract
+Payment
+
+đều phải liên kết bằng các khóa chung như:
+organization_id
+contact_id
+lead_id
+opportunity_id
+conversation_id
+
+
+4. KIỂU KHÓA CHÍNH
+Tất cả bảng nghiệp vụ sử dụng:
+UUID
+
+Khuyến nghị:
+gen_random_uuid()
+
+Không dùng integer auto-increment cho các entity chính.
+
+5. TRƯỜNG AUDIT CHUNG
+Hầu hết bảng nghiệp vụ phải có:
+id UUID PRIMARY KEY
+
+created_at TIMESTAMPTZ
+created_by UUID NULL
+
+updated_at TIMESTAMPTZ
+updated_by UUID NULL
+
+deleted_at TIMESTAMPTZ NULL
+deleted_by UUID NULL
+
+Nếu bảng chỉ mang tính liên kết thì có thể giản lược.
+
+6. SOFT DELETE
+Không xóa vật lý dữ liệu nghiệp vụ thông thường.
+Sử dụng:
+deleted_at
+deleted_by
+
+Mặc định API chỉ query:
+WHERE deleted_at IS NULL
+
+
+7. MULTI-TENANT READINESS
+Ngay cả khi phiên bản đầu chỉ dùng cho một doanh nghiệp, schema nên chuẩn bị:
+tenant_id UUID
+
+cho các bảng nghiệp vụ chính.
+Có thể triển khai tenant mặc định duy nhất trong MVP.
+Điều này giúp sau này hỗ trợ nhiều công ty mà không phải thiết kế lại database.
+
+8. DOMAIN 01 – TENANT
+8.1. tenants
+id UUID PK
+
+name VARCHAR(255)
+code VARCHAR(100) UNIQUE
+
+logo_url TEXT
+timezone VARCHAR(100)
+default_language VARCHAR(20)
+default_currency VARCHAR(10)
+
+status VARCHAR(30)
+
+created_at
+updated_at
+deleted_at
+
+Status:
+ACTIVE
+SUSPENDED
+INACTIVE
+
+
+9. DOMAIN 02 – USER & ORGANIZATION STRUCTURE
+9.1. users
+id UUID PK
+tenant_id UUID FK tenants.id
+
+email VARCHAR(255)
+email_normalized VARCHAR(255)
+
+password_hash TEXT
+
+full_name VARCHAR(255)
+
+phone VARCHAR(50)
+phone_normalized VARCHAR(50)
+
+avatar_url TEXT
+
+department_id UUID NULL
+manager_id UUID NULL FK users.id
+
+timezone VARCHAR(100)
+language VARCHAR(20)
+
+status VARCHAR(30)
+
+last_login_at TIMESTAMPTZ
+password_changed_at TIMESTAMPTZ
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+deleted_by
+
+Constraint:
+UNIQUE(tenant_id, email_normalized)
+
+
+10. departments
+id UUID PK
+tenant_id UUID FK
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+parent_id UUID NULL
+manager_id UUID NULL
+
+description TEXT
+
+status VARCHAR(30)
+
+created_at
+updated_at
+deleted_at
+
+Constraint:
+UNIQUE(tenant_id, code)
+
+
+11. roles
+id UUID PK
+tenant_id UUID FK
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+description TEXT
+
+is_system_role BOOLEAN DEFAULT FALSE
+
+status VARCHAR(30)
+
+created_at
+updated_at
+
+
+12. permissions
+id UUID PK
+
+module VARCHAR(100)
+resource VARCHAR(100)
+action VARCHAR(100)
+
+code VARCHAR(255) UNIQUE
+
+description TEXT
+
+Ví dụ:
+crm.organization.view
+crm.organization.create
+crm.organization.edit
+
+sales.opportunity.assign
+
+messaging.message.send
+
+ai.assistant.use
+
+knowledge.document.upload
+
+
+13. role_permissions
+role_id UUID FK
+permission_id UUID FK
+
+PRIMARY KEY(role_id, permission_id)
+
+
+14. user_roles
+Không khóa một User chỉ vào một Role.
+user_id UUID FK
+role_id UUID FK
+
+PRIMARY KEY(user_id, role_id)
+
+Điều này tốt hơn trường role_id trực tiếp trong users.
+
+15. DOMAIN 03 – MASTER DATA
+Các danh mục sau không được hard-code.
+
+16. industries
+id UUID PK
+tenant_id UUID NULL
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+parent_id UUID NULL
+
+status VARCHAR(30)
+
+display_order INTEGER
+
+
+17. organization_types
+Ví dụ:
+Enterprise
+SME
+Government
+School
+Partner
+Distributor
+Schema:
+id UUID PK
+tenant_id UUID
+
+name
+code
+status
+display_order
+
+
+18. lead_sources
+Ví dụ:
+REFERRAL
+WEBSITE
+FACEBOOK
+ZALO
+WHATSAPP
+EVENT
+TELESALES
+PARTNER
+IMPORT
+
+Schema:
+id UUID PK
+tenant_id UUID
+
+name
+code
+
+status
+display_order
+
+
+19. contact_roles
+Ví dụ:
+Decision Maker
+Influencer
+User
+Procurement
+Finance
+Champion
+Schema:
+id UUID PK
+tenant_id UUID
+
+name
+code
+description
+
+status
+
+
+20. lost_reasons
+Dùng khi Lead hoặc Opportunity thất bại.
+id UUID PK
+tenant_id UUID
+
+entity_type VARCHAR
+
+name
+code
+
+status
+display_order
+
+
+21. tags
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(100)
+color VARCHAR(20)
+
+description TEXT
+
+created_at
+created_by
+
+
+22. DOMAIN 04 – ORGANIZATION / CUSTOMER
+22.1. organizations
+Đây là bảng khách hàng tổ chức.
+id UUID PK
+tenant_id UUID FK
+
+organization_code VARCHAR(100)
+
+name VARCHAR(255)
+short_name VARCHAR(255)
+
+tax_code VARCHAR(100)
+tax_code_normalized VARCHAR(100)
+
+organization_type_id UUID NULL
+industry_id UUID NULL
+
+website TEXT
+
+email VARCHAR(255)
+email_normalized VARCHAR(255)
+
+phone VARCHAR(50)
+phone_normalized VARCHAR(50)
+
+address_line1 TEXT
+address_line2 TEXT
+
+ward VARCHAR(255)
+district VARCHAR(255)
+city VARCHAR(255)
+province VARCHAR(255)
+country VARCHAR(100)
+
+postal_code VARCHAR(50)
+
+employee_count INTEGER
+annual_revenue NUMERIC(18,2)
+
+source_id UUID NULL
+
+owner_id UUID FK users.id
+
+priority VARCHAR(30)
+lifecycle_stage VARCHAR(50)
+status VARCHAR(50)
+
+description TEXT
+
+last_activity_at TIMESTAMPTZ
+next_activity_at TIMESTAMPTZ
+
+first_contact_at TIMESTAMPTZ
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+deleted_by
+
+
+23. organization_tags
+organization_id UUID FK
+tag_id UUID FK
+
+PRIMARY KEY(organization_id, tag_id)
+
+
+24. organization_relationships
+Cho phép lưu quan hệ:
+công ty mẹ;
+công ty con;
+đối tác;
+đại lý;
+liên kết.
+id UUID PK
+tenant_id UUID
+
+source_organization_id UUID
+target_organization_id UUID
+
+relationship_type VARCHAR(50)
+
+description TEXT
+
+created_at
+created_by
+
+
+25. DOMAIN 05 – CONTACT
+25.1. contacts
+id UUID PK
+tenant_id UUID
+
+contact_code VARCHAR(100)
+
+organization_id UUID NULL
+
+first_name VARCHAR(100)
+middle_name VARCHAR(100)
+last_name VARCHAR(100)
+
+full_name VARCHAR(255)
+
+job_title VARCHAR(255)
+department_name VARCHAR(255)
+
+gender VARCHAR(30)
+birthday DATE
+
+phone VARCHAR(50)
+phone_normalized VARCHAR(50)
+
+secondary_phone VARCHAR(50)
+secondary_phone_normalized VARCHAR(50)
+
+email VARCHAR(255)
+email_normalized VARCHAR(255)
+
+zalo_identifier VARCHAR(255)
+viber_identifier VARCHAR(255)
+whatsapp_identifier VARCHAR(255)
+
+facebook_url TEXT
+linkedin_url TEXT
+
+address TEXT
+city VARCHAR(255)
+province VARCHAR(255)
+country VARCHAR(100)
+
+contact_role_id UUID NULL
+
+influence_level VARCHAR(30)
+decision_power VARCHAR(30)
+
+preferred_channel_id UUID NULL
+
+owner_id UUID NULL
+
+source_id UUID NULL
+
+status VARCHAR(50)
+
+notes TEXT
+
+last_activity_at TIMESTAMPTZ
+next_activity_at TIMESTAMPTZ
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+deleted_by
+
+
+26. contact_tags
+contact_id UUID
+tag_id UUID
+
+PRIMARY KEY(contact_id, tag_id)
+
+
+27. contact_channel_identifiers
+Không nên dựa hoàn toàn vào:
+zalo_identifier
+viber_identifier
+whatsapp_identifier
+
+trong contacts.
+Cần một bảng chuẩn hóa:
+id UUID PK
+
+tenant_id UUID
+
+contact_id UUID FK
+channel_id UUID FK
+
+external_user_id VARCHAR(255)
+external_username VARCHAR(255)
+
+phone VARCHAR(50)
+
+is_verified BOOLEAN
+
+metadata JSONB
+
+created_at
+updated_at
+
+Unique:
+UNIQUE(channel_id, external_user_id)
+
+Đây là bảng cực kỳ quan trọng cho Omnichannel.
+
+28. DOMAIN 06 – LEAD
+28.1. leads
+id UUID PK
+tenant_id UUID
+
+lead_code VARCHAR(100)
+
+full_name VARCHAR(255)
+
+organization_name VARCHAR(255)
+job_title VARCHAR(255)
+
+phone VARCHAR(50)
+phone_normalized VARCHAR(50)
+
+email VARCHAR(255)
+email_normalized VARCHAR(255)
+
+channel_id UUID NULL
+external_user_id VARCHAR(255) NULL
+
+source_id UUID NULL
+
+campaign_id UUID NULL
+
+product_interest TEXT
+
+estimated_value NUMERIC(18,2)
+currency VARCHAR(10)
+
+lead_score NUMERIC(5,2)
+lead_rating VARCHAR(30)
+
+owner_id UUID NULL
+
+status VARCHAR(30)
+
+qualification_status VARCHAR(50)
+qualification_notes TEXT
+
+lost_reason_id UUID NULL
+lost_reason_detail TEXT
+
+converted_organization_id UUID NULL
+converted_contact_id UUID NULL
+converted_opportunity_id UUID NULL
+
+converted_at TIMESTAMPTZ
+
+last_activity_at TIMESTAMPTZ
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+deleted_by
+
+Lead status:
+NEW
+CONTACTED
+QUALIFYING
+QUALIFIED
+CONVERTED
+NURTURING
+LOST
+
+
+29. lead_tags
+lead_id UUID
+tag_id UUID
+
+PRIMARY KEY(lead_id, tag_id)
+
+
+30. DOMAIN 07 – SALES PIPELINE
+30.1. pipelines
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+description TEXT
+
+is_default BOOLEAN
+
+status VARCHAR(30)
+
+created_at
+updated_at
+
+
+31. pipeline_stages
+id UUID PK
+tenant_id UUID
+
+pipeline_id UUID FK
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+display_order INTEGER
+
+default_probability NUMERIC(5,2)
+
+stage_type VARCHAR(30)
+
+is_active BOOLEAN
+
+created_at
+updated_at
+
+Stage Type:
+OPEN
+WON
+LOST
+
+
+32. opportunities
+id UUID PK
+tenant_id UUID
+
+opportunity_code VARCHAR(100)
+
+name VARCHAR(255)
+
+organization_id UUID FK
+primary_contact_id UUID NULL
+
+pipeline_id UUID FK
+stage_id UUID FK
+
+owner_id UUID FK
+
+source_id UUID NULL
+
+estimated_value NUMERIC(18,2)
+final_value NUMERIC(18,2)
+
+currency VARCHAR(10)
+
+probability NUMERIC(5,2)
+
+expected_close_date DATE
+actual_close_date DATE
+
+need TEXT
+pain_point TEXT
+
+budget_amount NUMERIC(18,2)
+budget_currency VARCHAR(10)
+budget_notes TEXT
+
+authority_notes TEXT
+timing_notes TEXT
+
+competitor_notes TEXT
+
+next_action TEXT
+next_action_date TIMESTAMPTZ
+
+status VARCHAR(30)
+
+lost_reason_id UUID NULL
+lost_reason_detail TEXT
+
+last_activity_at TIMESTAMPTZ
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+deleted_by
+
+
+33. opportunity_contacts
+Một Opportunity có thể liên quan nhiều Contact.
+id UUID PK
+
+opportunity_id UUID
+contact_id UUID
+
+role VARCHAR(50)
+
+is_primary BOOLEAN
+
+notes TEXT
+
+Role:
+DECISION_MAKER
+INFLUENCER
+USER
+PROCUREMENT
+FINANCE
+TECHNICAL
+OTHER
+
+
+34. opportunity_stage_history
+id UUID PK
+tenant_id UUID
+
+opportunity_id UUID
+
+from_stage_id UUID NULL
+to_stage_id UUID
+
+changed_by UUID
+
+changed_at TIMESTAMPTZ
+
+reason TEXT
+metadata JSONB
+
+Không được update Stage mà không tạo history.
+
+35. opportunity_competitors
+id UUID PK
+
+opportunity_id UUID
+
+competitor_name VARCHAR(255)
+
+strengths TEXT
+weaknesses TEXT
+
+status VARCHAR(50)
+
+notes TEXT
+
+
+36. DOMAIN 08 – PRODUCT
+36.1. product_categories
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+parent_id UUID NULL
+
+status VARCHAR(30)
+
+
+37. products
+id UUID PK
+tenant_id UUID
+
+product_code VARCHAR(100)
+
+name VARCHAR(255)
+
+category_id UUID NULL
+
+description TEXT
+
+unit VARCHAR(100)
+
+standard_price NUMERIC(18,2)
+currency VARCHAR(10)
+
+status VARCHAR(30)
+
+created_at
+updated_at
+deleted_at
+
+
+38. opportunity_products
+id UUID PK
+
+opportunity_id UUID
+product_id UUID
+
+quantity NUMERIC(18,4)
+
+unit_price NUMERIC(18,2)
+
+discount_percent NUMERIC(7,4)
+discount_amount NUMERIC(18,2)
+
+tax_percent NUMERIC(7,4)
+
+line_total NUMERIC(18,2)
+
+currency VARCHAR(10)
+
+notes TEXT
+
+
+39. DOMAIN 09 – ACTIVITY TIMELINE
+Đây là bảng cốt lõi nhất sau Customer.
+39.1. activities
+id UUID PK
+tenant_id UUID
+
+activity_type VARCHAR(50)
+
+organization_id UUID NULL
+contact_id UUID NULL
+lead_id UUID NULL
+opportunity_id UUID NULL
+
+owner_id UUID NULL
+
+subject VARCHAR(255)
+description TEXT
+
+activity_at TIMESTAMPTZ
+
+status VARCHAR(30)
+
+channel_id UUID NULL
+
+direction VARCHAR(20) NULL
+
+outcome TEXT
+
+next_action TEXT
+next_action_at TIMESTAMPTZ
+
+source_type VARCHAR(50)
+source_id UUID NULL
+
+metadata JSONB
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+deleted_by
+
+Activity Type:
+CALL
+MESSAGE
+EMAIL
+MEETING
+DEMO
+TASK
+NOTE
+QUOTE
+CONTRACT
+PAYMENT
+CHATBOT
+AI_ACTION
+DOCUMENT
+OTHER
+
+
+40. activity_participants
+id UUID PK
+
+activity_id UUID
+
+participant_type VARCHAR
+
+user_id UUID NULL
+contact_id UUID NULL
+
+role VARCHAR(50)
+
+
+41. DOMAIN 10 – TASK
+41.1. tasks
+id UUID PK
+tenant_id UUID
+
+title VARCHAR(255)
+description TEXT
+
+organization_id UUID NULL
+contact_id UUID NULL
+lead_id UUID NULL
+opportunity_id UUID NULL
+
+assigned_to UUID
+assigned_by UUID
+
+priority VARCHAR(30)
+status VARCHAR(30)
+
+start_at TIMESTAMPTZ
+due_at TIMESTAMPTZ
+completed_at TIMESTAMPTZ
+
+reminder_at TIMESTAMPTZ
+
+result TEXT
+
+source_type VARCHAR(50)
+source_id UUID NULL
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+deleted_by
+
+Status:
+TODO
+IN_PROGRESS
+WAITING
+COMPLETED
+CANCELLED
+
+Không cần lưu OVERDUE.
+Overdue nên tính:
+due_at < now()
+AND status NOT IN(COMPLETED,CANCELLED)
+
+
+42. DOMAIN 11 – MEETING
+42.1. meetings
+id UUID PK
+tenant_id UUID
+
+title VARCHAR(255)
+
+organization_id UUID NULL
+contact_id UUID NULL
+opportunity_id UUID NULL
+
+meeting_type VARCHAR(50)
+
+start_at TIMESTAMPTZ
+end_at TIMESTAMPTZ
+
+location TEXT
+meeting_url TEXT
+
+agenda TEXT
+
+meeting_notes TEXT
+
+status VARCHAR(30)
+
+owner_id UUID
+
+recording_file_id UUID NULL
+transcript_id UUID NULL
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+
+
+43. meeting_participants
+id UUID PK
+
+meeting_id UUID
+
+participant_type VARCHAR(30)
+
+user_id UUID NULL
+contact_id UUID NULL
+
+display_name VARCHAR(255)
+
+response_status VARCHAR(30)
+
+
+44. meeting_transcripts
+id UUID PK
+
+meeting_id UUID
+
+language VARCHAR(20)
+
+transcript_text TEXT
+
+source VARCHAR(50)
+
+status VARCHAR(30)
+
+created_at
+
+
+45. DOMAIN 12 – QUOTE
+45.1. quotes
+id UUID PK
+tenant_id UUID
+
+quote_number VARCHAR(100)
+
+organization_id UUID
+contact_id UUID NULL
+opportunity_id UUID NULL
+
+version_number INTEGER
+
+parent_quote_id UUID NULL
+
+quote_date DATE
+expiry_date DATE
+
+subtotal NUMERIC(18,2)
+
+discount_amount NUMERIC(18,2)
+tax_amount NUMERIC(18,2)
+
+total_amount NUMERIC(18,2)
+
+currency VARCHAR(10)
+
+payment_terms TEXT
+notes TEXT
+
+status VARCHAR(30)
+
+owner_id UUID
+
+approved_by UUID NULL
+approved_at TIMESTAMPTZ NULL
+
+pdf_file_id UUID NULL
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+
+Status:
+DRAFT
+INTERNAL_REVIEW
+APPROVED
+SENT
+CUSTOMER_REVIEW
+ACCEPTED
+REJECTED
+EXPIRED
+CANCELLED
+
+
+46. quote_items
+id UUID PK
+
+quote_id UUID
+product_id UUID NULL
+
+item_name VARCHAR(255)
+description TEXT
+
+quantity NUMERIC(18,4)
+unit VARCHAR(100)
+
+unit_price NUMERIC(18,2)
+
+discount_percent NUMERIC(7,4)
+discount_amount NUMERIC(18,2)
+
+tax_percent NUMERIC(7,4)
+tax_amount NUMERIC(18,2)
+
+line_total NUMERIC(18,2)
+
+display_order INTEGER
+
+
+47. DOMAIN 13 – CONTRACT
+47.1. contracts
+id UUID PK
+tenant_id UUID
+
+contract_number VARCHAR(100)
+
+organization_id UUID
+contact_id UUID NULL
+
+opportunity_id UUID NULL
+quote_id UUID NULL
+
+contract_value NUMERIC(18,2)
+currency VARCHAR(10)
+
+signed_date DATE
+start_date DATE
+end_date DATE
+
+payment_terms TEXT
+
+status VARCHAR(30)
+
+owner_id UUID
+
+file_id UUID NULL
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+
+
+48. DOMAIN 14 – PAYMENT
+48.1. payment_schedules
+id UUID PK
+tenant_id UUID
+
+contract_id UUID
+
+installment_number INTEGER
+
+description VARCHAR(255)
+
+amount NUMERIC(18,2)
+currency VARCHAR(10)
+
+due_date DATE
+
+status VARCHAR(30)
+
+created_at
+updated_at
+
+
+49. payments
+id UUID PK
+tenant_id UUID
+
+contract_id UUID
+payment_schedule_id UUID NULL
+
+amount NUMERIC(18,2)
+currency VARCHAR(10)
+
+payment_date DATE
+
+payment_method VARCHAR(50)
+
+reference_number VARCHAR(255)
+
+notes TEXT
+
+created_at
+created_by
+updated_at
+
+
+50. DOMAIN 15 – CHANNEL
+50.1. channels
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+channel_type VARCHAR(50)
+
+provider VARCHAR(100)
+
+status VARCHAR(30)
+
+settings JSONB
+
+created_at
+updated_at
+
+Channel Type:
+ZALO
+WHATSAPP
+VIBER
+EMAIL
+SMS
+WEBCHAT
+MESSENGER
+OTHER
+
+
+51. channel_credentials
+Tách credential khỏi channel.
+id UUID PK
+
+channel_id UUID
+
+credential_type VARCHAR(100)
+
+secret_reference TEXT
+
+expires_at TIMESTAMPTZ
+
+status VARCHAR(30)
+
+created_at
+updated_at
+
+Không lưu access token raw nếu có Secret Manager.
+
+52. DOMAIN 16 – CONVERSATION
+52.1. conversations
+id UUID PK
+tenant_id UUID
+
+channel_id UUID
+
+external_conversation_id VARCHAR(255)
+
+organization_id UUID NULL
+contact_id UUID NULL
+lead_id UUID NULL
+
+assigned_user_id UUID NULL
+assigned_team_id UUID NULL
+
+conversation_status VARCHAR(30)
+
+bot_mode VARCHAR(30)
+
+priority VARCHAR(30)
+
+current_intent_id UUID NULL
+
+sentiment VARCHAR(30) NULL
+
+first_message_at TIMESTAMPTZ
+last_message_at TIMESTAMPTZ
+
+last_message_preview TEXT
+
+unread_count INTEGER DEFAULT 0
+
+closed_at TIMESTAMPTZ NULL
+
+metadata JSONB
+
+created_at
+updated_at
+deleted_at
+
+Conversation Status:
+OPEN
+PENDING
+WAITING_CUSTOMER
+WAITING_AGENT
+CLOSED
+SPAM
+
+Bot Mode:
+BOT
+HUMAN
+AI_ASSIST
+HYBRID
+
+
+53. conversation_participants
+id UUID PK
+
+conversation_id UUID
+
+participant_type VARCHAR(30)
+
+contact_id UUID NULL
+user_id UUID NULL
+
+external_identifier VARCHAR(255)
+
+display_name VARCHAR(255)
+
+joined_at TIMESTAMPTZ
+left_at TIMESTAMPTZ NULL
+
+
+54. DOMAIN 17 – MESSAGE
+54.1. messages
+id UUID PK
+tenant_id UUID
+
+conversation_id UUID
+channel_id UUID
+
+external_message_id VARCHAR(255)
+
+sender_type VARCHAR(30)
+
+sender_identifier VARCHAR(255)
+recipient_identifier VARCHAR(255)
+
+direction VARCHAR(20)
+
+message_type VARCHAR(30)
+
+content TEXT
+
+reply_to_message_id UUID NULL
+
+delivery_status VARCHAR(30)
+read_status VARCHAR(30)
+
+sent_at TIMESTAMPTZ NULL
+received_at TIMESTAMPTZ NULL
+delivered_at TIMESTAMPTZ NULL
+read_at TIMESTAMPTZ NULL
+
+is_bot_message BOOLEAN
+is_ai_generated BOOLEAN
+
+ai_generation_id UUID NULL
+
+raw_payload JSONB
+
+created_at
+
+Direction:
+INBOUND
+OUTBOUND
+
+Sender Type:
+CUSTOMER
+AGENT
+BOT
+SYSTEM
+AI
+
+
+55. message_attachments
+id UUID PK
+
+message_id UUID
+
+file_id UUID NULL
+
+external_url TEXT NULL
+
+file_name VARCHAR(255)
+mime_type VARCHAR(255)
+
+file_size BIGINT
+
+metadata JSONB
+
+
+56. message_delivery_events
+Để theo dõi trạng thái message chính xác.
+id UUID PK
+
+message_id UUID
+
+event_type VARCHAR(30)
+
+event_at TIMESTAMPTZ
+
+external_event_id VARCHAR(255)
+
+payload JSONB
+
+Event:
+QUEUED
+SENT
+DELIVERED
+READ
+FAILED
+
+
+57. DOMAIN 18 – CHATBOT
+57.1. chatbots
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+description TEXT
+
+assistant_id UUID NULL
+
+default_language VARCHAR(20)
+
+fallback_message TEXT
+
+status VARCHAR(30)
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+
+
+58. chatbot_channels
+id UUID PK
+
+chatbot_id UUID
+channel_id UUID
+
+is_enabled BOOLEAN
+
+settings JSONB
+
+created_at
+updated_at
+
+
+59. chatbot_sessions
+id UUID PK
+tenant_id UUID
+
+chatbot_id UUID
+channel_id UUID
+conversation_id UUID
+
+external_user_id VARCHAR(255)
+
+organization_id UUID NULL
+contact_id UUID NULL
+lead_id UUID NULL
+
+session_status VARCHAR(30)
+
+started_at TIMESTAMPTZ
+last_activity_at TIMESTAMPTZ
+ended_at TIMESTAMPTZ NULL
+
+handoff_status VARCHAR(30)
+
+current_flow_id UUID NULL
+current_node_id VARCHAR(255) NULL
+
+context JSONB
+
+created_at
+updated_at
+
+
+60. chatbot_intents
+id UUID PK
+tenant_id UUID
+
+chatbot_id UUID
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+description TEXT
+
+training_examples JSONB
+
+status VARCHAR(30)
+
+created_at
+updated_at
+
+
+61. chatbot_intent_history
+Không chỉ giữ intent hiện tại.
+id UUID PK
+
+session_id UUID
+message_id UUID NULL
+
+intent_id UUID
+
+confidence_score NUMERIC(5,4)
+
+detected_at TIMESTAMPTZ
+
+model_reference VARCHAR(255)
+
+metadata JSONB
+
+
+62. chatbot_flows
+id UUID PK
+tenant_id UUID
+
+chatbot_id UUID
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+version INTEGER
+
+trigger_type VARCHAR(50)
+
+flow_definition JSONB
+
+status VARCHAR(30)
+
+published_at TIMESTAMPTZ NULL
+
+created_at
+created_by
+updated_at
+updated_by
+
+
+63. chatbot_flow_versions
+Không overwrite flow đã production.
+id UUID PK
+
+flow_id UUID
+
+version INTEGER
+
+flow_definition JSONB
+
+created_at
+created_by
+
+published_at TIMESTAMPTZ NULL
+
+
+64. chatbot_session_variables
+Có thể lưu các field thu thập trong hội thoại.
+id UUID PK
+
+session_id UUID
+
+variable_key VARCHAR(255)
+
+value_text TEXT
+value_json JSONB
+
+updated_at
+
+Ví dụ:
+customer_name
+company
+phone
+email
+product_interest
+budget
+meeting_date
+
+
+65. DOMAIN 19 – HUMAN HANDOFF
+65.1. chatbot_handoffs
+id UUID PK
+tenant_id UUID
+
+session_id UUID
+conversation_id UUID
+
+reason VARCHAR(255)
+
+priority VARCHAR(30)
+
+requested_at TIMESTAMPTZ
+
+assigned_user_id UUID NULL
+assigned_team_id UUID NULL
+
+status VARCHAR(30)
+
+accepted_at TIMESTAMPTZ NULL
+resolved_at TIMESTAMPTZ NULL
+
+ai_summary TEXT
+
+resolution_notes TEXT
+
+Status:
+REQUESTED
+QUEUED
+ASSIGNED
+ACCEPTED
+RESOLVED
+CANCELLED
+
+
+66. agent_queues
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+description TEXT
+
+status VARCHAR(30)
+
+
+67. agent_queue_members
+queue_id UUID
+user_id UUID
+
+priority INTEGER
+
+PRIMARY KEY(queue_id, user_id)
+
+
+68. DOMAIN 20 – AI PROVIDER
+68.1. ai_providers
+id UUID PK
+tenant_id UUID NULL
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+provider_type VARCHAR(50)
+
+api_base_url TEXT NULL
+
+status VARCHAR(30)
+
+settings JSONB
+
+created_at
+updated_at
+
+
+69. ai_provider_credentials
+id UUID PK
+
+provider_id UUID
+
+secret_reference TEXT
+
+status VARCHAR(30)
+
+expires_at TIMESTAMPTZ NULL
+
+created_at
+updated_at
+
+
+70. ai_models
+id UUID PK
+
+provider_id UUID
+
+name VARCHAR(255)
+model_code VARCHAR(255)
+
+model_type VARCHAR(30)
+
+context_window INTEGER NULL
+
+supports_tools BOOLEAN
+supports_vision BOOLEAN
+supports_audio BOOLEAN
+supports_structured_output BOOLEAN
+
+cost_metadata JSONB
+
+status VARCHAR(30)
+
+Model Type:
+CHAT
+EMBEDDING
+VISION
+SPEECH_TO_TEXT
+TEXT_TO_SPEECH
+RERANKER
+OTHER
+
+
+71. DOMAIN 21 – AI ASSISTANT
+71.1. ai_assistants
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+assistant_type VARCHAR(50)
+
+description TEXT
+
+system_instruction TEXT
+
+default_model_id UUID
+
+temperature NUMERIC(5,4)
+
+knowledge_base_id UUID NULL
+
+status VARCHAR(30)
+
+created_at
+created_by
+updated_at
+updated_by
+
+Assistant Type:
+SALES
+CUSTOMER_SERVICE
+CHATBOT
+DATA_ANALYST
+MEETING
+WRITING
+MANAGER
+CUSTOM
+
+
+72. ai_assistant_tools
+id UUID PK
+
+assistant_id UUID
+
+tool_id UUID
+
+is_enabled BOOLEAN
+
+approval_policy VARCHAR(30)
+
+created_at
+
+Approval Policy:
+AUTO
+USER_CONFIRM
+MANAGER_CONFIRM
+DISABLED
+
+
+73. ai_tools
+Định nghĩa các công cụ AI có thể gọi.
+id UUID PK
+
+name VARCHAR(255)
+code VARCHAR(100) UNIQUE
+
+description TEXT
+
+tool_type VARCHAR(50)
+
+input_schema JSONB
+output_schema JSONB
+
+required_permission VARCHAR(255)
+
+risk_level VARCHAR(30)
+
+status VARCHAR(30)
+
+Ví dụ:
+search_customer
+get_customer_360
+search_messages
+get_pipeline
+create_task
+draft_message
+create_meeting
+create_lead
+update_opportunity
+
+
+74. ai_conversations
+id UUID PK
+tenant_id UUID
+
+assistant_id UUID
+
+user_id UUID NULL
+
+organization_id UUID NULL
+contact_id UUID NULL
+lead_id UUID NULL
+opportunity_id UUID NULL
+conversation_id UUID NULL
+
+title VARCHAR(255)
+
+status VARCHAR(30)
+
+created_at
+updated_at
+
+
+75. ai_messages
+id UUID PK
+
+ai_conversation_id UUID
+
+role VARCHAR(20)
+
+content TEXT
+
+model_id UUID NULL
+
+input_tokens INTEGER NULL
+output_tokens INTEGER NULL
+
+latency_ms INTEGER NULL
+
+metadata JSONB
+
+created_at
+
+Role:
+SYSTEM
+USER
+ASSISTANT
+TOOL
+
+
+76. ai_tool_calls
+id UUID PK
+
+ai_message_id UUID
+
+tool_id UUID
+
+tool_call_external_id VARCHAR(255)
+
+input_payload JSONB
+output_payload JSONB
+
+permission_result VARCHAR(30)
+
+approval_status VARCHAR(30)
+
+executed_at TIMESTAMPTZ NULL
+
+status VARCHAR(30)
+
+error_message TEXT NULL
+
+
+77. DOMAIN 22 – AI INSIGHTS
+77.1. ai_insights
+id UUID PK
+tenant_id UUID
+
+insight_type VARCHAR(50)
+
+organization_id UUID NULL
+contact_id UUID NULL
+lead_id UUID NULL
+opportunity_id UUID NULL
+conversation_id UUID NULL
+meeting_id UUID NULL
+
+title VARCHAR(255)
+
+summary TEXT
+
+details JSONB
+
+confidence_score NUMERIC(5,4)
+
+model_id UUID NULL
+
+status VARCHAR(30)
+
+generated_at TIMESTAMPTZ
+
+reviewed_by UUID NULL
+reviewed_at TIMESTAMPTZ NULL
+
+expires_at TIMESTAMPTZ NULL
+
+Insight Type:
+CUSTOMER_SUMMARY
+CONVERSATION_SUMMARY
+MEETING_SUMMARY
+LEAD_SCORE
+NEXT_BEST_ACTION
+OPPORTUNITY_RISK
+SENTIMENT
+INTENT
+CHURN_RISK
+PAYMENT_RISK
+RECOMMENDATION
+
+
+78. ai_action_suggestions
+id UUID PK
+tenant_id UUID
+
+insight_id UUID NULL
+
+organization_id UUID NULL
+contact_id UUID NULL
+lead_id UUID NULL
+opportunity_id UUID NULL
+
+action_type VARCHAR(50)
+
+title VARCHAR(255)
+description TEXT
+
+priority VARCHAR(30)
+
+suggested_due_at TIMESTAMPTZ NULL
+
+status VARCHAR(30)
+
+approved_by UUID NULL
+approved_at TIMESTAMPTZ NULL
+
+executed_by UUID NULL
+executed_at TIMESTAMPTZ NULL
+
+execution_reference_type VARCHAR(50) NULL
+execution_reference_id UUID NULL
+
+created_at
+
+Status:
+SUGGESTED
+APPROVED
+REJECTED
+EXECUTED
+EXPIRED
+
+
+79. ai_scoring_results
+Dùng cho Lead Score, Opportunity Score, Health Score.
+id UUID PK
+tenant_id UUID
+
+score_type VARCHAR(50)
+
+entity_type VARCHAR(50)
+entity_id UUID
+
+score NUMERIC(7,4)
+
+rating VARCHAR(30)
+
+factors JSONB
+
+model_id UUID NULL
+
+generated_at TIMESTAMPTZ
+
+expires_at TIMESTAMPTZ NULL
+
+
+80. ai_audit_logs
+id UUID PK
+tenant_id UUID
+
+user_id UUID NULL
+assistant_id UUID NULL
+model_id UUID NULL
+
+action VARCHAR(100)
+
+entity_type VARCHAR(50) NULL
+entity_id UUID NULL
+
+input_reference JSONB
+output_reference JSONB
+
+tool_id UUID NULL
+
+approval_required BOOLEAN
+
+approved_by UUID NULL
+
+status VARCHAR(30)
+
+created_at
+
+
+81. DOMAIN 23 – KNOWLEDGE HUB
+81.1. knowledge_bases
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+description TEXT
+
+scope VARCHAR(50)
+
+owner_department_id UUID NULL
+
+status VARCHAR(30)
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+
+Scope:
+GLOBAL
+SALES
+CUSTOMER_SERVICE
+CHATBOT
+DEPARTMENT
+CUSTOM
+
+
+82. knowledge_base_permissions
+Không phải User nào cũng thấy toàn bộ Knowledge.
+id UUID PK
+
+knowledge_base_id UUID
+
+subject_type VARCHAR(30)
+
+user_id UUID NULL
+role_id UUID NULL
+department_id UUID NULL
+
+permission VARCHAR(30)
+
+Permission:
+READ
+WRITE
+ADMIN
+
+
+83. knowledge_documents
+id UUID PK
+tenant_id UUID
+
+knowledge_base_id UUID
+
+title VARCHAR(500)
+
+source_type VARCHAR(30)
+
+file_id UUID NULL
+source_url TEXT NULL
+
+content_text TEXT NULL
+
+language VARCHAR(20)
+
+document_status VARCHAR(30)
+
+version INTEGER
+
+checksum VARCHAR(255)
+
+effective_from TIMESTAMPTZ NULL
+effective_to TIMESTAMPTZ NULL
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+
+Source:
+FILE
+URL
+TEXT
+CRM
+API
+
+
+84. knowledge_document_versions
+id UUID PK
+
+document_id UUID
+
+version INTEGER
+
+content_text TEXT NULL
+file_id UUID NULL
+
+checksum VARCHAR(255)
+
+created_at
+created_by
+
+
+85. knowledge_chunks
+id UUID PK
+
+document_id UUID
+document_version_id UUID NULL
+
+chunk_index INTEGER
+
+content TEXT
+
+token_count INTEGER NULL
+
+embedding_model_id UUID NULL
+
+vector_reference TEXT NULL
+
+metadata JSONB
+
+created_at
+
+Nếu dùng PostgreSQL + pgvector:
+Có thể thay vector_reference bằng:
+embedding VECTOR(...)
+
+
+86. knowledge_queries
+Để phân tích chất lượng RAG.
+id UUID PK
+
+knowledge_base_id UUID
+
+user_id UUID NULL
+
+query_text TEXT
+
+response_text TEXT NULL
+
+retrieved_chunk_ids JSONB
+
+assistant_id UUID NULL
+
+model_id UUID NULL
+
+feedback_score INTEGER NULL
+
+created_at
+
+
+87. DOMAIN 24 – FILE STORAGE
+87.1. files
+id UUID PK
+tenant_id UUID
+
+storage_provider VARCHAR(50)
+
+storage_key TEXT
+file_url TEXT NULL
+
+original_file_name VARCHAR(500)
+
+mime_type VARCHAR(255)
+
+file_size BIGINT
+
+checksum VARCHAR(255)
+
+uploaded_by UUID
+
+status VARCHAR(30)
+
+created_at
+deleted_at
+
+
+88. file_links
+Thay vì entity_type/entity_id trực tiếp trong files.
+id UUID PK
+
+file_id UUID
+
+entity_type VARCHAR(50)
+entity_id UUID
+
+link_type VARCHAR(50)
+
+created_at
+created_by
+
+Ví dụ:
+CONTRACT_DOCUMENT
+QUOTE_PDF
+MEETING_RECORDING
+MESSAGE_ATTACHMENT
+GENERAL_ATTACHMENT
+
+
+89. DOMAIN 25 – NOTES
+89.1. notes
+id UUID PK
+tenant_id UUID
+
+content TEXT
+
+organization_id UUID NULL
+contact_id UUID NULL
+lead_id UUID NULL
+opportunity_id UUID NULL
+conversation_id UUID NULL
+
+is_pinned BOOLEAN DEFAULT FALSE
+
+visibility VARCHAR(30)
+
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+
+Visibility:
+PRIVATE
+TEAM
+TENANT
+
+
+90. DOMAIN 26 – NOTIFICATION
+90.1. notifications
+id UUID PK
+tenant_id UUID
+
+user_id UUID
+
+notification_type VARCHAR(50)
+
+title VARCHAR(255)
+content TEXT
+
+entity_type VARCHAR(50) NULL
+entity_id UUID NULL
+
+priority VARCHAR(30)
+
+is_read BOOLEAN
+
+read_at TIMESTAMPTZ NULL
+
+created_at
+
+
+91. notification_preferences
+id UUID PK
+
+user_id UUID
+
+notification_type VARCHAR(50)
+
+in_app BOOLEAN
+email BOOLEAN
+push BOOLEAN
+
+created_at
+updated_at
+
+
+92. DOMAIN 27 – AUTOMATION / WORKFLOW
+Workflow cần có ngay trong schema dù MVP có thể chỉ dùng một phần.
+
+93. workflows
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+description TEXT
+
+trigger_type VARCHAR(50)
+
+entity_type VARCHAR(50)
+
+status VARCHAR(30)
+
+version INTEGER
+
+created_at
+created_by
+updated_at
+updated_by
+
+
+94. workflow_versions
+id UUID PK
+
+workflow_id UUID
+
+version INTEGER
+
+definition JSONB
+
+created_at
+created_by
+
+published_at TIMESTAMPTZ NULL
+
+
+95. workflow_runs
+id UUID PK
+tenant_id UUID
+
+workflow_id UUID
+workflow_version_id UUID
+
+trigger_entity_type VARCHAR(50)
+trigger_entity_id UUID
+
+status VARCHAR(30)
+
+started_at TIMESTAMPTZ
+completed_at TIMESTAMPTZ NULL
+
+input_payload JSONB
+output_payload JSONB
+
+error_message TEXT NULL
+
+
+96. workflow_action_runs
+id UUID PK
+
+workflow_run_id UUID
+
+action_type VARCHAR(50)
+
+action_order INTEGER
+
+status VARCHAR(30)
+
+input_payload JSONB
+output_payload JSONB
+
+started_at TIMESTAMPTZ
+completed_at TIMESTAMPTZ NULL
+
+error_message TEXT NULL
+
+
+97. automation_rules
+Cho automation đơn giản không cần workflow graph.
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(255)
+
+entity_type VARCHAR(50)
+
+trigger_event VARCHAR(50)
+
+conditions JSONB
+
+actions JSONB
+
+is_active BOOLEAN
+
+created_at
+created_by
+updated_at
+
+
+98. DOMAIN 28 – APPROVAL
+Cần cho Quote, Contract, AI Action hoặc nghiệp vụ khác.
+
+99. approval_requests
+id UUID PK
+tenant_id UUID
+
+entity_type VARCHAR(50)
+entity_id UUID
+
+approval_type VARCHAR(50)
+
+requested_by UUID
+requested_at TIMESTAMPTZ
+
+status VARCHAR(30)
+
+current_step INTEGER
+
+completed_at TIMESTAMPTZ NULL
+
+
+100. approval_steps
+id UUID PK
+
+approval_request_id UUID
+
+step_order INTEGER
+
+approver_type VARCHAR(30)
+
+approver_user_id UUID NULL
+approver_role_id UUID NULL
+
+status VARCHAR(30)
+
+decision VARCHAR(30) NULL
+
+comments TEXT
+
+decided_at TIMESTAMPTZ NULL
+
+
+101. DOMAIN 29 – AUDIT
+101.1. audit_logs
+id UUID PK
+tenant_id UUID
+
+user_id UUID NULL
+
+action VARCHAR(100)
+
+entity_type VARCHAR(100)
+entity_id UUID NULL
+
+old_values JSONB
+new_values JSONB
+
+request_id VARCHAR(255) NULL
+
+ip_address VARCHAR(100)
+user_agent TEXT
+
+source VARCHAR(50)
+
+created_at
+
+Source:
+WEB
+API
+MOBILE
+CHATBOT
+AI
+SYSTEM
+WORKFLOW
+
+
+102. security_events
+Tách security khỏi audit nghiệp vụ.
+id UUID PK
+tenant_id UUID
+
+user_id UUID NULL
+
+event_type VARCHAR(50)
+
+severity VARCHAR(30)
+
+ip_address VARCHAR(100)
+
+details JSONB
+
+created_at
+
+Ví dụ:
+LOGIN_SUCCESS
+LOGIN_FAILED
+PASSWORD_CHANGED
+ROLE_CHANGED
+SUSPICIOUS_ACTIVITY
+TOKEN_REVOKED
+
+
+103. DOMAIN 30 – SEARCH
+Không nhất thiết có bảng riêng trong MVP.
+Global Search cần index:
+organizations;
+contacts;
+leads;
+opportunities;
+messages;
+quotes;
+contracts.
+Có thể dùng:
+PostgreSQL Full Text Search
+
+trước.
+Sau này có thể dùng:
+Elasticsearch / OpenSearch
+
+
+104. NORMALIZED PHONE
+Phải chuẩn hóa số điện thoại.
+Ví dụ:
+0909123456
++84909123456
+84909123456
+
+phải có thể map về cùng một normalized value.
+Đề xuất:
++84909123456
+
+
+105. NORMALIZED EMAIL
+Lưu song song:
+email
+email_normalized
+
+Normalized:
+LOWER(TRIM(email))
+
+
+106. DUPLICATE DETECTION
+Duplicate không chỉ dựa vào unique constraint.
+Cần service kiểm tra:
+Contact
+Phone;
+Email;
+Channel Identifier.
+Organization
+Tax Code;
+Domain;
+Name similarity.
+Lead
+Phone;
+Email;
+External User ID.
+
+107. ENTITY MERGE
+Đề xuất thêm:
+entity_merge_logs
+id UUID PK
+tenant_id UUID
+
+entity_type VARCHAR(50)
+
+source_entity_id UUID
+target_entity_id UUID
+
+merge_strategy JSONB
+
+merged_by UUID
+merged_at TIMESTAMPTZ
+
+Không xóa lịch sử merge.
+
+108. RELATIONSHIP – CUSTOMER 360°
+Quan hệ trung tâm:
+Organization
+ |
+ +--- Contacts
+ |
+ +--- Leads converted
+ |
+ +--- Opportunities
+ |
+ +--- Activities
+ |
+ +--- Tasks
+ |
+ +--- Meetings
+ |
+ +--- Conversations
+ |
+ +--- Messages
+ |
+ +--- Quotes
+ |
+ +--- Contracts
+ |
+ +--- Payments
+ |
+ +--- Notes
+ |
+ +--- Files
+ |
+ +--- AI Insights
+
+
+109. RELATIONSHIP – CONVERSATION
+Channel
+   |
+Conversation
+   |
+   +--- Messages
+   |
+   +--- Contact
+   |
+   +--- Organization
+   |
+   +--- Chatbot Session
+   |
+   +--- Handoff
+   |
+   +--- AI Insight
+   |
+   +--- Activity
+
+
+110. RELATIONSHIP – AI
+AI Provider
+   |
+AI Model
+   |
+AI Assistant
+   |
+   +--- AI Conversation
+   |
+   +--- AI Message
+   |
+   +--- Tool Calls
+   |
+   +--- Insights
+   |
+   +--- Action Suggestions
+
+
+111. RELATIONSHIP – KNOWLEDGE
+Knowledge Base
+    |
+    +--- Documents
+           |
+           +--- Versions
+           |
+           +--- Chunks
+                   |
+                   +--- Embeddings
+
+
+112. QUY TẮC ACTIVITY TIMELINE
+Các sự kiện sau phải tạo Activity tự động:
+Call completed;
+Meeting completed;
+Message important interaction;
+Quote sent;
+Contract sent;
+Opportunity Stage changed;
+Payment received;
+Chatbot Handoff;
+AI action được thực thi.
+Không nhất thiết mỗi Message đều tạo một Activity riêng.
+Nếu không Timeline sẽ quá nhiễu.
+Message nên nằm trong Conversation.
+Activity có thể ghi:
+WhatsApp conversation with Customer
+18 messages
+
+
+113. QUY TẮC CUSTOMER LAST ACTIVITY
+Khi tạo Activity có customer/contact:
+organizations.last_activity_at
+contacts.last_activity_at
+opportunities.last_activity_at
+
+được cập nhật.
+
+114. NEXT ACTIVITY
+Không nên chỉ lấy một field nhập tay.
+Có thể tính từ:
+Task;
+Meeting;
+Opportunity next action.
+Sau đó cache vào:
+next_activity_at
+
+để Dashboard query nhanh.
+
+115. QUY TẮC CHATBOT LEAD CAPTURE
+Khi Chatbot thu được:
+phone OR email OR verified channel identifier
+
+hệ thống chạy:
+Identity Resolution
+
+Nếu tìm thấy Contact:
+link conversation → contact
+
+Nếu không:
+create Lead
+
+Không tạo Lead mới mỗi lần Customer mở Chatbot.
+
+116. IDENTITY RESOLUTION
+Nên có bảng hỗ trợ nâng cao:
+identity_links
+id UUID PK
+tenant_id UUID
+
+identity_type VARCHAR(50)
+identity_value VARCHAR(500)
+
+contact_id UUID NULL
+lead_id UUID NULL
+
+confidence_score NUMERIC(5,4)
+
+is_verified BOOLEAN
+
+source VARCHAR(50)
+
+created_at
+updated_at
+
+Ví dụ identity:
+PHONE
+EMAIL
+ZALO_USER_ID
+WHATSAPP_ID
+VIBER_ID
+MESSENGER_PSID
+
+Đây là nền tảng quan trọng để xây đúng Omni CRM.
+
+117. CONSENT / PRIVACY
+Omnichannel và AI nên có:
+contact_consents
+id UUID PK
+tenant_id UUID
+
+contact_id UUID
+
+consent_type VARCHAR(50)
+
+channel_id UUID NULL
+
+status VARCHAR(30)
+
+source VARCHAR(50)
+
+granted_at TIMESTAMPTZ NULL
+revoked_at TIMESTAMPTZ NULL
+
+evidence JSONB
+
+Consent Type:
+MARKETING
+MESSAGING
+EMAIL
+AI_PROCESSING
+DATA_PROCESSING
+
+
+118. DO NOT CONTACT
+Đề xuất trong contacts:
+do_not_contact BOOLEAN
+
+hoặc bảng riêng:
+contact_suppression
+
+nếu cần granular theo channel.
+
+119. CONTACT CHANNEL PREFERENCES
+contact_channel_preferences
+id UUID PK
+
+contact_id UUID
+channel_id UUID
+
+preference_rank INTEGER
+
+is_allowed BOOLEAN
+
+preferred_contact_time JSONB
+
+notes TEXT
+
+
+120. CHATBOT SAFETY / FALLBACK
+Cần lưu các trường:
+Trong chatbot_sessions:
+fallback_count INTEGER
+
+Hoặc bảng:
+chatbot_events
+id UUID PK
+
+session_id UUID
+
+event_type VARCHAR(50)
+
+message_id UUID NULL
+
+details JSONB
+
+created_at
+
+Event:
+FALLBACK
+KNOWLEDGE_MISS
+HANDOFF
+LEAD_CAPTURED
+MEETING_BOOKED
+QUOTE_REQUESTED
+ERROR
+
+
+121. AI FEEDBACK
+Phải cho người dùng đánh giá AI.
+ai_feedback
+id UUID PK
+tenant_id UUID
+
+user_id UUID
+
+ai_message_id UUID NULL
+insight_id UUID NULL
+suggestion_id UUID NULL
+
+rating INTEGER
+
+feedback_type VARCHAR(50)
+
+comment TEXT
+
+created_at
+
+
+122. AI PROMPT VERSIONING
+Không hard-code prompt trong source.
+ai_prompt_templates
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+purpose VARCHAR(100)
+
+current_version INTEGER
+
+status VARCHAR(30)
+
+ai_prompt_versions
+id UUID PK
+
+prompt_template_id UUID
+
+version INTEGER
+
+system_prompt TEXT
+user_prompt_template TEXT
+
+variables JSONB
+
+created_at
+created_by
+
+
+123. AI EXECUTION
+Để kiểm soát cost/performance:
+ai_executions
+id UUID PK
+tenant_id UUID
+
+assistant_id UUID NULL
+model_id UUID
+
+execution_type VARCHAR(50)
+
+entity_type VARCHAR(50) NULL
+entity_id UUID NULL
+
+input_tokens INTEGER
+output_tokens INTEGER
+
+latency_ms INTEGER
+
+estimated_cost NUMERIC(18,8)
+
+status VARCHAR(30)
+
+error_code VARCHAR(100) NULL
+
+created_at
+
+
+124. MESSAGE TEMPLATE
+Cần cho WhatsApp/Zalo/SMS/Email.
+message_templates
+id UUID PK
+tenant_id UUID
+
+channel_id UUID
+
+name VARCHAR(255)
+code VARCHAR(100)
+
+template_type VARCHAR(50)
+
+subject_template TEXT NULL
+body_template TEXT
+
+variables JSONB
+
+external_template_id VARCHAR(255) NULL
+
+status VARCHAR(30)
+
+created_at
+updated_at
+
+
+125. QUICK REPLIES
+quick_replies
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(255)
+
+content TEXT
+
+category VARCHAR(100)
+
+channel_type VARCHAR(50) NULL
+
+created_by UUID
+
+status VARCHAR(30)
+
+
+126. CONVERSATION ASSIGNMENT HISTORY
+conversation_assignment_history
+id UUID PK
+
+conversation_id UUID
+
+from_user_id UUID NULL
+to_user_id UUID NULL
+
+from_team_id UUID NULL
+to_team_id UUID NULL
+
+reason TEXT
+
+changed_by UUID
+
+created_at
+
+
+127. SLA
+Nếu sử dụng CRM cho CSKH:
+sla_policies
+id UUID PK
+tenant_id UUID
+
+name VARCHAR(255)
+
+priority VARCHAR(30)
+
+first_response_minutes INTEGER
+resolution_minutes INTEGER
+
+status VARCHAR(30)
+
+
+128. conversation_sla
+id UUID PK
+
+conversation_id UUID
+sla_policy_id UUID
+
+first_response_due_at TIMESTAMPTZ
+resolution_due_at TIMESTAMPTZ
+
+first_response_at TIMESTAMPTZ NULL
+resolved_at TIMESTAMPTZ NULL
+
+breached BOOLEAN
+
+
+129. INDEXING STRATEGY
+Bắt buộc Index:
+tenant_id
+owner_id
+organization_id
+contact_id
+lead_id
+opportunity_id
+conversation_id
+created_at
+status
+
+
+130. INDEX ORGANIZATION
+CREATE INDEX idx_org_tenant_name
+ON organizations(tenant_id, name);
+
+CREATE INDEX idx_org_tax_code
+ON organizations(tenant_id, tax_code_normalized);
+
+CREATE INDEX idx_org_owner
+ON organizations(tenant_id, owner_id);
+
+
+131. INDEX CONTACT
+CREATE INDEX idx_contact_phone
+ON contacts(tenant_id, phone_normalized);
+
+CREATE INDEX idx_contact_email
+ON contacts(tenant_id, email_normalized);
+
+CREATE INDEX idx_contact_org
+ON contacts(tenant_id, organization_id);
+
+
+132. INDEX MESSAGES
+CREATE INDEX idx_messages_conversation_time
+ON messages(conversation_id, created_at DESC);
+
+CREATE INDEX idx_messages_external
+ON messages(channel_id, external_message_id);
+
+
+133. INDEX OPPORTUNITY
+CREATE INDEX idx_opportunity_pipeline_stage
+ON opportunities(tenant_id, pipeline_id, stage_id);
+
+CREATE INDEX idx_opportunity_owner
+ON opportunities(tenant_id, owner_id);
+
+CREATE INDEX idx_opportunity_close_date
+ON opportunities(expected_close_date);
+
+
+134. UNIQUE CONSTRAINTS
+Không nên unique toàn cục nếu hỗ trợ Tenant.
+Ví dụ:
+UNIQUE(tenant_id, organization_code)
+
+UNIQUE(tenant_id, contact_code)
+
+UNIQUE(tenant_id, opportunity_code)
+
+UNIQUE(tenant_id, quote_number)
+
+UNIQUE(tenant_id, contract_number)
+
+
+135. FOREIGN KEY DELETE RULE
+Mặc định:
+ON DELETE RESTRICT
+
+Không cascade delete các dữ liệu nghiệp vụ chính.
+Cascade có thể dùng cho bảng link như:
+organization_tags
+contact_tags
+
+
+136. JSONB – KHI NÀO ĐƯỢC DÙNG
+JSONB dùng cho:
+API raw payload;
+AI metadata;
+workflow definition;
+chatbot flow;
+provider configuration;
+integration-specific metadata.
+Không được dùng JSONB thay thế schema nghiệp vụ cốt lõi.
+Sai:
+customer_data JSONB
+
+Đúng:
+name
+phone
+email
+...
+metadata JSONB
+
+
+137. ENUM VS VARCHAR
+Không nên dùng PostgreSQL ENUM quá nhiều.
+Đề xuất:
+VARCHAR + application validation
+
+vì business status có thể thay đổi.
+Các cấu hình thay đổi thường xuyên phải sử dụng Master Data Table.
+
+138. MONEY
+Tất cả giá trị tiền:
+NUMERIC(18,2)
+
+Không dùng float/double.
+Luôn có:
+currency
+
+
+139. TIMESTAMP
+Luôn dùng:
+TIMESTAMPTZ
+
+Không dùng timestamp không timezone.
+
+140. AI VECTOR STORE
+Hai phương án:
+MVP
+PostgreSQL + pgvector.
+Scale lớn
+Vector Database riêng.
+Schema ứng dụng không được phụ thuộc chặt vào vendor vector database.
+
+141. RAG RETRIEVAL LOG
+Đề xuất:
+rag_retrieval_logs
+id UUID PK
+tenant_id UUID
+
+query_text TEXT
+
+knowledge_base_id UUID
+
+retrieved_chunks JSONB
+
+reranked_chunks JSONB
+
+model_id UUID
+
+response_id UUID NULL
+
+latency_ms INTEGER
+
+created_at
+
+
+142. CHANNEL WEBHOOK LOG
+Rất cần để debug Omnichannel.
+webhook_events
+id UUID PK
+tenant_id UUID
+
+channel_id UUID
+
+external_event_id VARCHAR(255)
+
+event_type VARCHAR(100)
+
+payload JSONB
+
+received_at TIMESTAMPTZ
+
+processed_at TIMESTAMPTZ NULL
+
+status VARCHAR(30)
+
+retry_count INTEGER DEFAULT 0
+
+error_message TEXT NULL
+
+Unique:
+(channel_id, external_event_id)
+
+để chống xử lý webhook hai lần.
+
+143. OUTBOUND MESSAGE QUEUE
+outbound_messages
+id UUID PK
+tenant_id UUID
+
+channel_id UUID
+conversation_id UUID
+
+message_id UUID
+
+scheduled_at TIMESTAMPTZ NULL
+
+status VARCHAR(30)
+
+attempt_count INTEGER
+
+next_retry_at TIMESTAMPTZ NULL
+
+last_error TEXT NULL
+
+created_at
+updated_at
+
+
+144. BACKGROUND JOB
+background_jobs
+Nếu không dùng queue system lưu riêng thì có thể dùng:
+id UUID PK
+
+job_type VARCHAR(100)
+
+entity_type VARCHAR(50)
+entity_id UUID
+
+payload JSONB
+
+status VARCHAR(30)
+
+scheduled_at TIMESTAMPTZ
+started_at TIMESTAMPTZ NULL
+completed_at TIMESTAMPTZ NULL
+
+attempts INTEGER
+
+error_message TEXT NULL
+
+Production lớn có thể dùng queue riêng như Redis/RabbitMQ/Kafka.
+
+145. ANALYTICS EVENT
+Để đo usage:
+product_events
+id UUID PK
+tenant_id UUID
+
+user_id UUID NULL
+
+event_name VARCHAR(100)
+
+entity_type VARCHAR(50) NULL
+entity_id UUID NULL
+
+properties JSONB
+
+occurred_at TIMESTAMPTZ
+
+
+146. CÁC BẢNG CỐT LÕI MVP
+Mặc dù schema đầy đủ lớn, MVP cần triển khai trước:
+tenants
+users
+departments
+roles
+permissions
+user_roles
+role_permissions
+
+organizations
+contacts
+contact_channel_identifiers
+
+leads
+
+pipelines
+pipeline_stages
+opportunities
+opportunity_contacts
+
+activities
+tasks
+meetings
+
+products
+opportunity_products
+
+quotes
+quote_items
+
+channels
+conversations
+messages
+message_attachments
+
+chatbots
+chatbot_channels
+chatbot_sessions
+chatbot_handoffs
+
+ai_providers
+ai_models
+ai_assistants
+ai_tools
+ai_conversations
+ai_messages
+ai_insights
+ai_action_suggestions
+
+knowledge_bases
+knowledge_documents
+knowledge_chunks
+
+files
+file_links
+notes
+
+notifications
+audit_logs
+webhook_events
+
+
+147. PHASE SAU
+Có thể triển khai sau:
+contracts
+payment_schedules
+payments
+
+workflow engine
+approval engine
+
+SLA
+
+advanced scoring
+
+AI cost analytics
+
+campaigns
+
+marketing automation
+
+
+148. DOMAIN BOUNDARIES
+Claude phải chia source code tương ứng:
+auth
+iam
+
+crm
+contacts
+organizations
+leads
+
+sales
+pipeline
+opportunities
+products
+quotes
+contracts
+payments
+
+activity
+tasks
+meetings
+
+messaging
+channels
+conversations
+messages
+
+chatbot
+handoff
+
+ai
+knowledge
+
+workflow
+approvals
+
+files
+notifications
+
+analytics
+audit
+settings
+
+
+149. SERVICE BOUNDARIES
+Ví dụ:
+ContactService
+
+IdentityResolutionService
+
+OpportunityService
+
+TimelineService
+
+ConversationService
+
+MessageService
+
+ChannelConnectorService
+
+ChatbotService
+
+HandoffService
+
+AIOrchestrator
+
+AIToolService
+
+KnowledgeRetrievalService
+
+WorkflowService
+
+AuditService
+
+
+150. CÁC SERVICE ĐẶC BIỆT QUAN TRỌNG
+IdentityResolutionService
+Có nhiệm vụ:
+xác định khách hàng từ số điện thoại;
+email;
+Zalo;
+WhatsApp;
+Viber;
+Messenger.
+
+TimelineService
+Có nhiệm vụ:
+tập hợp Activity;
+Meeting;
+Quote;
+Contract;
+AI Action;
+Chatbot interaction.
+
+ConversationService
+Có nhiệm vụ:
+tạo/match Conversation;
+assign Agent;
+update unread;
+close/reopen.
+
+AIOrchestrator
+Có nhiệm vụ:
+chọn Assistant;
+chọn Model;
+load context;
+RAG;
+Tool Calling;
+permission;
+audit;
+output.
+
+151. AI CONTEXT BUILDER
+AI không query database tùy tiện.
+Cần:
+AIContextBuilder
+
+để cung cấp context có kiểm soát:
+User permission
++
+Customer
++
+Opportunity
++
+Conversation
++
+Knowledge
++
+Relevant history
+
+
+152. CUSTOMER 360 QUERY MODEL
+Không nhất thiết tạo một bảng Customer360.
+Customer 360 nên là:
+API aggregation/read model
+
+tập hợp:
+organization
+contacts
+activities
+opportunities
+messages
+quotes
+contracts
+payments
+tasks
+AI insights
+
+
+153. READ MODEL / MATERIALIZED VIEW
+Khi dữ liệu lớn có thể tạo:
+customer_360_summary
+sales_pipeline_summary
+conversation_summary
+daily_sales_metrics
+
+bằng:
+Materialized View;
+cached table;
+analytics warehouse.
+Không tối ưu quá sớm trong MVP.
+
+154. DATABASE TRANSACTION
+Các flow quan trọng phải dùng transaction.
+Ví dụ:
+Convert Lead
+Trong một transaction:
+Create/Find Organization
++
+Create/Find Contact
++
+Create Opportunity
++
+Update Lead = CONVERTED
++
+Create Activity
++
+Audit
+
+Nếu một bước lỗi:
+ROLLBACK
+
+
+155. MESSAGE IDEMPOTENCY
+Webhook Omnichannel bắt buộc có idempotency.
+Nếu cùng:
+external_message_id
+
+gửi nhiều lần:
+Chỉ tạo một Message.
+
+156. AI TOOL IDEMPOTENCY
+Tool tạo record cũng cần:
+idempotency_key
+
+để tránh AI gọi:
+create_task
+
+hai lần do retry.
+Đề xuất bổ sung:
+idempotency_key VARCHAR(255)
+
+trong ai_tool_calls hoặc request layer.
+
+157. BUSINESS RULE – MESSAGE SENDING
+Trước khi gửi:
+Check user permission
+↓
+Check contact consent
+↓
+Check do-not-contact
+↓
+Check channel connection
+↓
+Validate message
+↓
+Create outbound queue
+↓
+Send
+↓
+Update delivery
+↓
+Audit
+
+
+158. BUSINESS RULE – AI DRAFT
+AI Draft:
+AI creates draft
+
+không đồng nghĩa:
+message sent
+
+Hai hành động phải tách.
+
+159. BUSINESS RULE – AI ACTION
+AI action suggestions không được trực tiếp update:
+Opportunity Won;
+Payment;
+Contract;
+Permissions;
+Delete;
+Bulk Send.
+trừ khi workflow được cấu hình rõ và có approval.
+
+160. BUSINESS RULE – CHATBOT
+Chatbot được quyền tự động:
+trả lời FAQ;
+thu thập thông tin;
+create/update Lead;
+tạo yêu cầu gọi lại;
+tạo Task;
+đề xuất Meeting.
+Chatbot không tự động:
+giảm giá;
+ký hợp đồng;
+xác nhận thanh toán;
+thay đổi điều khoản thương mại;
+xóa Customer.
+
+161. DATA RETENTION
+Cần thiết kế cấu hình:
+message_retention_days
+audit_retention_days
+ai_log_retention_days
+webhook_retention_days
+
+Không hard-code trong source.
+
+162. BACKUP
+Production cần:
+automated backup;
+point-in-time recovery nếu hạ tầng hỗ trợ;
+encrypted backup;
+test restore định kỳ.
+
+163. MIGRATION POLICY
+Claude phải dùng migration tool.
+Không:
+CREATE TABLE thủ công trực tiếp trên production
+
+Migration phải:
+có version;
+reversible khi có thể;
+nằm trong source control.
+
+164. SEED DATA
+Seed chỉ dành cho:
+System Roles;
+Permissions;
+default Pipeline;
+default Stages;
+basic Lead Sources;
+basic Activity Types.
+Không nhúng demo customers vào production seed.
+
+165. DEFAULT PIPELINE SEED
+Có thể tạo:
+New Opportunity – 10%
+Contacted – 20%
+Needs Identified – 35%
+Demo / Consulting – 50%
+Proposal – 65%
+Negotiation – 80%
+Decision – 90%
+Won – 100%
+Lost – 0%
+
+Admin được thay đổi.
+
+166. DEFAULT ROLES
+ADMIN
+DIRECTOR
+SALES_MANAGER
+SALES
+CUSTOMER_SERVICE
+ACCOUNTING
+VIEWER
+
+
+167. SECURITY RULE
+Tenant isolation bắt buộc:
+Mọi query business data phải filter:
+tenant_id = current_tenant
+
+Không tin tenant_id do frontend gửi.
+Tenant lấy từ authenticated context.
+
+168. ROW-LEVEL PERMISSION
+Ngoài Tenant còn phải kiểm tra:
+owner
+department
+team
+role
+
+Ví dụ:
+Sales:
+owner_id = current_user
+
+Sales Manager:
+owner.department_id IN managed_departments
+
+
+169. AI PERMISSION PROPAGATION
+Nếu User không có quyền đọc Contract:
+AI cũng không được nhận Contract vào context.
+Quy tắc:
+AI quyền bằng hoặc thấp hơn User đang sử dụng AI.
+
+170. LOGGING PRINCIPLE
+Không log plain:
+password;
+access token;
+refresh token;
+API secret;
+full payment credential.
+Phải mask sensitive data.
+
+171. DATABASE MODULE MAP
+Tổng thể schema v2.0 gồm các nhóm:
+01 Tenant
+02 IAM
+03 Master Data
+04 Organizations
+05 Contacts
+06 Leads
+07 Pipeline
+08 Products
+09 Activities
+10 Tasks
+11 Meetings
+12 Quotes
+13 Contracts
+14 Payments
+15 Channels
+16 Conversations
+17 Messages
+18 Chatbot
+19 Human Handoff
+20 AI Providers
+21 AI Assistants
+22 AI Insights
+23 Knowledge Hub
+24 Files
+25 Notes
+26 Notifications
+27 Workflow
+28 Approval
+29 Audit
+30 Search / Analytics
+
+
+172. ERD CẤP CAO
+TENANT
+ │
+ ├── USERS
+ │     └── ROLES/PERMISSIONS
+ │
+ ├── ORGANIZATIONS
+ │      ├── CONTACTS
+ │      │      └── CHANNEL IDENTITIES
+ │      │
+ │      ├── OPPORTUNITIES
+ │      │      ├── PRODUCTS
+ │      │      ├── QUOTES
+ │      │      ├── CONTRACTS
+ │      │      └── PAYMENTS
+ │      │
+ │      ├── ACTIVITIES
+ │      ├── TASKS
+ │      ├── MEETINGS
+ │      └── NOTES
+ │
+ ├── LEADS
+ │
+ ├── CHANNELS
+ │      └── CONVERSATIONS
+ │             ├── MESSAGES
+ │             ├── CHATBOT SESSION
+ │             ├── HANDOFF
+ │             └── AI INSIGHTS
+ │
+ ├── CHATBOTS
+ │      ├── INTENTS
+ │      ├── FLOWS
+ │      └── SESSIONS
+ │
+ ├── AI
+ │      ├── PROVIDERS
+ │      ├── MODELS
+ │      ├── ASSISTANTS
+ │      ├── TOOL CALLS
+ │      ├── INSIGHTS
+ │      └── ACTIONS
+ │
+ └── KNOWLEDGE
+        └── DOCUMENT
+               └── CHUNKS
+
+
+173. CÁC ENTITY CỐT LÕI NHẤT
+Nếu phải xác định 10 bảng quan trọng nhất:
+organizations
+contacts
+contact_channel_identifiers
+opportunities
+activities
+conversations
+messages
+chatbot_sessions
+ai_insights
+knowledge_documents
+
+174. TRIẾT LÝ DỮ LIỆU CỦA OMNI CRM
+Toàn bộ hệ thống phải tuân theo:
+One Customer
+Khách hàng không bị tách thành nhiều hồ sơ theo từng kênh.
+One Conversation History
+Toàn bộ hội thoại được tập trung.
+One Timeline
+Hoạt động quan trọng nằm trên một Timeline.
+Shared Intelligence
+AI và Chatbot sử dụng chung CRM + Knowledge Hub.
+Human Control
+AI hỗ trợ ra quyết định nhưng các hành động quan trọng vẫn có kiểm soát.
+Configurable
+Pipeline, Role, Channel, Chatbot, Knowledge và Workflow đều có khả năng cấu hình.
+
+175. DEFINITION OF DONE – DATABASE
+Database Schema chỉ được coi là triển khai hoàn chỉnh khi Claude đã tạo:
+Migration cho toàn bộ bảng thuộc Sprint.
+Primary Key.
+Foreign Key.
+Unique Constraint.
+Index.
+Soft Delete nếu cần.
+Audit fields.
+Tenant fields.
+ORM Models.
+Relationships.
+Validation layer.
+Seed data.
+Migration test.
+Transaction handling.
+Permission-aware repository.
+Unit test cho business rules quan trọng.
+
+176. KẾT LUẬN
+Database này được thiết kế với tư duy:
+CRM
++
+Omnichannel
++
+Chatbot
++
+AI
++
+Knowledge Hub
++
+Automation
+
+là một nền tảng duy nhất, không phải nhiều ứng dụng ghép lại.
+Trung tâm dữ liệu vẫn là:
+Organization
++
+Contact
++
+Customer Timeline
++
+Conversation
++
+Opportunity
+
+Chatbot và AI vận hành xung quanh các entity này và sử dụng chung Knowledge Hub.
+Kiến trúc này cho phép Omni CRM phát triển từ phiên bản MVP đến hệ thống quy mô lớn mà không cần thay đổi bản chất mô hình dữ liệu.

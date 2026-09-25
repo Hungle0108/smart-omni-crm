@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Báo giá_Smart iVier_V2.docx",
+    "source": "G:\\My Drive\\Version 4\\iViTech\\iVier\\Báo giá\\Báo giá_Smart iVier_V2.docx",
+    "sha256": "0f5b1aa5a4dac87b7cb5a198a067b87d28ceae2f3aef4fa10d323873bb8d676d",
+    "media": [],
+    "parts": [
+      "word/document.xml",
+      "word/footnotes.xml",
+      "word/endnotes.xml",
+      "word/header1.xml",
+      "word/footer1.xml"
+    ]
+  },
+  {
+    "name": "Bao_gia_Dao_tao_AI_ChatGPT_Plus_Tân Thuận.docx",
+    "source": "G:\\My Drive\\Version 4\\iViTech\\iVier\\Báo giá\\Bao_gia_Dao_tao_AI_ChatGPT_Plus_Tân Thuận.docx",
+    "sha256": "1cef1a3b5a7208d7805b69e2ae1c36a8432f4ccca7c38652298b6eaa2ae01e55",
+    "media": [],
+    "parts": [
+      "word/document.xml",
+      "word/footnotes.xml",
+      "word/endnotes.xml",
+      "word/header1.xml"
+    ]
+  }
+]

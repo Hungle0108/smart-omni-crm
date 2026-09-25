@@ -1,0 +1,4872 @@
+﻿# OMNI CRM – USER FLOW v2.0
+
+**Phạm vi:** CRM Core + Sales + Omnichannel + Chatbot + AI + Knowledge Hub + Automation
+**Tài liệu liên quan:** Database Schema v2.0, Screen Architecture v2.0
+**Mục tiêu:** Mô tả toàn bộ luồng người dùng và luồng hệ thống để Claude/Codex triển khai frontend, backend, API, workflow và business logic nhất quán.
+
+---
+
+# 1. NGUYÊN TẮC USER FLOW
+
+Toàn bộ User Flow phải tuân theo các nguyên tắc:
+
+1. Customer 360° là trung tâm dữ liệu.
+2. Conversation là trung tâm giao tiếp.
+3. Opportunity là trung tâm bán hàng.
+4. AI hỗ trợ xuyên suốt nhưng không tách thành ứng dụng riêng.
+5. Chatbot và nhân viên cùng sử dụng một Conversation.
+6. Mọi hành động quan trọng phải ghi Timeline/Audit.
+7. Không bắt người dùng nhập lại dữ liệu đã có.
+8. Mọi flow phải kiểm tra quyền trước khi thao tác dữ liệu.
+9. AI chỉ được dùng dữ liệu mà người dùng có quyền truy cập.
+10. Các hành động rủi ro phải có Human-in-the-loop.
+
+---
+
+# 2. FLOW TỔNG THỂ KHÁCH HÀNG
+
+```text
+Customer / Prospect
+      ↓
+Omnichannel Entry
+      ↓
+Identity Resolution
+      ↓
+Existing Contact?
+   ┌──┴───┐
+  Yes     No
+   │       │
+Link CRM  Create/Update Lead
+   │       │
+   └───┬───┘
+       ↓
+Conversation
+       ↓
+Chatbot / Human / Hybrid
+       ↓
+Need Identified
+       ↓
+Qualified?
+   ┌───┴────┐
+  No       Yes
+   │         │
+Nurture   Opportunity
+             ↓
+          Pipeline
+             ↓
+        Demo / Proposal
+             ↓
+           Quote
+             ↓
+        Negotiation
+             ↓
+         Won / Lost
+             ↓
+     Contract / Payment
+             ↓
+      Customer Success
+```
+
+---
+
+# 3. FLOW 01 – ĐĂNG NHẬP
+
+```text
+Login
+  ↓
+Enter Email + Password
+  ↓
+Authentication
+  ↓
+Valid?
+ ┌─┴─┐
+No  Yes
+│    │
+Error ↓
+     Load Tenant
+     ↓
+     Load Roles
+     ↓
+     Load Permissions
+     ↓
+     Load User Preferences
+     ↓
+     My Home
+```
+
+System actions:
+
+* create login audit;
+* update last_login_at;
+* determine timezone;
+* determine accessible modules.
+
+---
+
+# 4. FLOW 02 – MY HOME / MORNING WORKFLOW
+
+```text
+Login
+  ↓
+My Home
+  ↓
+Load:
+- Tasks Today
+- Overdue
+- Meetings
+- Follow-ups
+- Deals Closing Soon
+- Recent Conversations
+- AI Recommendations
+```
+
+Người dùng có thể đi trực tiếp tới:
+
+```text
+Task
+Customer
+Opportunity
+Conversation
+Meeting
+AI Copilot
+```
+
+Mục tiêu:
+
+**Người dùng biết ngay hôm nay cần làm gì.**
+
+---
+
+# 5. FLOW 03 – TẠO ORGANIZATION
+
+```text
+Organization List
+      ↓
++ Create
+      ↓
+Enter Organization Data
+      ↓
+Normalize:
+Phone
+Email
+Tax Code
+      ↓
+Duplicate Detection
+```
+
+Nếu có khả năng trùng:
+
+```text
+Possible Duplicate
+   ↓
+View Existing
+or
+Merge
+or
+Create Anyway
+```
+
+Nếu không:
+
+```text
+Save
+ ↓
+Create Organization
+ ↓
+Audit
+ ↓
+Organization 360
+```
+
+---
+
+# 6. FLOW 04 – TẠO CONTACT
+
+```text
+Organization 360
+     ↓
+Contacts
+     ↓
++ Add Contact
+     ↓
+Enter:
+Name
+Phone
+Email
+Role
+Channel IDs
+     ↓
+Identity Check
+     ↓
+Possible Duplicate?
+```
+
+Nếu không:
+
+```text
+Create Contact
+   ↓
+Link Organization
+   ↓
+Create Identity Links
+   ↓
+Update Customer 360
+```
+
+---
+
+# 7. FLOW 05 – GLOBAL SEARCH
+
+```text
+Global Search
+     ↓
+Input keyword
+     ↓
+Normalize Search
+     ↓
+Search:
+Organization
+Contact
+Lead
+Opportunity
+Conversation
+Quote
+Contract
+```
+
+Ví dụ:
+
+```text
++84909123456
+```
+
+System phải tìm được:
+
+```text
+Contact
++
+Organization
++
+Conversation
++
+Opportunity
+```
+
+---
+
+# 8. FLOW 06 – LEAD THỦ CÔNG
+
+```text
+Lead List
+   ↓
++ Create Lead
+   ↓
+Enter:
+Name
+Company
+Phone
+Email
+Source
+Interest
+Owner
+   ↓
+Duplicate / Identity Check
+   ↓
+Save Lead
+   ↓
+Lead Detail
+```
+
+Sau đó:
+
+```text
+Call
+Message
+Meeting
+Task
+Qualify
+Convert
+Lost
+```
+
+---
+
+# 9. FLOW 07 – LEAD TỪ OMNICHANNEL
+
+```text
+Incoming Message
+       ↓
+Channel Connector
+       ↓
+Webhook
+       ↓
+Normalize Message
+       ↓
+Identity Resolution
+```
+
+Nếu Contact đã tồn tại:
+
+```text
+Link Contact
+↓
+Open/Create Conversation
+```
+
+Nếu chưa tồn tại:
+
+```text
+Check Existing Lead
+       ↓
+Found?
+ ┌─────┴─────┐
+Yes          No
+ │            │
+Link Lead   Create Lead
+```
+
+Sau đó:
+
+```text
+Conversation linked to CRM
+```
+
+---
+
+# 10. FLOW 08 – IDENTITY RESOLUTION
+
+Identity Resolution kiểm tra theo thứ tự:
+
+```text
+External Channel ID
+        ↓
+Verified Phone
+        ↓
+Email
+        ↓
+Other Identity
+```
+
+Kết quả:
+
+```text
+CONFIRMED MATCH
+POSSIBLE MATCH
+NO MATCH
+```
+
+Nếu Possible Match:
+
+```text
+Do not auto merge
+↓
+Request human confirmation
+```
+
+---
+
+# 11. FLOW 09 – CHATBOT INBOUND
+
+```text
+Customer sends message
+        ↓
+Channel Connector
+        ↓
+Conversation
+        ↓
+Chatbot Session
+        ↓
+Load:
+CRM Context
+Conversation Context
+Knowledge Base
+Bot Config
+        ↓
+Detect Intent
+        ↓
+Need RAG?
+```
+
+Nếu cần:
+
+```text
+Knowledge Search
+     ↓
+Retrieve Chunks
+     ↓
+Rerank
+     ↓
+Generate Answer
+```
+
+Sau đó:
+
+```text
+Send Response
+↓
+Save Message
+↓
+Update Session Context
+↓
+Log Bot Event
+```
+
+---
+
+# 12. FLOW 10 – CHATBOT FAQ
+
+```text
+Customer Question
+      ↓
+Intent = FAQ / Product Question
+      ↓
+Search Knowledge
+      ↓
+Knowledge Found?
+```
+
+Nếu có:
+
+```text
+Generate Grounded Answer
+↓
+Send
+```
+
+Nếu không:
+
+```text
+Fallback
+↓
+Fallback Count +1
+```
+
+Nếu fallback vượt ngưỡng:
+
+```text
+Human Handoff
+```
+
+---
+
+# 13. FLOW 11 – CHATBOT LEAD CAPTURE
+
+Chatbot hỏi tuần tự:
+
+```text
+Name
+Company
+Phone
+Email
+Need
+Product Interest
+Budget
+Timing
+```
+
+Mỗi field được lưu vào:
+
+```text
+chatbot_session_variables
+```
+
+Sau khi có đủ identity:
+
+```text
+Identity Resolution
+      ↓
+Existing Contact?
+```
+
+Nếu có:
+
+```text
+Link Conversation to Contact
+↓
+Do not create duplicate Lead
+```
+
+Nếu không:
+
+```text
+Create / Update Lead
+↓
+Create Activity
+↓
+AI Lead Scoring
+```
+
+---
+
+# 14. FLOW 12 – CHATBOT YÊU CẦU BÁO GIÁ
+
+```text
+Customer:
+"Tôi muốn nhận báo giá"
+      ↓
+Intent = REQUEST_QUOTE
+      ↓
+Check Identity
+      ↓
+Check Product / Need
+      ↓
+Enough Information?
+```
+
+Nếu chưa:
+
+```text
+Ask Clarifying Questions
+```
+
+Nếu đủ:
+
+```text
+Create Lead or link Contact
+↓
+Create Sales Task
+or
+Create Opportunity Draft
+↓
+Notify Sales
+```
+
+Không tự phát hành báo giá thương mại nếu chưa có rule cho phép.
+
+---
+
+# 15. FLOW 13 – CHATBOT BOOK MEETING
+
+```text
+Customer requests meeting
+      ↓
+Intent = BOOK_MEETING
+      ↓
+Collect:
+Date
+Time
+Contact
+Topic
+      ↓
+Check Available Slots
+      ↓
+Slot Available?
+```
+
+Nếu có:
+
+```text
+Create Meeting Request
+↓
+User/Agent Confirmation if required
+↓
+Meeting Created
+↓
+Send Confirmation
+```
+
+Nếu không:
+
+```text
+Suggest Alternatives
+```
+
+---
+
+# 16. FLOW 14 – HUMAN HANDOFF
+
+Handoff có thể được kích hoạt khi:
+
+* customer yêu cầu;
+* chatbot confidence thấp;
+* fallback nhiều;
+* sentiment tiêu cực;
+* VIP;
+* high-value opportunity;
+* policy yêu cầu;
+* vấn đề ngoài Knowledge.
+
+Flow:
+
+```text
+Handoff Trigger
+      ↓
+Create Handoff Request
+      ↓
+Generate AI Summary
+      ↓
+Route to Queue
+      ↓
+Assign Agent
+      ↓
+Notify Agent
+```
+
+Agent nhận:
+
+```text
+Customer
+Conversation
+Intent
+AI Summary
+Opportunity
+Reason
+Suggested Reply
+```
+
+---
+
+# 17. FLOW 15 – AGENT ACCEPT HANDOFF
+
+```text
+Handoff Queue
+      ↓
+Agent clicks Accept
+      ↓
+Permission Check
+      ↓
+Assign Conversation
+      ↓
+Bot Mode = HUMAN / AI_ASSIST
+      ↓
+Agent replies
+```
+
+Sau khi xong:
+
+```text
+Resolve
+or
+Return to Bot
+```
+
+---
+
+# 18. FLOW 16 – RETURN TO BOT
+
+```text
+Agent resolves human-only portion
+      ↓
+Click Return to Bot
+      ↓
+Update Session Context
+      ↓
+Bot resumes
+```
+
+Conversation vẫn là một luồng liên tục.
+
+---
+
+# 19. FLOW 17 – UNIFIED INBOX
+
+```text
+Open Unified Inbox
+      ↓
+Load Accessible Conversations
+      ↓
+Select Conversation
+      ↓
+Load:
+Messages
+Contact
+Organization
+Opportunity
+AI Summary
+Intent
+Sentiment
+```
+
+Agent có thể:
+
+```text
+Reply
+AI Suggest Reply
+Create Task
+Create Meeting
+Create Opportunity
+Add Note
+Assign
+Close
+```
+
+---
+
+# 20. FLOW 18 – AI SUGGEST REPLY
+
+```text
+Agent clicks Suggest Reply
+      ↓
+Permission Check
+      ↓
+AI Context Builder
+      ↓
+Load:
+Recent messages
+Customer profile
+Opportunity
+Knowledge
+Policies
+      ↓
+Generate Draft
+```
+
+Draft được đánh dấu:
+
+```text
+AI GENERATED
+```
+
+Agent:
+
+```text
+Edit
+Approve & Send
+Discard
+```
+
+Chỉ khi Approve:
+
+```text
+Outbound Message Created
+↓
+Send Queue
+↓
+Channel Connector
+```
+
+---
+
+# 21. FLOW 19 – OUTBOUND MESSAGE
+
+```text
+User clicks Send
+      ↓
+Permission Check
+      ↓
+Consent Check
+      ↓
+Do Not Contact Check
+      ↓
+Channel Status Check
+      ↓
+Template Validation if needed
+      ↓
+Create Message
+      ↓
+Outbound Queue
+      ↓
+Connector
+      ↓
+External Channel
+```
+
+Sau đó:
+
+```text
+Sent
+Delivered
+Read
+Failed
+```
+
+được cập nhật từ webhook.
+
+---
+
+# 22. FLOW 20 – MESSAGE FAILURE
+
+```text
+Outbound Message
+      ↓
+Failed
+      ↓
+Retry Policy
+      ↓
+Retry allowed?
+```
+
+Nếu có:
+
+```text
+Schedule Retry
+```
+
+Nếu không:
+
+```text
+Mark Failed
+↓
+Notify Agent
+↓
+Audit
+```
+
+---
+
+# 23. FLOW 21 – UNKNOWN CONVERSATION
+
+```text
+Incoming Message
+      ↓
+No Contact Match
+      ↓
+Inbox = Unknown
+```
+
+Agent thấy:
+
+```text
+Possible Matches
+```
+
+Actions:
+
+```text
+Link Existing
+Create Contact
+Create Lead
+Ignore/Spam
+```
+
+---
+
+# 24. FLOW 22 – CONVERT LEAD
+
+```text
+Lead Detail
+    ↓
+Qualify
+    ↓
+Convert
+```
+
+Wizard:
+
+```text
+Step 1 Organization
+Step 2 Contact
+Step 3 Opportunity
+Step 4 Owner
+Step 5 Confirm
+```
+
+Transaction:
+
+```text
+Find/Create Organization
++
+Find/Create Contact
++
+Create Opportunity
++
+Update Lead = CONVERTED
++
+Create Activity
++
+Audit
+```
+
+Nếu lỗi:
+
+```text
+Rollback
+```
+
+---
+
+# 25. FLOW 23 – AI LEAD SCORING
+
+Trigger:
+
+* Lead created;
+* major activity;
+* meeting booked;
+* meaningful conversation;
+* manual refresh.
+
+Flow:
+
+```text
+Lead Event
+   ↓
+Collect Features
+   ↓
+AI/Rules Scoring
+   ↓
+Score + Factors
+   ↓
+Save ai_scoring_result
+   ↓
+Update Lead Display
+```
+
+Output:
+
+```text
+Score
+Rating
+Factors
+Generated At
+```
+
+---
+
+# 26. FLOW 24 – TẠO OPPORTUNITY
+
+```text
+Customer 360
+or
+Lead Conversion
+or
+Inbox
+      ↓
+Create Opportunity
+      ↓
+Select:
+Organization
+Contacts
+Pipeline
+Stage
+Owner
+Products
+Value
+Close Date
+      ↓
+Save
+```
+
+System:
+
+```text
+Create Stage History
+↓
+Create Activity
+↓
+Update Customer 360
+```
+
+---
+
+# 27. FLOW 25 – PIPELINE KANBAN
+
+```text
+Pipeline
+   ↓
+Load Opportunities by Stage
+   ↓
+Drag Card
+   ↓
+Validate Transition
+```
+
+Nếu normal stage:
+
+```text
+Update Stage
+↓
+Create Stage History
+↓
+Update Probability if configured
+↓
+Create Activity
+```
+
+---
+
+# 28. FLOW 26 – OPPORTUNITY WON
+
+```text
+Move to WON
+    ↓
+Prompt:
+Final Value
+Actual Close Date
+```
+
+Required:
+
+```text
+Final Value
+Actual Close Date
+```
+
+Optional:
+
+```text
+Create Contract
+Create Handover Task
+Notify Accounting
+```
+
+Then:
+
+```text
+Stage History
+Activity
+Audit
+```
+
+---
+
+# 29. FLOW 27 – OPPORTUNITY LOST
+
+```text
+Move to LOST
+    ↓
+Lost Reason required
+    ↓
+Notes
+    ↓
+Save
+```
+
+System:
+
+```text
+Update Opportunity
+↓
+Stage History
+↓
+Create Activity
+↓
+Audit
+```
+
+---
+
+# 30. FLOW 28 – AI OPPORTUNITY RISK
+
+Trigger:
+
+* scheduled;
+* stage change;
+* close date near;
+* inactivity;
+* quote sent;
+* negative sentiment.
+
+Flow:
+
+```text
+Opportunity
+    ↓
+Collect:
+Stage age
+Last activity
+Messages
+Quote status
+Decision makers
+Close date
+Sentiment
+    ↓
+AI Risk Analysis
+    ↓
+Save Insight
+```
+
+Result:
+
+```text
+LOW / MEDIUM / HIGH
++
+Reasons
++
+Suggested Action
+```
+
+---
+
+# 31. FLOW 29 – NEXT BEST ACTION
+
+```text
+Customer / Opportunity Context
+        ↓
+Analyze:
+Activities
+Messages
+Tasks
+Meeting
+Stage
+Quote
+Timing
+        ↓
+Generate Suggested Action
+```
+
+Possible:
+
+```text
+Call
+Message
+Meeting
+Demo
+Send Quote
+Wait
+Escalate
+Create Task
+```
+
+Status:
+
+```text
+Suggested
+Approved
+Rejected
+Executed
+Expired
+```
+
+---
+
+# 32. FLOW 30 – USER APPROVES AI ACTION
+
+```text
+AI Suggestion
+     ↓
+User clicks Approve
+     ↓
+Action Type
+```
+
+Ví dụ Create Task:
+
+```text
+Preview Task
+↓
+Edit if needed
+↓
+Confirm
+↓
+Create Task
+↓
+Suggestion = EXECUTED
+↓
+Audit
+```
+
+---
+
+# 33. FLOW 31 – CREATE TASK
+
+```text
+Any Context
+    ↓
+Create Task
+    ↓
+Auto-fill related:
+Customer
+Contact
+Opportunity
+    ↓
+Assignee
+Due
+Priority
+Reminder
+    ↓
+Save
+```
+
+System:
+
+```text
+Notification
+↓
+Timeline if relevant
+```
+
+---
+
+# 34. FLOW 32 – COMPLETE TASK
+
+```text
+Task
+ ↓
+Complete
+ ↓
+Result
+ ↓
+Next Action?
+```
+
+Nếu có:
+
+```text
+Create New Task / Meeting
+```
+
+System:
+
+```text
+Completed At
+Activity
+Timeline
+```
+
+---
+
+# 35. FLOW 33 – CREATE MEETING
+
+```text
+Customer / Opportunity
+      ↓
+Create Meeting
+      ↓
+Participants
+Date
+Time
+Location
+Agenda
+Reminder
+      ↓
+Save
+```
+
+System:
+
+```text
+Calendar Event
+Notifications
+Timeline
+```
+
+---
+
+# 36. FLOW 34 – PRE-MEETING AI BRIEF
+
+```text
+Meeting Detail
+      ↓
+AI Preparation
+      ↓
+Load:
+Customer Summary
+Opportunity
+Last Conversations
+Outstanding Issues
+Previous Meetings
+      ↓
+Generate Brief
+```
+
+User sees:
+
+```text
+What changed
+Who attends
+Open issues
+Suggested talking points
+```
+
+---
+
+# 37. FLOW 35 – POST-MEETING AI SUMMARY
+
+```text
+Meeting Complete
+      ↓
+Notes / Transcript
+      ↓
+AI Summary
+```
+
+AI extracts:
+
+```text
+Summary
+Key Points
+Customer Needs
+Decisions
+Action Items
+Risks
+Next Follow-up
+```
+
+User reviews:
+
+```text
+Approve
+Edit
+Reject
+```
+
+On approval:
+
+```text
+Save Meeting Summary
+Create Tasks
+Update Opportunity
+Create Activity
+```
+
+---
+
+# 38. FLOW 36 – CREATE QUOTE
+
+```text
+Opportunity Detail
+     ↓
+Create Quote
+     ↓
+Auto-fill Customer / Contact
+     ↓
+Add Products
+     ↓
+Quantity / Price
+     ↓
+Discount / Tax
+     ↓
+Terms
+     ↓
+Save Draft
+```
+
+Then:
+
+```text
+Preview
+↓
+Internal Review?
+```
+
+If required:
+
+```text
+Submit Approval
+```
+
+Else:
+
+```text
+Generate PDF
+```
+
+---
+
+# 39. FLOW 37 – QUOTE APPROVAL
+
+```text
+Quote Draft
+     ↓
+Submit Approval
+     ↓
+Approval Request
+     ↓
+Approver
+```
+
+Result:
+
+```text
+Approved
+Rejected
+Changes Requested
+```
+
+If Approved:
+
+```text
+Quote status = APPROVED
+```
+
+---
+
+# 40. FLOW 38 – SEND QUOTE
+
+```text
+Approved Quote
+     ↓
+Send
+     ↓
+Select Channel
+Email / Zalo / WhatsApp / Other
+     ↓
+Create Outbound Message
+     ↓
+Send
+```
+
+System:
+
+```text
+Quote status = SENT
+Activity created
+Timeline updated
+```
+
+---
+
+# 41. FLOW 39 – QUOTE FOLLOW-UP
+
+```text
+Quote SENT
+   ↓
+No activity for N days
+   ↓
+Create AI Suggestion / Task
+```
+
+---
+
+# 42. FLOW 40 – CONTRACT CREATION
+
+```text
+Opportunity WON
+      ↓
+Create Contract
+      ↓
+Link Quote
+      ↓
+Contract Value
+Start/End
+Terms
+Upload File
+      ↓
+Save
+```
+
+System:
+
+```text
+Contract Timeline Event
+Audit
+```
+
+---
+
+# 43. FLOW 41 – PAYMENT SCHEDULE
+
+```text
+Contract
+    ↓
+Create Payment Schedule
+    ↓
+Installments
+Amounts
+Due Dates
+    ↓
+Save
+```
+
+System:
+
+```text
+Upcoming Payment Notifications
+```
+
+---
+
+# 44. FLOW 42 – RECORD PAYMENT
+
+```text
+Contract
+   ↓
+Record Payment
+   ↓
+Amount
+Date
+Method
+Reference
+   ↓
+Save
+```
+
+System:
+
+```text
+Recalculate Outstanding
+↓
+Payment Activity
+↓
+Timeline
+↓
+Audit
+```
+
+---
+
+# 45. FLOW 43 – PAYMENT OVERDUE
+
+```text
+Payment Due Date passed
+AND
+Remaining > 0
+       ↓
+Mark Overdue
+       ↓
+Notify Accounting
+       ↓
+Optional:
+Create Task
+AI Draft Reminder
+```
+
+---
+
+# 46. FLOW 44 – CUSTOMER 360°
+
+```text
+Open Customer
+      ↓
+Load Core Profile
+      ↓
+Parallel Load:
+Contacts
+Opportunities
+Activities
+Conversations
+Quotes
+Contracts
+Payments
+Tasks
+Meetings
+AI Insights
+```
+
+Overview prioritizes:
+
+```text
+AI Summary
+Open Opportunities
+Next Action
+Recent Conversations
+Upcoming Tasks
+```
+
+---
+
+# 47. FLOW 45 – AI CUSTOMER SUMMARY
+
+```text
+Customer
+   ↓
+Permission Check
+   ↓
+AI Context Builder
+   ↓
+Select Relevant Data
+   ↓
+Generate Summary
+   ↓
+Save AI Insight
+```
+
+Summary phải có evidence references.
+
+---
+
+# 48. FLOW 46 – AI COPILOT QUERY
+
+Ví dụ:
+
+> Những khách hàng nào tôi cần gọi lại hôm nay?
+
+```text
+User Query
+    ↓
+AI Assistant
+    ↓
+Intent
+    ↓
+Tool Selection
+    ↓
+Permission Check
+    ↓
+CRM Tool Call
+    ↓
+Result
+    ↓
+AI Response
+```
+
+Không cho LLM query DB trực tiếp.
+
+---
+
+# 49. FLOW 47 – AI COPILOT WITH CURRENT CONTEXT
+
+Nếu User đang ở Customer ABC:
+
+```text
+Current Context:
+organization_id = ABC
+```
+
+Người dùng hỏi:
+
+> Tóm tắt tình hình.
+
+```text
+Page Context
++
+User Query
+↓
+AI Context Builder
+↓
+Customer Data
+↓
+Answer
+```
+
+---
+
+# 50. FLOW 48 – AI TOOL CALL: CREATE TASK
+
+```text
+User:
+"Tạo cho tôi việc gọi ABC ngày mai"
+      ↓
+AI parses action
+      ↓
+Tool = create_task
+      ↓
+Permission Check
+      ↓
+Approval Policy
+```
+
+Nếu USER_CONFIRM:
+
+```text
+Preview
+↓
+Confirm
+↓
+Execute
+```
+
+Sau đó:
+
+```text
+Create Task
+Audit
+Return result
+```
+
+---
+
+# 51. FLOW 49 – AI TOOL REJECTED
+
+```text
+AI proposes action
+     ↓
+User Rejects
+     ↓
+Do not execute
+     ↓
+Save Feedback / Audit
+```
+
+---
+
+# 52. FLOW 50 – KNOWLEDGE DOCUMENT UPLOAD
+
+```text
+Knowledge Base
+     ↓
+Upload Document
+     ↓
+Virus/File Validation
+     ↓
+Store File
+     ↓
+Extract Text
+     ↓
+Create Document Version
+     ↓
+Chunking
+     ↓
+Embedding
+     ↓
+Index
+     ↓
+Status = READY
+```
+
+Nếu lỗi:
+
+```text
+Status = ERROR
+↓
+Show Processing Error
+```
+
+---
+
+# 53. FLOW 51 – KNOWLEDGE URL INGEST
+
+```text
+Add URL
+  ↓
+Validate
+  ↓
+Fetch Content
+  ↓
+Extract
+  ↓
+Version
+  ↓
+Chunk
+  ↓
+Embedding
+  ↓
+Index
+```
+
+---
+
+# 54. FLOW 52 – KNOWLEDGE SEARCH TEST
+
+```text
+Admin enters question
+      ↓
+Retrieve Knowledge
+      ↓
+Show:
+Chunks
+Documents
+Scores
+      ↓
+Generate Answer
+```
+
+Admin đánh giá:
+
+```text
+Good
+Bad
+Feedback
+```
+
+---
+
+# 55. FLOW 53 – RAG RUNTIME
+
+```text
+User / Chatbot Question
+      ↓
+Query Preparation
+      ↓
+Permission-aware Knowledge Selection
+      ↓
+Vector Search
+      ↓
+Metadata Filter
+      ↓
+Rerank
+      ↓
+Context Window Build
+      ↓
+LLM
+      ↓
+Grounded Answer
+```
+
+---
+
+# 56. FLOW 54 – KNOWLEDGE MISS
+
+```text
+Question
+  ↓
+No suitable chunks
+  ↓
+KNOWLEDGE_MISS event
+```
+
+Depending on policy:
+
+```text
+Ask clarification
+or
+Human Handoff
+or
+General Answer with limitation
+```
+
+Không được bịa nội dung doanh nghiệp.
+
+---
+
+# 57. FLOW 55 – CHATBOT FLOW EXECUTION
+
+```text
+Session starts
+   ↓
+Load published flow version
+   ↓
+Current Node
+   ↓
+Execute Node
+```
+
+Node may:
+
+```text
+Send Message
+Ask
+Collect Variable
+Condition
+Knowledge Search
+AI Answer
+Create Lead
+Create Task
+Book Meeting
+Handoff
+End
+```
+
+Then:
+
+```text
+Next Node
+```
+
+---
+
+# 58. FLOW 56 – CHATBOT FLOW PUBLISH
+
+```text
+Flow Draft
+   ↓
+Validate
+   ↓
+Test
+   ↓
+Publish
+   ↓
+Create Immutable Version
+   ↓
+Set Active Version
+```
+
+Existing sessions mặc định:
+
+```text
+Continue old version
+```
+
+---
+
+# 59. FLOW 57 – CONVERSATION ASSIGNMENT
+
+```text
+Unassigned Conversation
+       ↓
+Routing Rules
+       ↓
+Queue
+       ↓
+Agent availability / priority
+       ↓
+Assign
+```
+
+Manual reassign:
+
+```text
+Supervisor
+↓
+Select Agent
+↓
+Reason
+↓
+Save Assignment History
+```
+
+---
+
+# 60. FLOW 58 – PRIORITY CONVERSATION
+
+Priority có thể bị ảnh hưởng bởi:
+
+* VIP tag;
+* negative sentiment;
+* high opportunity value;
+* long waiting;
+* manual priority.
+
+```text
+Conversation Event
+      ↓
+Evaluate Priority
+      ↓
+Update Priority
+      ↓
+Queue Ordering
+```
+
+---
+
+# 61. FLOW 59 – CONVERSATION CLOSE
+
+```text
+Agent clicks Close
+      ↓
+Resolution Note optional/required
+      ↓
+Close Conversation
+      ↓
+Create Summary if configured
+      ↓
+Update Activity
+```
+
+New inbound message later:
+
+```text
+Reopen
+or
+Create new Conversation
+```
+
+tùy cấu hình.
+
+---
+
+# 62. FLOW 60 – CHATBOT ANALYTICS
+
+Events:
+
+```text
+Conversation Started
+Intent Detected
+Knowledge Search
+Lead Created
+Meeting Booked
+Handoff
+Conversation Resolved
+```
+
+Feed vào:
+
+```text
+Chatbot Dashboard
+```
+
+---
+
+# 63. FLOW 61 – AI FEEDBACK
+
+```text
+AI Output
+   ↓
+User:
+Thumb Up / Down
+or Rating
+   ↓
+Save Feedback
+```
+
+Dùng cho:
+
+* evaluation;
+* prompt improvement;
+* model comparison.
+
+---
+
+# 64. FLOW 62 – AI MODEL FALLBACK
+
+```text
+AI Request
+   ↓
+Primary Model
+   ↓
+Fails?
+```
+
+Nếu configured:
+
+```text
+Fallback Model
+```
+
+Nếu không:
+
+```text
+Return AI unavailable
+```
+
+CRM workflow vẫn tiếp tục.
+
+---
+
+# 65. FLOW 63 – AI PROVIDER FAILURE
+
+```text
+Provider Error
+    ↓
+Log ai_execution
+    ↓
+Retry Policy
+    ↓
+Fallback Provider?
+```
+
+Nếu không:
+
+```text
+Graceful UI Error
+```
+
+Không mất dữ liệu CRM.
+
+---
+
+# 66. FLOW 64 – CHATBOT AI FAILURE
+
+```text
+Chatbot requests AI
+      ↓
+AI unavailable
+      ↓
+Fallback Policy
+```
+
+Options:
+
+```text
+Static fallback
+Knowledge-only response
+Human Handoff
+```
+
+---
+
+# 67. FLOW 65 – AUTOMATION RULE
+
+Ví dụ:
+
+```text
+Customer last activity > 30 days
+       ↓
+Automation Trigger
+       ↓
+Condition Check
+       ↓
+Create Follow-up Task
+       ↓
+Notify Owner
+       ↓
+Audit
+```
+
+---
+
+# 68. FLOW 66 – WORKFLOW ENGINE
+
+```text
+Business Event
+   ↓
+Find Active Workflows
+   ↓
+Evaluate Conditions
+   ↓
+Create Workflow Run
+   ↓
+Execute Actions in order
+```
+
+Each action:
+
+```text
+Success
+Retry
+Failed
+Skipped
+```
+
+---
+
+# 69. FLOW 67 – APPROVAL CENTER
+
+```text
+User submits item
+      ↓
+Create Approval Request
+      ↓
+Determine Approver
+      ↓
+Notify Approver
+      ↓
+Approve / Reject
+```
+
+Nếu multi-step:
+
+```text
+Step 1
+↓
+Step 2
+↓
+Final
+```
+
+---
+
+# 70. FLOW 68 – ROLE / PERMISSION
+
+```text
+Admin
+ ↓
+Role Settings
+ ↓
+Select Role
+ ↓
+Update Permissions
+ ↓
+Save
+```
+
+System:
+
+```text
+Audit
+↓
+Apply to next authorization check
+```
+
+---
+
+# 71. FLOW 69 – USER ACCESS TO RECORD
+
+Every API:
+
+```text
+Authenticated?
+   ↓
+Tenant Match?
+   ↓
+Permission?
+   ↓
+Record Scope?
+```
+
+Record scope:
+
+```text
+Owner
+Team
+Department
+All
+```
+
+Nếu fail:
+
+```text
+403
+```
+
+---
+
+# 72. FLOW 70 – AI PERMISSION PROPAGATION
+
+```text
+User asks AI
+      ↓
+AI selects Tool
+      ↓
+Tool Permission Check
+      ↓
+Data Scope Check
+```
+
+AI chỉ nhận permitted result.
+
+Không phải:
+
+```text
+AI sees all data then hides answer
+```
+
+Mà là:
+
+```text
+restricted query before data reaches model
+```
+
+---
+
+# 73. FLOW 71 – IMPORT CUSTOMER
+
+```text
+Upload Excel/CSV
+      ↓
+Preview
+      ↓
+Column Mapping
+      ↓
+Validation
+      ↓
+Duplicate Analysis
+      ↓
+Import Preview
+      ↓
+Confirm
+```
+
+System:
+
+```text
+Batch Transaction
++
+Error Report
+```
+
+---
+
+# 74. FLOW 72 – DUPLICATE MERGE
+
+```text
+Possible Duplicate
+      ↓
+Compare Records
+      ↓
+Choose Master Record
+      ↓
+Field-by-field Merge
+      ↓
+Preview
+      ↓
+Confirm
+```
+
+System relinks:
+
+```text
+Activities
+Conversations
+Opportunities
+Files
+Notes
+Identity Links
+```
+
+Then:
+
+```text
+Soft-delete source
+Create Merge Log
+Audit
+```
+
+---
+
+# 75. FLOW 73 – SAVED VIEW
+
+```text
+List Screen
+   ↓
+Apply Filters
+   ↓
+Columns / Sort
+   ↓
+Save View
+```
+
+User can:
+
+```text
+Private
+Shared Team
+Default
+```
+
+nếu có quyền.
+
+---
+
+# 76. FLOW 74 – SALES MANAGER DAILY WORKFLOW
+
+```text
+Login
+ ↓
+Sales Dashboard
+ ↓
+Review:
+Pipeline
+Forecast
+High Risk
+Overdue Activities
+```
+
+Then:
+
+```text
+Drill into Salesperson
+↓
+Opportunity
+↓
+Customer
+```
+
+Actions:
+
+* reassign;
+* create task;
+* review AI risk;
+* approve quote.
+
+---
+
+# 77. FLOW 75 – SALES USER DAILY WORKFLOW
+
+```text
+Login
+↓
+My Home
+↓
+Overdue
+↓
+Follow-up Today
+↓
+Meetings
+↓
+Inbox
+↓
+Pipeline
+```
+
+AI hỗ trợ ưu tiên nhưng không che mất công việc khác.
+
+---
+
+# 78. FLOW 76 – CUSTOMER SERVICE USER
+
+```text
+Login
+ ↓
+Unified Inbox
+ ↓
+My Queue
+ ↓
+Conversation
+ ↓
+Customer 360 Mini
+ ↓
+Respond
+```
+
+Nếu phát hiện sales opportunity:
+
+```text
+Create Lead / Opportunity
+↓
+Assign Sales
+```
+
+---
+
+# 79. FLOW 77 – ADMIN USER
+
+```text
+Settings
+  ↓
+Users
+Roles
+Pipelines
+Channels
+Chatbots
+AI
+Knowledge
+Audit
+```
+
+Mọi thay đổi config đều audit.
+
+---
+
+# 80. FLOW 78 – CHANNEL CONNECTION
+
+```text
+Settings → Integrations
+       ↓
+Select Channel
+       ↓
+Enter Provider Configuration
+       ↓
+Authorize / Credentials
+       ↓
+Test Connection
+```
+
+Nếu success:
+
+```text
+Activate Channel
+↓
+Register Webhook
+```
+
+Nếu fail:
+
+```text
+Show Error
+↓
+Do not activate
+```
+
+---
+
+# 81. FLOW 79 – WEBHOOK RECEIVING
+
+```text
+External Provider
+      ↓
+Webhook Endpoint
+      ↓
+Verify Signature
+      ↓
+Idempotency Check
+      ↓
+Save Webhook Event
+      ↓
+Process
+```
+
+Nếu duplicate:
+
+```text
+Acknowledge
+Do not reprocess
+```
+
+---
+
+# 82. FLOW 80 – WEBHOOK RETRY
+
+```text
+Webhook Processing Error
+      ↓
+Mark ERROR
+      ↓
+Retry Count
+      ↓
+Retry Job
+```
+
+Sau threshold:
+
+```text
+Dead Letter / Manual Review
+```
+
+---
+
+# 83. FLOW 81 – MESSAGE DELIVERY UPDATE
+
+```text
+Provider Webhook
+    ↓
+Message ID
+    ↓
+Update Status
+```
+
+Ví dụ:
+
+```text
+Sent
+Delivered
+Read
+Failed
+```
+
+Insert:
+
+```text
+message_delivery_events
+```
+
+---
+
+# 84. FLOW 82 – CUSTOMER CONSENT
+
+Before outbound marketing:
+
+```text
+Contact
+ ↓
+Check Consent
+ ↓
+Allowed?
+```
+
+Nếu không:
+
+```text
+Block Send
+```
+
+---
+
+# 85. FLOW 83 – DO NOT CONTACT
+
+```text
+Contact marked DNC
+      ↓
+Outbound Attempt
+      ↓
+Block
+      ↓
+Explain reason
+      ↓
+Audit
+```
+
+---
+
+# 86. FLOW 84 – DATA EXPORT
+
+```text
+User requests Export
+      ↓
+Permission Check
+      ↓
+Scope Check
+      ↓
+Generate Export
+      ↓
+Audit Export
+```
+
+Large export:
+
+```text
+Background Job
+```
+
+---
+
+# 87. FLOW 85 – AI AUDIT
+
+Every significant AI event:
+
+```text
+AI Input
+Tool
+Output
+Model
+User
+Entity
+Approval
+```
+
+logged into:
+
+```text
+ai_audit_logs
+ai_executions
+```
+
+---
+
+# 88. FLOW 86 – AI PROMPT VERSION
+
+```text
+Admin edits Prompt
+       ↓
+Save Draft Version
+       ↓
+Test
+       ↓
+Publish
+```
+
+New executions dùng new version.
+
+Old execution vẫn traceable về old version.
+
+---
+
+# 89. FLOW 87 – KNOWLEDGE DOCUMENT VERSION
+
+```text
+Existing Document
+       ↓
+Upload New Version
+       ↓
+Create Version
+       ↓
+Process
+       ↓
+Publish
+```
+
+Previous versions vẫn giữ để audit.
+
+---
+
+# 90. FLOW 88 – DOCUMENT EFFECTIVE DATE
+
+```text
+RAG Query
+   ↓
+Filter:
+effective_from <= now
+AND
+effective_to > now / null
+```
+
+Tránh dùng tài liệu hết hiệu lực.
+
+---
+
+# 91. FLOW 89 – ACTIVITY TIMELINE GENERATION
+
+Events producing Timeline entries:
+
+```text
+Call
+Meeting
+Important Conversation
+Quote Sent
+Contract
+Payment
+Stage Change
+Handoff
+Executed AI Action
+```
+
+Không đưa mọi technical event lên Timeline.
+
+---
+
+# 92. FLOW 90 – CONVERSATION SUMMARY
+
+Trigger:
+
+* Conversation closed;
+* message threshold;
+* handoff;
+* manual request.
+
+```text
+Conversation
+    ↓
+Relevant Messages
+    ↓
+AI Summary
+    ↓
+Save Insight
+```
+
+Fields:
+
+```text
+Intent
+Summary
+Questions
+Issues
+Sentiment
+Next Action
+```
+
+---
+
+# 93. FLOW 91 – CUSTOMER NEEDS ATTENTION
+
+System evaluates:
+
+```text
+No activity
++
+High deal value
++
+Overdue task
++
+Negative sentiment
++
+Quote waiting
+```
+
+Result:
+
+```text
+Needs Attention
+```
+
+Dùng cho Home và Manager Dashboard.
+
+---
+
+# 94. FLOW 92 – NOTIFICATION
+
+Business event:
+
+```text
+Task Assigned
+Meeting Soon
+Handoff
+Quote Approval
+Payment Due
+```
+
+Then:
+
+```text
+Check Notification Preferences
+↓
+Create In-App
+↓
+Optional Email / Push
+```
+
+---
+
+# 95. FLOW 93 – DEEP LINK NOTIFICATION
+
+Notification click:
+
+```text
+Open exact entity
+```
+
+Ví dụ:
+
+```text
+Task → Task Detail
+Handoff → Conversation
+Approval → Quote
+```
+
+---
+
+# 96. FLOW 94 – MOBILE CUSTOMER ACTION
+
+```text
+Customer 360 Mobile
+     ↓
+Quick Action
+```
+
+Options:
+
+```text
+Call
+Message
+Task
+Note
+Meeting
+```
+
+Sau completion:
+
+```text
+Return to Customer context
+```
+
+---
+
+# 97. FLOW 95 – MOBILE INBOX
+
+```text
+Conversation List
+      ↓
+Open Conversation
+      ↓
+Message
+      ↓
+Customer Info Drawer
+```
+
+Back phải giữ list position.
+
+---
+
+# 98. FLOW 96 – OFFLINE / NETWORK ERROR
+
+For write operation:
+
+```text
+Submit
+ ↓
+Network Failure
+ ↓
+Do not show false success
+ ↓
+Keep Draft
+ ↓
+Retry
+```
+
+Messaging không được duplicate send khi retry.
+
+---
+
+# 99. FLOW 97 – BACKGROUND AI PROCESS
+
+```text
+Request
+ ↓
+Create Job
+ ↓
+UI = Processing
+ ↓
+Background Execution
+ ↓
+Complete
+ ↓
+Notify / Refresh
+```
+
+Ví dụ:
+
+* document indexing;
+* long transcript summary;
+* bulk scoring.
+
+---
+
+# 100. FLOW 98 – SECURITY EVENT
+
+Ví dụ repeated failed login:
+
+```text
+Failed Login
+   ↓
+Security Rule
+   ↓
+Log Event
+   ↓
+Rate Limit / Lock if needed
+   ↓
+Notify Admin if severe
+```
+
+---
+
+# 101. FLOW 99 – CUSTOMER JOURNEY END-TO-END
+
+```text
+Customer sends Zalo message
+       ↓
+Channel Connector
+       ↓
+Identity Resolution
+       ↓
+No CRM Contact found
+       ↓
+Chatbot starts
+       ↓
+RAG answers product questions
+       ↓
+Collects:
+Name
+Phone
+Company
+Need
+       ↓
+Lead created
+       ↓
+AI Lead Score = HOT
+       ↓
+Customer asks for Demo
+       ↓
+Human Handoff
+       ↓
+Sales receives AI Summary
+       ↓
+Meeting booked
+       ↓
+Meeting completed
+       ↓
+AI Meeting Summary
+       ↓
+Lead converted
+       ↓
+Opportunity created
+       ↓
+Pipeline = Demo
+       ↓
+Quote created
+       ↓
+Quote approved
+       ↓
+Quote sent by Zalo
+       ↓
+Customer responds on WhatsApp
+       ↓
+Identity Resolution links same Contact
+       ↓
+Same Customer 360
+       ↓
+Negotiation
+       ↓
+Opportunity Won
+       ↓
+Contract
+       ↓
+Payment
+       ↓
+Post-sale care
+```
+
+Điểm quan trọng:
+
+**Đổi kênh nhưng không đổi hồ sơ khách hàng.**
+
+---
+
+# 102. FLOW 100 – MULTI-CHANNEL CONTINUITY
+
+```text
+Zalo
+ ↓
+Contact Identity
+ ↓
+Customer 360
+ ↑
+WhatsApp
+ ↑
+Viber
+ ↑
+Email
+ ↑
+Webchat
+```
+
+Tất cả hội thoại gom về cùng:
+
+```text
+Contact
++
+Organization
+```
+
+---
+
+# 103. FLOW 101 – SALES DISCOVERS CUSTOMER FROM INBOX
+
+```text
+Inbox
+ ↓
+Customer Mini Panel
+ ↓
+Open Customer 360
+ ↓
+Open Opportunity
+ ↓
+Return to Inbox
+```
+
+Conversation state phải giữ nguyên.
+
+---
+
+# 104. FLOW 102 – MANAGER DRILL-DOWN
+
+```text
+Sales Dashboard
+ ↓
+Team
+ ↓
+Salesperson
+ ↓
+Pipeline Stage
+ ↓
+Opportunity
+ ↓
+Customer
+ ↓
+Conversation
+```
+
+---
+
+# 105. FLOW 103 – AI ANALYST
+
+Manager hỏi:
+
+> Tại sao pipeline tháng này giảm?
+
+```text
+AI Copilot
+ ↓
+Authorized Analytics Tools
+ ↓
+Pipeline Metrics
+ ↓
+Compare Period
+ ↓
+Activity Metrics
+ ↓
+Win/Loss Reasons
+ ↓
+Summarize Findings
+```
+
+AI phải phân biệt:
+
+```text
+Fact
+vs
+Interpretation
+```
+
+---
+
+# 106. FLOW 104 – AI DRAFT FOLLOW-UP
+
+```text
+Opportunity Detail
+     ↓
+AI → Draft Follow-up
+     ↓
+Load:
+Customer
+Stage
+Quote
+Recent conversation
+Knowledge
+     ↓
+Generate Draft
+```
+
+User:
+
+```text
+Edit
+Choose Channel
+Send
+```
+
+---
+
+# 107. FLOW 105 – BULK AI SCORING
+
+```text
+Admin / Manager
+ ↓
+Run Score for Leads
+ ↓
+Background Job
+ ↓
+Batch Permission Scope
+ ↓
+AI/Model Execution
+ ↓
+Save Scores
+ ↓
+Dashboard Refresh
+```
+
+---
+
+# 108. FLOW 106 – KNOWLEDGE PERMISSION
+
+```text
+AI / Chatbot asks Knowledge Service
+      ↓
+Determine Actor
+      ↓
+Knowledge Base Permissions
+      ↓
+Retrieve only allowed KB
+```
+
+Chatbot có thể có Knowledge permission khác employee.
+
+---
+
+# 109. FLOW 107 – CHATBOT PUBLIC KNOWLEDGE
+
+Public-facing Bot:
+
+```text
+Allowed:
+Product FAQ
+Public Policies
+Published Price
+```
+
+Not allowed:
+
+```text
+Internal Sales Notes
+Confidential Contracts
+Internal Customer Data
+```
+
+---
+
+# 110. FLOW 108 – AGENT PRIVATE NOTE
+
+```text
+Conversation
+ ↓
+Add Internal Note
+```
+
+Internal Note:
+
+* không gửi customer;
+* visible theo role;
+* có thể xuất hiện Timeline nếu cấu hình.
+
+---
+
+# 111. FLOW 109 – CUSTOMER PROFILE UPDATE FROM CHATBOT
+
+Nếu chatbot thu thập dữ liệu mới:
+
+```text
+New phone / title / need
+      ↓
+Is existing Contact?
+      ↓
+Suggest Update
+```
+
+Không nên tự overwrite field quan trọng.
+
+Dùng:
+
+```text
+Auto-fill safe fields
+or
+Human confirmation
+```
+
+---
+
+# 112. FLOW 110 – LEAD NURTURING
+
+```text
+Lead not ready
+ ↓
+Status = NURTURING
+ ↓
+Follow-up date
+ ↓
+Automation
+ ↓
+Task / Message Draft
+```
+
+---
+
+# 113. FLOW 111 – REOPEN LOST LEAD
+
+```text
+Lost Lead
+ ↓
+New inbound interaction
+ ↓
+Agent / Rule
+ ↓
+Reopen?
+```
+
+Options:
+
+```text
+Reopen Lead
+or
+Create new Opportunity
+```
+
+Giữ historical loss.
+
+---
+
+# 114. FLOW 112 – CUSTOMER MERGE ACROSS CHANNELS
+
+```text
+Zalo Contact A
+WhatsApp Contact B
+       ↓
+Detected same phone/email
+       ↓
+Possible Duplicate
+       ↓
+Human Merge
+       ↓
+Relink Conversations
+       ↓
+Single Contact
+```
+
+---
+
+# 115. FLOW 113 – FILE SENT TO CUSTOMER
+
+```text
+Conversation
+ ↓
+Attach File
+ ↓
+Permission / Size / Type Check
+ ↓
+Upload
+ ↓
+Send via Channel
+ ↓
+Message Attachment
+```
+
+Nếu business-critical:
+
+```text
+Create Timeline Activity
+```
+
+---
+
+# 116. FLOW 114 – TEMPLATE MESSAGE
+
+```text
+Composer
+ ↓
+Choose Template
+ ↓
+Fill Variables
+ ↓
+Preview
+ ↓
+Send
+```
+
+Nếu provider yêu cầu approved template:
+
+```text
+Validate external_template_id
+```
+
+---
+
+# 117. FLOW 115 – QUICK REPLY
+
+```text
+Conversation
+ ↓
+Quick Reply
+ ↓
+Select Canned Response
+ ↓
+Edit
+ ↓
+Send
+```
+
+---
+
+# 118. FLOW 116 – SLA BREACH
+
+```text
+Conversation Open
+ ↓
+SLA Timer
+ ↓
+Due Time Reached?
+```
+
+Nếu yes:
+
+```text
+Mark Breach
+↓
+Escalate
+↓
+Notify Supervisor
+```
+
+---
+
+# 119. FLOW 117 – SESSION END
+
+Chatbot session ends khi:
+
+* inactivity timeout;
+* conversation closed;
+* human takeover final;
+* explicit end.
+
+```text
+End Session
+ ↓
+Session Summary
+ ↓
+Optional AI Conversation Summary
+ ↓
+Analytics Event
+```
+
+---
+
+# 120. FLOW 118 – CHATBOT SESSION CONTINUITY
+
+Returning user:
+
+```text
+New Message
+ ↓
+Open Session exists?
+```
+
+Nếu yes:
+
+```text
+Resume Context
+```
+
+Nếu không:
+
+```text
+Create New Session
+but
+Link same Contact / Conversation history
+```
+
+---
+
+# 121. FLOW 119 – DATA AUDIT
+
+Every important mutation:
+
+```text
+Before State
+ ↓
+Action
+ ↓
+After State
+ ↓
+Audit Log
+```
+
+Includes:
+
+* owner changes;
+* stage;
+* value;
+* permissions;
+* merge;
+* approvals.
+
+---
+
+# 122. FLOW 120 – SOFT DELETE / RESTORE
+
+```text
+Delete Record
+ ↓
+Permission
+ ↓
+Confirmation
+ ↓
+Soft Delete
+ ↓
+Audit
+```
+
+Admin Restore:
+
+```text
+Deleted Records
+ ↓
+Restore
+ ↓
+Audit
+```
+
+---
+
+# 123. FLOW 121 – FULL OMNI CRM SALES JOURNEY
+
+```text
+Lead source
+ ↓
+Omnichannel conversation
+ ↓
+Chatbot qualification
+ ↓
+AI scoring
+ ↓
+Human handoff
+ ↓
+Sales engagement
+ ↓
+Opportunity
+ ↓
+Meeting
+ ↓
+AI summary
+ ↓
+Proposal / Quote
+ ↓
+Follow-up
+ ↓
+AI risk
+ ↓
+Negotiation
+ ↓
+Won
+ ↓
+Contract
+ ↓
+Payment
+ ↓
+Customer Success
+```
+
+---
+
+# 124. FLOW 122 – CUSTOMER SERVICE → SALES
+
+```text
+Customer Service Conversation
+       ↓
+Intent indicates purchase
+       ↓
+Agent clicks Create Opportunity
+       ↓
+Assign Sales Owner
+       ↓
+Notify Sales
+       ↓
+Opportunity appears Pipeline
+```
+
+Conversation vẫn linked.
+
+---
+
+# 125. FLOW 123 – SALES → CUSTOMER SERVICE
+
+After Won:
+
+```text
+Opportunity WON
+     ↓
+Create Handover Task
+     ↓
+Assign Customer Service
+     ↓
+AI Generate Handover Summary
+     ↓
+Customer Service receives context
+```
+
+---
+
+# 126. FLOW 124 – AI-GENERATED HANDOVER SUMMARY
+
+Input:
+
+```text
+Customer
+Opportunity
+Meetings
+Messages
+Quote
+Contract
+Open Issues
+```
+
+Output:
+
+```text
+Customer Situation
+Products Purchased
+Key Contacts
+Commitments
+Open Issues
+Next Actions
+```
+
+---
+
+# 127. FLOW 125 – RENEWAL
+
+```text
+Contract End Date approaching
+       ↓
+Automation
+       ↓
+Create Renewal Opportunity
+or
+Create Sales Task
+       ↓
+AI Draft Outreach
+```
+
+---
+
+# 128. FLOW 126 – CROSS-SELL / UPSELL
+
+AI có thể detect:
+
+```text
+Existing Customer
++
+Product History
++
+Conversation Need
+```
+
+Then:
+
+```text
+Suggestion:
+Potential Upsell
+```
+
+User quyết định có tạo Opportunity hay không.
+
+---
+
+# 129. FLOW 127 – CHURN RISK
+
+Future capability:
+
+```text
+Reduced engagement
+Negative sentiment
+Support issues
+Payment delays
+ ↓
+AI Churn Risk
+ ↓
+Manager Review
+```
+
+---
+
+# 130. FLOW 128 – REPORT DRILL-DOWN
+
+```text
+Dashboard KPI
+ ↓
+Click
+ ↓
+Filtered List
+ ↓
+Record
+ ↓
+Customer 360
+```
+
+Mọi KPI phải traceable về record.
+
+---
+
+# 131. FLOW 129 – USER IMPERSONATION
+
+Không khuyến nghị cho MVP.
+
+Nếu sau này có:
+
+* explicit permission;
+* visible banner;
+* mandatory audit.
+
+---
+
+# 132. FLOW 130 – SESSION / TOKEN EXPIRY
+
+```text
+API Request
+ ↓
+Access Token expired
+ ↓
+Refresh Token
+```
+
+Nếu refresh fail:
+
+```text
+Redirect Login
+```
+
+---
+
+# 133. FLOW 131 – CHANNEL DISCONNECTED
+
+```text
+Channel disconnected
+ ↓
+Mark Channel ERROR
+ ↓
+Notify Admin
+ ↓
+Inbox banner
+```
+
+CRM Core vẫn hoạt động.
+
+---
+
+# 134. FLOW 132 – CHANNEL RECONNECT
+
+```text
+Admin → Channel
+ ↓
+Reconnect
+ ↓
+Test
+ ↓
+Register webhook
+ ↓
+Sync state
+```
+
+---
+
+# 135. FLOW 133 – CHATBOT CONFIG CHANGE
+
+```text
+Admin edits Chatbot
+ ↓
+Save Draft
+ ↓
+Test
+ ↓
+Publish
+```
+
+Production chỉ thay đổi sau Publish.
+
+---
+
+# 136. FLOW 134 – AI ASSISTANT CONFIG CHANGE
+
+```text
+Admin edits:
+Model
+Prompt
+Tools
+Knowledge
+ ↓
+Save Draft
+ ↓
+Test
+ ↓
+Publish
+```
+
+---
+
+# 137. FLOW 135 – AI TOOL APPROVAL POLICY
+
+Ví dụ:
+
+```text
+search_customer = AUTO
+draft_message = AUTO
+create_task = USER_CONFIRM
+update_opportunity = USER_CONFIRM
+record_payment = DISABLED
+```
+
+At runtime:
+
+```text
+Tool Request
+ ↓
+Approval Policy
+ ↓
+Execute / Confirm / Block
+```
+
+---
+
+# 138. FLOW 136 – ERROR HANDLING STANDARD
+
+Every user action:
+
+```text
+Action
+ ↓
+Validation
+ ↓
+API
+```
+
+Possible states:
+
+```text
+Loading
+Success
+Validation Error
+Permission Error
+Conflict
+Server Error
+```
+
+---
+
+# 139. FLOW 137 – OPTIMISTIC UI
+
+Allowed cho low-risk actions như:
+
+* mark notification read;
+* reorder UI.
+
+Không khuyến nghị cho:
+
+* payment;
+* quote approval;
+* sending message;
+* stage Won/Lost.
+
+---
+
+# 140. FLOW 138 – SAVING DRAFT
+
+Long forms:
+
+```text
+Quote
+Chatbot Flow
+Knowledge
+Workflow
+```
+
+nên support:
+
+```text
+Draft
+```
+
+tách khỏi:
+
+```text
+Published / Sent / Active
+```
+
+---
+
+# 141. FLOW 139 – ENTITY OWNERSHIP CHANGE
+
+```text
+Manager
+ ↓
+Reassign Customer / Opportunity
+ ↓
+Select New Owner
+ ↓
+Reason
+ ↓
+Confirm
+```
+
+System:
+
+```text
+Update Owner
+Audit
+Optional Notification
+```
+
+---
+
+# 142. FLOW 140 – CUSTOMER PRIORITY
+
+Priority có thể:
+
+* manual;
+* rule;
+* AI suggestion.
+
+AI không tự overwrite manual priority nếu policy không cho phép.
+
+---
+
+# 143. FLOW 141 – END-TO-END AI SAFETY
+
+```text
+User Request
+ ↓
+Permission
+ ↓
+Context Filtering
+ ↓
+Model
+ ↓
+Tool Decision
+ ↓
+Tool Permission
+ ↓
+Approval Policy
+ ↓
+Execute
+ ↓
+Audit
+```
+
+---
+
+# 144. FLOW 142 – END-TO-END KNOWLEDGE SAFETY
+
+```text
+Query
+ ↓
+Actor
+ ↓
+Allowed Knowledge Bases
+ ↓
+Effective Documents
+ ↓
+Retrieve
+ ↓
+Generate
+ ↓
+Source References
+```
+
+---
+
+# 145. FLOW 143 – CUSTOMER DATA LINEAGE
+
+Khi AI hiển thị insight:
+
+```text
+Insight
+ ↓
+View Sources
+```
+
+Sources có thể là:
+
+* Conversation;
+* Meeting;
+* Quote;
+* CRM field;
+* Knowledge document.
+
+---
+
+# 146. FLOW 144 – USER FLOW BY ROLE: SALES
+
+```text
+Home
+ ↓
+Task / Follow-up
+ ↓
+Customer
+ ↓
+Conversation
+ ↓
+Opportunity
+ ↓
+Meeting
+ ↓
+Quote
+ ↓
+Next Action
+```
+
+AI embedded xuyên suốt.
+
+---
+
+# 147. FLOW 145 – USER FLOW BY ROLE: MANAGER
+
+```text
+Dashboard
+ ↓
+Risk / Forecast
+ ↓
+Team
+ ↓
+Opportunity
+ ↓
+Customer
+ ↓
+Action / Assignment / Approval
+```
+
+---
+
+# 148. FLOW 146 – USER FLOW BY ROLE: CSKH
+
+```text
+Inbox
+ ↓
+Queue
+ ↓
+Conversation
+ ↓
+Customer 360
+ ↓
+Respond / Handoff / Task
+```
+
+---
+
+# 149. FLOW 147 – USER FLOW BY ROLE: ADMIN
+
+```text
+Settings
+ ↓
+IAM
+Channels
+Chatbots
+AI
+Knowledge
+Automation
+Audit
+```
+
+---
+
+# 150. FLOW 148 – USER FLOW BY ROLE: EXECUTIVE
+
+```text
+Executive Dashboard
+ ↓
+Sales
+Customers
+Omnichannel
+AI Insights
+ ↓
+Drill-down
+```
+
+---
+
+# 151. FLOW 149 – SCREEN CONTEXT PRESERVATION
+
+Ví dụ:
+
+```text
+Inbox Conversation #A
+ ↓
+Open Customer 360
+ ↓
+Open Opportunity
+ ↓
+Back
+```
+
+System phải return:
+
+```text
+Conversation #A
+same message position
+same filters
+```
+
+---
+
+# 152. FLOW 150 – URL DEEP LINK
+
+Core entity cần stable URL:
+
+```text
+/crm/organizations/:id
+
+/sales/opportunities/:id
+
+/inbox/:conversationId
+```
+
+---
+
+# 153. FLOW 151 – ACTIVITY FROM MESSAGE
+
+Không phải mỗi message là Activity.
+
+Rule:
+
+```text
+Conversation interaction
+ ↓
+Meaningful event / close / handoff
+ ↓
+Create Activity Summary
+```
+
+---
+
+# 154. FLOW 152 – AI SUMMARY REFRESH
+
+AI Summary có:
+
+```text
+generated_at
+```
+
+Nếu significant activity mới hơn:
+
+```text
+Summary = STALE
+```
+
+UI có thể hiển thị:
+
+```text
+Refresh Summary
+```
+
+---
+
+# 155. FLOW 153 – DATA FRESHNESS
+
+AI insight không tồn tại mãi.
+
+Dùng:
+
+```text
+expires_at
+```
+
+hoặc recompute trigger.
+
+---
+
+# 156. FLOW 154 – AI COST CONTROL
+
+Before expensive operation:
+
+```text
+Request
+ ↓
+Model Routing
+```
+
+Simple task:
+
+```text
+smaller model
+```
+
+Complex task:
+
+```text
+stronger model
+```
+
+Usage logged.
+
+---
+
+# 157. FLOW 155 – MODEL ROUTING
+
+Ví dụ:
+
+```text
+Classification → lightweight model
+Embedding → embedding model
+Summary → chat model
+Vision document → vision-capable model
+```
+
+---
+
+# 158. FLOW 156 – CHATBOT RESPONSE POLICY
+
+```text
+Incoming question
+ ↓
+Can answer from approved knowledge?
+```
+
+If yes:
+
+```text
+Answer
+```
+
+If uncertain:
+
+```text
+Clarify / Handoff
+```
+
+Không fabricate giá, hợp đồng, cam kết.
+
+---
+
+# 159. FLOW 157 – CUSTOMER REQUEST DELETE / PRIVACY
+
+```text
+Request
+ ↓
+Verify identity
+ ↓
+Privacy Admin
+ ↓
+Evaluate retention/legal basis
+ ↓
+Anonymize/Delete according to policy
+ ↓
+Audit
+```
+
+---
+
+# 160. FLOW 158 – AI DATA MINIMIZATION
+
+AI Context Builder chỉ lấy:
+
+```text
+relevant fields
+```
+
+Không dump toàn bộ DB record vào prompt.
+
+---
+
+# 161. FLOW 159 – CUSTOMER 360 DATA REFRESH
+
+```text
+Open Customer 360
+ ↓
+Core fields first
+ ↓
+Lazy load tabs
+```
+
+---
+
+# 162. FLOW 160 – INBOX REALTIME
+
+```text
+New Message
+ ↓
+Realtime Event
+ ↓
+Conversation List updates
+ ↓
+Unread badge
+```
+
+Nếu conversation đang mở:
+
+```text
+Append Message
+```
+
+---
+
+# 163. FLOW 161 – HANDOFF REALTIME
+
+```text
+New Handoff
+ ↓
+Realtime Queue Event
+ ↓
+Agent/Supervisor sees new card
+```
+
+---
+
+# 164. FLOW 162 – PIPELINE REALTIME
+
+Nếu Sales A move Deal:
+
+```text
+Server Event
+ ↓
+Sales Manager board updates
+```
+
+Optional MVP.
+
+---
+
+# 165. FLOW 163 – NOTIFICATION REALTIME
+
+```text
+Business Event
+ ↓
+Notification
+ ↓
+Realtime Header Badge
+```
+
+---
+
+# 166. FLOW 164 – BULK ASSIGN
+
+```text
+List
+ ↓
+Select Records
+ ↓
+Bulk Assign
+ ↓
+Permission
+ ↓
+New Owner
+ ↓
+Confirm
+ ↓
+Batch Update
+ ↓
+Audit
+```
+
+---
+
+# 167. FLOW 165 – BULK TAG
+
+```text
+Select Customers
+ ↓
+Add Tag
+ ↓
+Confirm
+ ↓
+Batch Link
+```
+
+---
+
+# 168. FLOW 166 – IMPORT DUPLICATE PREVIEW
+
+```text
+Rows
+ ↓
+Exact Match
+Possible Match
+New
+Invalid
+```
+
+User quyết định xử lý.
+
+---
+
+# 169. FLOW 167 – AI CUSTOMER INSIGHT TO TASK
+
+```text
+AI Insight
+ ↓
+Create Task
+ ↓
+Pre-fill title / reason / customer
+ ↓
+User confirm
+ ↓
+Task
+```
+
+---
+
+# 170. FLOW 168 – AI RISK TO MANAGER
+
+```text
+High Risk Opportunity
+ ↓
+Manager Dashboard
+ ↓
+Open Risk
+ ↓
+View Evidence
+ ↓
+Assign Follow-up
+```
+
+---
+
+# 171. FLOW 169 – CHATBOT INTENT TEST
+
+```text
+Admin
+ ↓
+Intent Detail
+ ↓
+Enter Test Message
+ ↓
+Detection
+ ↓
+Intent + Confidence
+```
+
+---
+
+# 172. FLOW 170 – CHATBOT FLOW TEST
+
+```text
+Draft Flow
+ ↓
+Test Mode
+ ↓
+Simulated Conversation
+ ↓
+Show:
+Node
+Variables
+Intent
+Knowledge
+Output
+```
+
+Không ghi CRM production mặc định.
+
+---
+
+# 173. FLOW 171 – WORKFLOW TEST
+
+```text
+Workflow Draft
+ ↓
+Test Event
+ ↓
+Dry Run
+ ↓
+Expected Actions
+```
+
+No side effects.
+
+---
+
+# 174. FLOW 172 – QUOTE VERSIONING
+
+```text
+Quote v1 Sent
+ ↓
+Customer asks revision
+ ↓
+Clone New Version
+ ↓
+Quote v2 Draft
+```
+
+Giữ v1 bất biến.
+
+---
+
+# 175. FLOW 173 – CHATBOT CONVERSATION TO OPPORTUNITY
+
+```text
+Conversation
+ ↓
+AI detects strong buying intent
+ ↓
+Suggest Create Opportunity
+ ↓
+Agent confirms
+ ↓
+Opportunity created
+```
+
+---
+
+# 176. FLOW 174 – CUSTOMER SWITCHES CHANNEL
+
+```text
+Zalo conversation
+   ↓
+Later WhatsApp message
+   ↓
+Identity Resolution
+   ↓
+Same Contact
+   ↓
+New Conversation
+   ↓
+Customer 360 shows both
+```
+
+Không ép merge conversation, nhưng shared customer context.
+
+---
+
+# 177. FLOW 175 – AI CROSS-CONVERSATION SUMMARY
+
+Customer có nhiều channel:
+
+```text
+Zalo
+WhatsApp
+Email
+ ↓
+AI Customer Summary
+```
+
+AI combine relevant content across allowed conversations.
+
+---
+
+# 178. FLOW 176 – CUSTOMER ACCOUNT WITH MULTIPLE CONTACTS
+
+```text
+Organization
+ ├ CEO
+ ├ IT Director
+ └ Procurement
+```
+
+Opportunity link nhiều contacts với role.
+
+AI phải biết:
+
+```text
+who said what
+```
+
+---
+
+# 179. FLOW 177 – CONTACT LEAVES COMPANY
+
+```text
+Contact
+ ↓
+Mark inactive / left company
+```
+
+Historical activity vẫn giữ.
+
+---
+
+# 180. FLOW 178 – ORGANIZATION RELATIONSHIP
+
+Ví dụ:
+
+```text
+Parent Company
+ ↓
+Subsidiary
+```
+
+Opportunity vẫn gắn actual contracting entity.
+
+---
+
+# 181. FLOW 179 – MANUAL ACTIVITY LOG
+
+```text
+Customer
+ ↓
+Log Activity
+ ↓
+Type
+Date
+Outcome
+Next Action
+```
+
+---
+
+# 182. FLOW 180 – CALL LOG
+
+Không có telephony integration:
+
+```text
+Log Call
+ ↓
+Direction
+Contact
+Duration optional
+Outcome
+Notes
+Follow-up
+```
+
+---
+
+# 183. FLOW 181 – AI CALL SUMMARY FUTURE
+
+Nếu có recording/transcript:
+
+```text
+Call Transcript
+ ↓
+AI Summary
+ ↓
+Action Items
+ ↓
+User Approval
+```
+
+---
+
+# 184. FLOW 182 – CUSTOMER NOTE
+
+```text
+Customer
+ ↓
+Add Note
+```
+
+Visibility:
+
+```text
+Private
+Team
+Tenant
+```
+
+---
+
+# 185. FLOW 183 – PIN IMPORTANT NOTE
+
+```text
+Note
+ ↓
+Pin
+```
+
+Pinned note hiển thị nổi bật trong Customer 360.
+
+---
+
+# 186. FLOW 184 – KNOWLEDGE USAGE ANALYTICS
+
+Mỗi RAG answer log:
+
+```text
+Query
+Chunks
+Document
+Feedback
+```
+
+Admin xem:
+
+```text
+Most used documents
+Low-performing queries
+Knowledge misses
+```
+
+---
+
+# 187. FLOW 185 – KNOWLEDGE DOCUMENT DISABLE
+
+```text
+Admin disables document
+ ↓
+Exclude from future retrieval
+```
+
+Historical AI logs giữ nguyên.
+
+---
+
+# 188. FLOW 186 – AI INSIGHT REVIEW
+
+```text
+AI Insight
+ ↓
+Manager / User Review
+```
+
+Possible:
+
+```text
+Accepted
+Dismissed
+Incorrect
+```
+
+---
+
+# 189. FLOW 187 – CUSTOMER HEALTH FUTURE
+
+```text
+Engagement
+Sales
+Support
+Payments
+ ↓
+Health Score
+```
+
+---
+
+# 190. FLOW 188 – REPORT EXPORT
+
+```text
+Dashboard
+ ↓
+Export
+ ↓
+Permission
+ ↓
+Generate File
+ ↓
+Audit
+```
+
+---
+
+# 191. FLOW 189 – SYSTEM ADMIN AUDIT
+
+```text
+Audit Logs
+ ↓
+Filter:
+User
+Entity
+Action
+Date
+Source
+```
+
+Open entry:
+
+```text
+Before
+After
+Request
+Source
+```
+
+---
+
+# 192. FLOW 190 – AI AUDIT REVIEW
+
+Admin:
+
+```text
+AI Configuration
+ ↓
+Audit
+```
+
+Xem:
+
+```text
+User
+Assistant
+Model
+Tool
+Approval
+Status
+Cost
+```
+
+---
+
+# 193. FLOW 191 – USER DISABLED
+
+```text
+Admin disables User
+ ↓
+Active sessions revoked
+ ↓
+User cannot login
+```
+
+Record ownership lịch sử vẫn giữ.
+
+---
+
+# 194. FLOW 192 – BULK OWNER REASSIGNMENT
+
+```text
+Admin/Manager
+ ↓
+Select User
+ ↓
+Reassign:
+Customers
+Opportunities
+Tasks
+Conversations
+ ↓
+New Owner
+ ↓
+Confirm
+```
+
+---
+
+# 195. FLOW 193 – TENANT SETTINGS
+
+```text
+Admin
+ ↓
+Tenant Settings
+ ↓
+Timezone
+Currency
+Language
+Retention
+```
+
+---
+
+# 196. FLOW 194 – SYSTEM HEALTH
+
+Optional Admin screen:
+
+```text
+Channels
+AI Providers
+Knowledge Index
+Background Jobs
+Webhooks
+```
+
+---
+
+# 197. FLOW 195 – BACKGROUND JOB RETRY
+
+```text
+Job Failed
+ ↓
+Retry Policy
+```
+
+Nếu repeated:
+
+```text
+Manual Attention
+```
+
+---
+
+# 198. FLOW 196 – DATA CONSISTENCY EVENT
+
+Ví dụ message linked sai customer:
+
+```text
+Supervisor Re-link
+ ↓
+Update Conversation Contact
+ ↓
+Rebuild relevant summary
+ ↓
+Audit
+```
+
+---
+
+# 199. FLOW 197 – CUSTOMER 360 AI REFRESH AFTER MERGE
+
+```text
+Contact Merge
+ ↓
+Invalidate AI Summary
+ ↓
+Regenerate on demand / background
+```
+
+---
+
+# 200. FLOW 198 – END-TO-END OMNI CRM OPERATING MODEL
+
+```text
+LISTEN
+↓
+UNDERSTAND
+↓
+IDENTIFY
+↓
+ENGAGE
+↓
+QUALIFY
+↓
+SELL
+↓
+SERVICE
+↓
+LEARN
+```
+
+Mapping:
+
+```text
+LISTEN
+= Omnichannel
+
+UNDERSTAND
+= AI + Knowledge
+
+IDENTIFY
+= Identity Resolution + CRM
+
+ENGAGE
+= Chatbot + Human
+
+QUALIFY
+= Lead + AI Scoring
+
+SELL
+= Opportunity + Pipeline + Quote
+
+SERVICE
+= Inbox + Task + Contract
+
+LEARN
+= Analytics + AI Feedback + Knowledge
+```
+
+---
+
+# 201. CÁC FLOW BẮT BUỘC TEST END-TO-END
+
+1. Create Customer → Contact → Opportunity.
+2. Lead → Convert → Opportunity.
+3. Incoming Message → Identity Resolution → Conversation.
+4. Unknown Message → Lead Creation.
+5. Chatbot → Lead Capture.
+6. Chatbot → RAG answer.
+7. Chatbot → Human Handoff.
+8. Agent → Suggested Reply → Send.
+9. Multi-channel → same Customer.
+10. Opportunity → Stage Change.
+11. Opportunity → Won.
+12. Opportunity → Lost.
+13. Quote → Approval → Send.
+14. Meeting → AI Summary → Task.
+15. AI Customer Summary.
+16. AI Next Best Action.
+17. AI Copilot → read CRM.
+18. AI Copilot → create Task with confirmation.
+19. Knowledge Upload → RAG Test.
+20. Permission restriction applied to AI.
+21. Channel webhook idempotency.
+22. Duplicate Contact Merge.
+23. Audit Trail.
+24. Customer 360 aggregation.
+25. Notification deep-link.
+
+---
+
+# 202. DEFINITION OF DONE – USER FLOW
+
+Mỗi flow chỉ hoàn thành khi có:
+
+1. Entry point.
+2. Permission rule.
+3. Required data.
+4. Validation.
+5. Happy path.
+6. Error path.
+7. Empty state nếu có.
+8. Duplicate/idempotency handling nếu cần.
+9. Database mutation.
+10. Audit.
+11. Notification nếu cần.
+12. Timeline impact nếu cần.
+13. AI behavior nếu có.
+14. Human approval rule nếu có.
+15. API mapping.
+16. Frontend state.
+17. Automated test phù hợp.
+
+---
+
+# 203. KẾT LUẬN
+
+User Flow v2.0 của Omni CRM phải được triển khai theo một luồng thống nhất:
+
+**Khách hàng → Kênh giao tiếp → Nhận diện → Conversation → Chatbot/AI/Human → CRM → Sales → Dịch vụ → AI Insight**
+
+Ba flow quan trọng nhất cần giữ xuyên suốt toàn bộ sản phẩm:
+
+### Customer Flow
+
+Một khách hàng phải giữ nguyên danh tính qua nhiều kênh.
+
+### Conversation Flow
+
+Chatbot, AI và con người phải cùng sử dụng một lịch sử hội thoại liên tục.
+
+### Commercial Flow
+
+Mọi tương tác có giá trị phải có khả năng chuyển thành:
+
+**Lead → Opportunity → Quote → Contract → Payment**
+
+Nguyên tắc cuối cùng:
+
+**One Customer – Multiple Channels – Shared Context – Human + AI Collaboration – Continuous Customer Journey.**

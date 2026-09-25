@@ -1,0 +1,3062 @@
+OMNI CRM – SCREEN ARCHITECTURE v2.0
+Phạm vi: CRM Core + Sales + Omnichannel + Chatbot + AI + Knowledge Hub + Automation
+Tài liệu liên quan: Omni CRM Database Schema v2.0
+Mục đích: Làm đặc tả UI/UX, navigation, screen hierarchy và cơ sở triển khai frontend bằng Claude.
+________________
+
+
+1. MỤC TIÊU KIẾN TRÚC MÀN HÌNH
+Screen Architecture phải đảm bảo:
+1. Một giao diện thống nhất cho toàn bộ Omni CRM.
+2. Customer 360° là trung tâm.
+3. Unified Inbox là trung tâm giao tiếp.
+4. AI Copilot luôn sẵn sàng hỗ trợ.
+5. Chatbot và nhân viên sử dụng chung Conversation.
+6. Sales không phải chuyển qua nhiều module để hiểu khách hàng.
+7. Manager có thể đi từ Dashboard xuống dữ liệu chi tiết.
+8. Các hành động quan trọng thực hiện trong 2–3 bước.
+9. UI hỗ trợ Desktop First nhưng Responsive.
+10. Kiến trúc frontend có thể mở rộng mà không phải thiết kế lại toàn bộ.
+________________
+
+
+2. CẤU TRÚC GIAO DIỆN TỔNG THỂ
+Desktop sử dụng cấu trúc:
+┌──────────────────────────────────────────────────────────────┐
+│ Top Header                                                   │
+├──────────────┬───────────────────────────────────────────────┤
+│              │                                               │
+│   Sidebar    │               Main Workspace                  │
+│              │                                               │
+│              │                                               │
+│              │                                               │
+├──────────────┴───────────────────────────────────────────────┤
+│ Optional AI Copilot / Utility Drawer                         │
+└──────────────────────────────────────────────────────────────┘
+
+
+________________
+
+
+3. TOP HEADER
+Top Header luôn hiển thị:
+Left
+* Breadcrumb;
+* tên màn hình.
+Center
+Global Search
+Có thể tìm:
+* Customer;
+* Contact;
+* Lead;
+* Opportunity;
+* Phone;
+* Email;
+* Conversation;
+* Quote;
+* Contract.
+Right
+* Quick Create;
+* Notifications;
+* AI Copilot;
+* Help;
+* User Profile.
+________________
+
+
+4. GLOBAL QUICK CREATE
+Nút:
++ Create
+luôn xuất hiện ở Header.
+Menu:
+* Organization;
+* Contact;
+* Lead;
+* Opportunity;
+* Task;
+* Meeting;
+* Note;
+* Quote.
+Có thể mở dưới dạng:
+Side Drawer
+thay vì chuyển trang để thao tác nhanh.
+________________
+
+
+5. AI COPILOT GLOBAL
+Nút AI nằm cố định trên Header.
+Khi click mở:
+Right Side AI Drawer
+
+
+AI Copilot có thể hiểu context màn hình hiện tại.
+Ví dụ:
+Nếu người dùng đang xem:
+Công ty ABC
+AI có thể nhận context:
+organization_id = ABC
+
+
+Người dùng hỏi:
+Tóm tắt tình trạng khách hàng này.
+hoặc:
+Tôi nên làm gì tiếp theo?
+Nếu đang ở Pipeline:
+Cơ hội nào cần chú ý nhất?
+AI Copilot không cần người dùng nhập lại tên Customer.
+________________
+
+
+6. SIDEBAR CHÍNH
+Cấu trúc Sidebar đề xuất:
+HOME
+
+
+CRM
+ ├─ Organizations
+ ├─ Contacts
+ ├─ Leads
+ └─ Segments
+
+
+SALES
+ ├─ Opportunities
+ ├─ Pipeline
+ ├─ Products
+ ├─ Quotes
+ ├─ Contracts
+ └─ Payments
+
+
+ACTIVITIES
+ ├─ My Tasks
+ ├─ Calendar
+ ├─ Meetings
+ └─ Activities
+
+
+OMNICHANNEL
+ ├─ Unified Inbox
+ ├─ Conversations
+ ├─ Channels
+ └─ Templates
+
+
+CHATBOT
+ ├─ Chatbots
+ ├─ Conversations
+ ├─ Intents
+ ├─ Flows
+ ├─ Human Handoff
+ └─ Analytics
+
+
+AI
+ ├─ AI Copilot
+ ├─ AI Insights
+ ├─ Next Best Actions
+ ├─ Lead Scoring
+ └─ Opportunity Risk
+
+
+KNOWLEDGE
+ ├─ Knowledge Bases
+ ├─ Documents
+ └─ Search & Test
+
+
+AUTOMATION
+ ├─ Workflows
+ ├─ Automation Rules
+ └─ Approvals
+
+
+REPORTS
+ ├─ Sales Dashboard
+ ├─ Customer Dashboard
+ ├─ Omnichannel Dashboard
+ ├─ Chatbot Dashboard
+ └─ AI Dashboard
+
+
+SETTINGS
+ ├─ Users
+ ├─ Departments
+ ├─ Roles & Permissions
+ ├─ Pipelines
+ ├─ Master Data
+ ├─ Integrations
+ ├─ AI Configuration
+ ├─ Audit Logs
+ └─ System Settings
+
+
+________________
+
+
+7. SIDEBAR BEHAVIOR
+Sidebar hỗ trợ:
+* Expanded;
+* Collapsed;
+* Mobile Drawer.
+Admin có thể thấy toàn bộ.
+Các Role khác chỉ thấy menu có quyền.
+Ví dụ:
+Sales không nhất thiết thấy:
+* AI Provider;
+* Role Permission;
+* Audit Logs.
+________________
+
+
+8. HOME – PERSONAL COMMAND CENTER
+SCR-001 – My Home
+Đây là màn hình đầu tiên sau Login.
+Mục tiêu:
+Người dùng phải biết ngay hôm nay cần làm gì.
+________________
+
+
+9. MY HOME – LAYOUT
+Row 1 – KPI
+* Tasks Today;
+* Meetings Today;
+* Follow-ups;
+* Overdue;
+* Open Opportunities;
+* Pipeline Value.
+Row 2
+Today's Agenda
+và
+AI Recommended Actions
+Row 3
+Deals Closing Soon
+và
+Customers Need Attention
+Row 4
+Recent Conversations
+và
+Recent Activities
+________________
+
+
+10. AI RECOMMENDED ACTIONS
+Ví dụ Card:
+AI Recommendation
+
+
+ABC Company
+
+
+Báo giá 480 triệu đã gửi 5 ngày
+nhưng chưa có phản hồi.
+
+
+Suggested Action:
+Follow-up khách hàng hôm nay.
+
+
+[Open Customer] [Create Task] [Draft Message]
+
+
+________________
+
+
+11. GLOBAL SEARCH SCREEN
+SCR-002 – Search Results
+Kết quả chia theo nhóm:
+Organizations
+Contacts
+Leads
+Opportunities
+Conversations
+Quotes
+Contracts
+
+
+Ví dụ nhập:
+0909123456
+
+
+Kết quả:
+CONTACT
+
+
+Nguyễn Văn A
+CEO – ABC Company
+0909123456
+
+
+CONVERSATION
+
+
+WhatsApp
+Last message 2 hours ago
+
+
+OPPORTUNITY
+
+
+Omni CRM Project
+480,000,000 VND
+Negotiation
+
+
+________________
+
+
+12. CRM – ORGANIZATION LIST
+SCR-100 – Organization List
+Layout:
+Page Header
+Search / Filters
+Bulk Actions
+Table
+Pagination
+
+
+Columns:
+* Organization;
+* Industry;
+* Main Contact;
+* Owner;
+* Last Activity;
+* Next Activity;
+* Open Deals;
+* Pipeline Value;
+* Status.
+Filters:
+* Owner;
+* Industry;
+* Type;
+* City;
+* Tag;
+* Status;
+* Last Activity;
+* Pipeline Value.
+Actions:
+* Create;
+* Import;
+* Export;
+* Bulk Assign;
+* Bulk Tag.
+________________
+
+
+13. ORGANIZATION CREATE
+SCR-101 – Create Organization
+Có thể mở:
+* Full Page;
+* Quick Drawer.
+Sections:
+Basic
+* Name;
+* Short Name;
+* Tax Code;
+* Type;
+* Industry.
+Contact
+* Phone;
+* Email;
+* Website.
+Address
+CRM
+* Owner;
+* Source;
+* Priority;
+* Lifecycle Stage;
+* Tags.
+Notes
+Trước Save:
+Duplicate Check
+________________
+
+
+14. ORGANIZATION 360°
+SCR-102 – Organization 360°
+Đây là một trong ba màn hình quan trọng nhất của sản phẩm.
+Header:
+ABC Company
+
+
+Enterprise | Education | VIP
+
+
+Owner: Nguyễn A
+
+
+Last Activity: 2 days ago
+Next Action: Follow-up tomorrow
+
+
+Actions:
+Call
+Message
+Meeting
+Task
+Opportunity
+Quote
+Note
+More
+
+
+________________
+
+
+15. ORGANIZATION 360 – AI SUMMARY CARD
+Ngay trên Overview:
+AI Customer Summary
+
+
+Ví dụ:
+ABC đang quan tâm Omni CRM cho 150 user. Demo đã hoàn thành. Báo giá 480 triệu đang chờ phản hồi. Người quyết định là Nguyễn Văn A. AI đề xuất follow-up trong 24 giờ.
+Actions:
+* Refresh;
+* View Evidence;
+* Ask AI.
+________________
+
+
+16. ORGANIZATION 360 – TABS
+Overview
+Contacts
+Timeline
+Opportunities
+Conversations
+Quotes
+Contracts
+Payments
+Tasks
+Meetings
+Files
+Notes
+AI Insights
+
+
+________________
+
+
+17. OVERVIEW TAB
+Gồm:
+Customer Profile
+Key Contacts
+Open Opportunities
+Upcoming Activities
+Recent Conversations
+Commercial Summary
+AI Next Best Action
+________________
+
+
+18. TIMELINE TAB
+Timeline hiển thị:
+Today
+
+
+WhatsApp conversation
+12 messages
+
+
+Yesterday
+
+
+Meeting completed
+Demo Omni CRM
+
+
+Sep 15
+
+
+Quote #Q-1024 sent
+480,000,000 VND
+
+
+Sep 12
+
+
+Opportunity moved
+Demo → Proposal
+
+
+Filter:
+* All;
+* Sales;
+* Calls;
+* Meetings;
+* Messages;
+* Quotes;
+* Payments;
+* Chatbot;
+* AI Actions.
+________________
+
+
+19. CONTACT LIST
+SCR-110 – Contacts
+Columns:
+* Contact;
+* Organization;
+* Title;
+* Phone;
+* Email;
+* Decision Role;
+* Owner;
+* Preferred Channel;
+* Last Activity.
+________________
+
+
+20. CONTACT DETAIL
+SCR-111 – Contact 360°
+Header:
+* Avatar;
+* Name;
+* Organization;
+* Title;
+* Influence;
+* Decision Role.
+Actions:
+* Call;
+* Message;
+* Email;
+* Meeting;
+* Task.
+Tabs:
+Overview
+Timeline
+Conversations
+Opportunities
+Meetings
+Files
+Notes
+AI Insights
+
+
+________________
+
+
+21. LEADS
+SCR-120 – Lead List
+Views:
+* Table;
+* Kanban optional.
+Columns:
+* Lead;
+* Company;
+* Source;
+* Product Interest;
+* Score;
+* Rating;
+* Owner;
+* Status;
+* Last Activity.
+________________
+
+
+22. LEAD DETAIL
+SCR-121
+Header:
+Nguyễn Văn A
+ABC Company
+
+
+Lead Score: 82
+HOT
+
+
+Actions:
+* Call;
+* Message;
+* Meeting;
+* Qualify;
+* Convert;
+* Mark Lost.
+Panels:
+* Lead Information;
+* Engagement;
+* AI Lead Score;
+* Timeline;
+* Conversation;
+* Notes.
+________________
+
+
+23. AI LEAD SCORE CARD
+Hiển thị:
+Score: 82/100
+HOT
+
+
+Factors:
++ Requested demo
++ Budget identified
++ Decision maker known
++ Replied within 1 hour
+- No expected purchase date
+
+
+Không chỉ hiển thị một số điểm không giải thích được.
+________________
+
+
+24. CONVERT LEAD WIZARD
+SCR-122
+Step 1:
+Organization.
+Step 2:
+Contact.
+Step 3:
+Opportunity.
+Step 4:
+Owner.
+Step 5:
+Confirm.
+Sau Save:
+Lead → Converted
+
+
+và điều hướng tới:
+Opportunity Detail
+
+
+________________
+
+
+25. CUSTOMER SEGMENTS
+SCR-130 – Segments
+Cho phép tạo:
+* Static Segment;
+* Dynamic Segment.
+Ví dụ:
+Government customers in HCMC
+
+
+Conditions:
+Organization Type = Government
+AND
+City = Ho Chi Minh City
+
+
+________________
+
+
+26. SALES – OPPORTUNITY LIST
+SCR-200
+Columns:
+* Opportunity;
+* Customer;
+* Stage;
+* Value;
+* Probability;
+* Forecast;
+* Close Date;
+* Owner;
+* Last Activity;
+* Next Action;
+* Risk.
+________________
+
+
+27. PIPELINE KANBAN
+SCR-201 – Pipeline
+Top Filter:
+Pipeline selector
+Owner
+Team
+Product
+Close Date
+
+
+Columns:
+New
+Contacted
+Needs
+Demo
+Proposal
+Negotiation
+Decision
+Won
+Lost
+
+
+________________
+
+
+28. OPPORTUNITY CARD
+Card:
+Omni CRM Project
+
+
+ABC Company
+
+
+480M VND
+
+
+Expected Close:
+30 Sep
+
+
+Owner:
+Nguyễn A
+
+
+Risk:
+Medium
+
+
+Next:
+Follow-up tomorrow
+
+
+________________
+
+
+29. DRAG & DROP PIPELINE
+Khi kéo Stage:
+Nếu Stage thông thường:
+Update ngay.
+Nếu:
+Won
+hiện modal:
+* Final Value;
+* Actual Close Date;
+* Create Contract?;
+* Create Handover Task?
+Nếu:
+Lost
+bắt buộc:
+* Lost Reason;
+* Notes.
+________________
+
+
+30. OPPORTUNITY DETAIL
+SCR-202
+Header:
+Omni CRM Project
+
+
+ABC Company
+
+
+480,000,000 VND
+
+
+Stage: Negotiation
+Probability: 80%
+Forecast: 384,000,000
+
+
+Actions:
+* Change Stage;
+* Activity;
+* Task;
+* Meeting;
+* Message;
+* Quote;
+* AI Analysis.
+________________
+
+
+31. OPPORTUNITY AI PANEL
+Hiển thị:
+AI Opportunity Analysis
+
+
+Risk: MEDIUM
+
+
+Reasons:
+• Quote has been waiting for 5 days.
+• Decision maker identified.
+• Customer engagement remains positive.
+
+
+Next Best Action:
+Follow up with CEO regarding approval timeline.
+
+
+________________
+
+
+32. OPPORTUNITY TABS
+Overview
+Products
+Contacts
+Timeline
+Conversations
+Quotes
+Meetings
+Tasks
+Files
+Notes
+Stage History
+AI Insights
+
+
+________________
+
+
+33. PRODUCTS
+SCR-210 – Product List
+Columns:
+* Code;
+* Product;
+* Category;
+* Unit;
+* Standard Price;
+* Status.
+________________
+
+
+34. PRODUCT DETAIL
+SCR-211
+Tabs:
+* Overview;
+* Pricing;
+* Opportunities;
+* Quotes.
+________________
+
+
+35. QUOTES
+SCR-220 – Quote List
+Columns:
+* Quote;
+* Customer;
+* Opportunity;
+* Version;
+* Value;
+* Owner;
+* Date;
+* Expiry;
+* Status.
+________________
+
+
+36. QUOTE BUILDER
+SCR-221
+Layout:
+Header
+* Customer;
+* Contact;
+* Opportunity.
+Product Table
+Columns:
+* Product;
+* Description;
+* Quantity;
+* Unit;
+* Unit Price;
+* Discount;
+* Tax;
+* Total.
+Commercial Terms
+* Payment;
+* Validity;
+* Notes.
+Actions:
+Save Draft
+Preview
+Generate PDF
+Submit for Approval
+Send
+Clone
+
+
+________________
+
+
+37. QUOTE PREVIEW
+SCR-222
+Hiển thị PDF-style preview.
+Actions:
+* Download;
+* Send;
+* Revise;
+* Create New Version.
+________________
+
+
+38. CONTRACTS
+SCR-230
+Columns:
+* Contract;
+* Customer;
+* Opportunity;
+* Value;
+* Signed Date;
+* Start;
+* End;
+* Owner;
+* Status.
+________________
+
+
+39. CONTRACT DETAIL
+SCR-231
+Header:
+* Contract Number;
+* Customer;
+* Value;
+* Status.
+Tabs:
+Overview
+Files
+Payment Schedule
+Payments
+Timeline
+Notes
+
+
+________________
+
+
+40. PAYMENTS
+SCR-240 – Payment Dashboard
+Cards:
+* Total Contract Value;
+* Receivable;
+* Due;
+* Overdue;
+* Paid.
+Table:
+* Customer;
+* Contract;
+* Due Date;
+* Due Amount;
+* Paid;
+* Remaining;
+* Status.
+________________
+
+
+41. ACTIVITIES – TASKS
+SCR-300 – My Tasks
+Views:
+List
+Kanban
+
+
+Filters:
+* Today;
+* Upcoming;
+* Overdue;
+* Completed;
+* Priority;
+* Customer;
+* Opportunity.
+________________
+
+
+42. TASK DRAWER
+SCR-301
+Quick Create/Edit.
+Fields:
+* Title;
+* Customer;
+* Contact;
+* Opportunity;
+* Assignee;
+* Priority;
+* Due;
+* Reminder;
+* Description.
+________________
+
+
+43. CALENDAR
+SCR-310
+Views:
+* Day;
+* Week;
+* Month.
+Events:
+* Task;
+* Meeting;
+* Follow-up;
+* Quote Expiry;
+* Payment Due.
+Color should reflect Event Type through Design System, not hard-coded business logic.
+________________
+
+
+44. MEETING DETAIL
+SCR-311
+Before Meeting:
+* Participants;
+* Agenda;
+* CRM Context;
+* AI Preparation.
+AI Preparation may show:
+Last interaction
+Open opportunity
+Outstanding issues
+Suggested discussion topics
+
+
+________________
+
+
+45. COMPLETE MEETING
+After Meeting:
+Meeting Notes
+Transcript
+AI Summary
+Decisions
+Action Items
+Next Follow-up
+
+
+Actions:
+* Create Tasks;
+* Update Opportunity;
+* Save Timeline.
+________________
+
+
+46. ACTIVITIES LIST
+SCR-320
+Dùng cho Manager hoặc audit operational.
+Columns:
+* Activity;
+* Customer;
+* User;
+* Channel;
+* Related Opportunity;
+* Date;
+* Outcome.
+________________
+
+
+47. OMNICHANNEL – UNIFIED INBOX
+SCR-400
+Đây là màn hình quan trọng thứ hai sau Customer 360°.
+Layout:
+┌────────────────┬─────────────────────────────┬─────────────────┐
+│ Conversations  │ Message Thread              │ Customer 360    │
+│                │                             │ Mini Panel      │
+└────────────────┴─────────────────────────────┴─────────────────┘
+
+
+________________
+
+
+48. UNIFIED INBOX – LEFT COLUMN
+Conversation List hiển thị:
+* Avatar;
+* Contact;
+* Organization;
+* Channel Icon;
+* Last Message;
+* Time;
+* Unread Count;
+* Owner;
+* Bot/Human indicator;
+* Priority.
+Filters:
+My Inbox
+Unassigned
+Bot
+Human
+Waiting
+Unread
+High Priority
+Channel
+
+
+________________
+
+
+49. MESSAGE THREAD
+Center panel:
+* messages;
+* attachments;
+* system events;
+* Chatbot messages;
+* Agent messages.
+Message badge:
+BOT
+AI DRAFT
+AGENT
+SYSTEM
+
+
+________________
+
+
+50. MESSAGE COMPOSER
+Composer gồm:
+* Text;
+* Attachment;
+* Emoji nếu cần;
+* Quick Reply;
+* Template;
+* AI Suggest Reply.
+Buttons:
+Send
+Suggest Reply
+
+
+Nếu AI Suggest:
+AI draft xuất hiện trước.
+Người dùng:
+Edit
+Approve & Send
+Discard
+
+
+________________
+
+
+51. CUSTOMER MINI PANEL
+Right Panel:
+Identity
+* Contact;
+* Organization;
+* Phone;
+* Email.
+CRM
+* Owner;
+* Tags;
+* Last Activity.
+Sales
+* Open Opportunity;
+* Value;
+* Stage.
+AI
+* Intent;
+* Sentiment;
+* Conversation Summary;
+* Suggested Action.
+Quick Actions:
+* Create Task;
+* Meeting;
+* Opportunity;
+* Quote;
+* Note.
+________________
+
+
+52. UNKNOWN CUSTOMER
+Nếu người gửi chưa match Contact:
+Right Panel:
+Unknown Contact
+
+
+WhatsApp:
++84...
+
+
+Possible Match:
+Nguyễn Văn A
+
+
+Actions:
+* Link Existing;
+* Create Contact;
+* Create Lead;
+* Ignore.
+________________
+
+
+53. CONVERSATION DETAIL
+SCR-401
+Full detail dành cho Supervisor:
+Tabs:
+Messages
+Customer
+AI Analysis
+Assignment History
+Bot Events
+SLA
+Audit
+
+
+________________
+
+
+54. CHANNEL MANAGEMENT
+SCR-410
+Cards:
+Zalo
+WhatsApp
+Viber
+Email
+SMS
+Webchat
+Messenger
+
+
+Mỗi Card:
+* Connected;
+* Error;
+* Disabled;
+* Last Sync;
+* Messages Today.
+________________
+
+
+55. CHANNEL DETAIL
+SCR-411
+Tabs:
+* Overview;
+* Credentials;
+* Webhooks;
+* Message Templates;
+* Logs;
+* Settings.
+Credentials phải mask.
+________________
+
+
+56. MESSAGE TEMPLATES
+SCR-420
+Filter:
+* Channel;
+* Status;
+* Type.
+Editor:
+* Name;
+* Subject;
+* Body;
+* Variables;
+* Preview.
+________________
+
+
+57. CHATBOT – BOT LIST
+SCR-500
+Cards/Table:
+* Name;
+* Channels;
+* AI Assistant;
+* Status;
+* Sessions Today;
+* Leads Created;
+* Handoff Rate;
+* Resolution Rate.
+________________
+
+
+58. CHATBOT DETAIL
+SCR-501
+Header:
+Sales Chatbot
+
+
+Active
+5 Channels
+
+
+Tabs:
+Overview
+Channels
+Knowledge
+Intents
+Flows
+Conversations
+Handoffs
+Analytics
+Settings
+
+
+________________
+
+
+59. CHATBOT OVERVIEW
+Widgets:
+* Conversations;
+* Leads;
+* Meetings;
+* Handoff;
+* Bot Resolution;
+* Knowledge Miss;
+* Top Intent.
+________________
+
+
+60. CHATBOT CHANNELS
+Allows attach:
+* Webchat;
+* Zalo;
+* WhatsApp;
+* Viber;
+* Messenger.
+________________
+
+
+61. CHATBOT KNOWLEDGE
+Assign one or more Knowledge Bases.
+Shows:
+* Knowledge Base;
+* Documents;
+* Last Indexed;
+* Health;
+* Test.
+________________
+
+
+62. INTENT MANAGEMENT
+SCR-510
+Columns:
+* Intent;
+* Description;
+* Training Examples;
+* Detection Count;
+* Confidence;
+* Status.
+Actions:
+* Create;
+* Test;
+* Edit;
+* Disable.
+________________
+
+
+63. INTENT DETAIL
+Editor:
+Intent Name
+Description
+Training Examples
+Fallback Behavior
+Flow Trigger
+
+
+Test Box:
+User enters:
+Tôi muốn xem bảng giá.
+System returns:
+Detected Intent:
+PRICE_REQUEST
+
+
+Confidence:
+0.94
+
+
+________________
+
+
+64. CHATBOT FLOW BUILDER
+SCR-520
+Giai đoạn đầu dùng:
+Step Builder
+thay vì canvas phức tạp.
+Node types:
+* Start;
+* Message;
+* Ask Question;
+* Collect Field;
+* Condition;
+* AI Answer;
+* Knowledge Search;
+* Create Lead;
+* Create Task;
+* Book Meeting;
+* Send File;
+* Handoff;
+* End.
+________________
+
+
+65. FLOW DETAIL LAYOUT
+Left:
+Steps
+
+
+Center:
+Step Editor
+
+
+Right:
+Variables / Testing
+
+
+________________
+
+
+66. FLOW TESTER
+Có Chat Preview riêng.
+Cho phép chạy Bot thử trước Publish.
+Hiển thị:
+* User Message;
+* Bot Response;
+* Intent;
+* Retrieved Knowledge;
+* Variables;
+* Next Node.
+________________
+
+
+67. FLOW VERSIONING
+Actions:
+Save Draft
+Publish
+View Version History
+Rollback
+
+
+Không sửa trực tiếp bản Production mà không version.
+________________
+
+
+68. HUMAN HANDOFF
+SCR-530
+Queue Board.
+Columns:
+Queued
+Assigned
+Active
+Resolved
+
+
+Card:
+* Customer;
+* Channel;
+* Wait Time;
+* Intent;
+* Sentiment;
+* Priority;
+* AI Summary.
+________________
+
+
+69. HANDOFF DETAIL
+Khi Agent nhận:
+Left:
+Conversation.
+Right:
+AI Handoff Summary
+Customer
+Opportunity
+Intent
+Reason for Handoff
+Suggested Reply
+
+
+Actions:
+Accept
+Reassign
+Resolve
+Return to Bot
+
+
+________________
+
+
+70. CHATBOT ANALYTICS
+SCR-540
+Metrics:
+* Conversations;
+* Unique Users;
+* Bot Resolution Rate;
+* Handoff Rate;
+* Lead Conversion;
+* Meeting Booking;
+* Avg Response;
+* Knowledge Miss;
+* Top Intent.
+________________
+
+
+71. AI – COPILOT FULL SCREEN
+SCR-600
+Ngoài Global Drawer, có Workspace đầy đủ.
+Layout:
+Conversation History
+AI Chat
+Context Panel
+
+
+Prompt examples:
+Khách hàng nào cần follow-up hôm nay?
+
+
+Tóm tắt tình hình ABC Company.
+
+
+Cơ hội nào đang có nguy cơ?
+
+
+Soạn tin nhắn follow-up cho ABC.
+
+
+Tổng hợp doanh số tháng này.
+
+
+________________
+
+
+72. AI COPILOT RESPONSE
+AI response có thể chứa:
+* Text;
+* Customer Card;
+* Opportunity Card;
+* Table;
+* Action Suggestion.
+Ví dụ:
+Có 5 khách hàng cần follow-up hôm nay.
+
+
+1. ABC Company
+   Opportunity: 480M
+   Reason: Quote waiting 5 days
+
+
+[Open]
+[Create Task]
+[Draft Message]
+
+
+________________
+
+
+73. AI ACTION CONFIRMATION
+Nếu AI muốn thực hiện Tool:
+Create Task
+
+
+UI hiển thị:
+AI wants to create:
+
+
+Task:
+Follow up ABC Company
+
+
+Due:
+Tomorrow
+
+
+Assignee:
+Nguyễn A
+
+
+[Confirm] [Edit] [Cancel]
+
+
+________________
+
+
+74. AI INSIGHTS
+SCR-610
+List:
+* Customer Summary;
+* Opportunity Risk;
+* Next Best Action;
+* Lead Score;
+* Conversation Insight;
+* Meeting Summary.
+Filters:
+* Type;
+* Confidence;
+* Date;
+* Owner;
+* Status.
+________________
+
+
+75. NEXT BEST ACTION
+SCR-611
+List dạng Action Center.
+Columns:
+* Customer;
+* Suggestion;
+* Reason;
+* Priority;
+* Suggested Date;
+* Confidence.
+Actions:
+Approve
+Reject
+Create Task
+Draft Message
+
+
+________________
+
+
+76. OPPORTUNITY RISK
+SCR-612
+Cards/Table:
+High Risk
+Medium Risk
+Low Risk
+
+
+Không nên dùng AI Risk như quyết định cuối.
+Hiển thị lý do cụ thể.
+________________
+
+
+77. AI LEAD SCORING
+SCR-613
+Table:
+* Lead;
+* Score;
+* Rating;
+* Factors;
+* Owner;
+* Last Activity.
+________________
+
+
+78. AI CONFIGURATION
+Admin only.
+SCR-620
+Tabs:
+Providers
+Models
+Assistants
+Tools
+Prompts
+Usage
+Audit
+
+
+________________
+
+
+79. AI PROVIDER SCREEN
+SCR-621
+Provider:
+* Name;
+* Endpoint;
+* Status;
+* Credential Status.
+Không hiển thị Secret raw.
+________________
+
+
+80. AI ASSISTANT CONFIGURATION
+SCR-622
+Fields:
+* Name;
+* Type;
+* Model;
+* Knowledge Base;
+* System Instruction;
+* Tools;
+* Approval Policy;
+* Status.
+________________
+
+
+81. AI TOOL CONFIGURATION
+SCR-623
+Columns:
+* Tool;
+* Permission;
+* Risk;
+* Approval;
+* Enabled.
+________________
+
+
+82. AI PROMPT MANAGEMENT
+SCR-624
+Cho phép:
+* Prompt Template;
+* Version;
+* Test;
+* Publish;
+* Rollback.
+________________
+
+
+83. KNOWLEDGE HUB
+SCR-700 – Knowledge Bases
+Cards:
+* Name;
+* Scope;
+* Documents;
+* Last Updated;
+* Status.
+________________
+
+
+84. KNOWLEDGE BASE DETAIL
+SCR-701
+Tabs:
+Overview
+Documents
+Permissions
+Search Test
+Usage
+Settings
+
+
+________________
+
+
+85. KNOWLEDGE DOCUMENT LIST
+Columns:
+* Document;
+* Source;
+* Version;
+* Status;
+* Effective Date;
+* Indexed;
+* Updated.
+________________
+
+
+86. ADD KNOWLEDGE DOCUMENT
+Options:
+Upload File
+Add URL
+Paste Text
+API Source
+
+
+After upload:
+Processing
+Chunking
+Embedding
+Ready
+
+
+________________
+
+
+87. DOCUMENT DETAIL
+SCR-702
+Shows:
+* Metadata;
+* Content;
+* Versions;
+* Chunks;
+* Usage;
+* Errors.
+Actions:
+* Reprocess;
+* Disable;
+* New Version.
+________________
+
+
+88. KNOWLEDGE SEARCH TEST
+SCR-703
+Admin enters:
+Omni CRM hỗ trợ WhatsApp không?
+
+
+System shows:
+Retrieved Chunks
+Source Documents
+AI Answer
+Score
+Đây là màn hình rất quan trọng để debug RAG.
+________________
+
+
+89. AUTOMATION – WORKFLOW LIST
+SCR-800
+Columns:
+* Workflow;
+* Entity;
+* Trigger;
+* Status;
+* Version;
+* Last Run.
+________________
+
+
+90. WORKFLOW EDITOR
+SCR-801
+MVP có thể sử dụng:
+Rule-based Builder.
+WHEN
+
+
+Opportunity Stage changes to Won
+
+
+IF
+
+
+Value > 100,000,000
+
+
+THEN
+
+
+Create Task
+Notify Manager
+Create Approval
+
+
+________________
+
+
+91. AUTOMATION RULES
+SCR-802
+Cho các rule đơn giản:
+Customer inactive > 30 days
+→ Create Follow-up Task
+
+
+________________
+
+
+92. APPROVAL CENTER
+SCR-810
+Tabs:
+Waiting for Me
+Requested by Me
+Completed
+
+
+Approval types:
+* Quote;
+* Contract;
+* AI Action;
+* Other.
+________________
+
+
+93. REPORTS – SALES DASHBOARD
+SCR-900
+KPI:
+* Pipeline;
+* Won Revenue;
+* Forecast;
+* Win Rate;
+* Sales Cycle;
+* Conversion.
+Charts:
+* Pipeline by Stage;
+* Revenue Trend;
+* Salesperson;
+* Product;
+* Source.
+________________
+
+
+94. CUSTOMER DASHBOARD
+SCR-901
+Metrics:
+* Total Customers;
+* New Customers;
+* Active Customers;
+* Customers Without Activity;
+* Customer Segments;
+* Retention.
+________________
+
+
+95. OMNICHANNEL DASHBOARD
+SCR-902
+Metrics:
+* Conversations;
+* Messages;
+* Response Time;
+* Channel Mix;
+* Open Conversations;
+* Unassigned;
+* SLA.
+________________
+
+
+96. CHATBOT DASHBOARD
+SCR-903
+Metrics:
+* Bot Conversations;
+* Bot Resolution;
+* Handoff;
+* Leads;
+* Conversion;
+* Top Intent;
+* Knowledge Miss.
+________________
+
+
+97. AI DASHBOARD
+SCR-904
+Metrics:
+* AI Suggestions;
+* Accepted;
+* Rejected;
+* AI Actions;
+* Lead Scores;
+* High-Risk Deals;
+* Token/Cost;
+* AI Feedback.
+________________
+
+
+98. SETTINGS – USER MANAGEMENT
+SCR-1000
+Columns:
+* User;
+* Department;
+* Roles;
+* Manager;
+* Status;
+* Last Login.
+________________
+
+
+99. USER DETAIL
+SCR-1001
+Tabs:
+* Profile;
+* Roles;
+* Permissions;
+* Activity;
+* Security.
+________________
+
+
+100. DEPARTMENT MANAGEMENT
+SCR-1010
+Tree View:
+Company
+ ├ Sales
+ │  ├ Team A
+ │  └ Team B
+ ├ Customer Service
+ └ Accounting
+
+
+________________
+
+
+101. ROLE & PERMISSION
+SCR-1020
+Matrix:
+                View Create Edit Delete Export Assign
+Customers        ✓    ✓      ✓    -      ✓      ✓
+Opportunities    ✓    ✓      ✓    -      ✓      ✓
+Messages         ✓    -      -    -      -      -
+
+
+________________
+
+
+102. PIPELINE SETTINGS
+SCR-1030
+Admin có thể:
+* Create Pipeline;
+* Add Stage;
+* Drag order;
+* Set Probability;
+* Set Won/Lost.
+________________
+
+
+103. MASTER DATA
+SCR-1040
+Tabs:
+* Industries;
+* Organization Types;
+* Lead Sources;
+* Contact Roles;
+* Lost Reasons;
+* Tags.
+________________
+
+
+104. INTEGRATIONS
+SCR-1050
+Cards:
+* Zalo;
+* WhatsApp;
+* Viber;
+* Email;
+* SMS;
+* AI Providers;
+* Storage;
+* Calendar.
+________________
+
+
+105. AUDIT LOG
+SCR-1060
+Filters:
+* User;
+* Action;
+* Entity;
+* Source;
+* Date.
+Columns:
+* Date;
+* User;
+* Action;
+* Entity;
+* Source;
+* Details.
+________________
+
+
+106. SYSTEM SETTINGS
+SCR-1070
+Settings:
+* Tenant;
+* Language;
+* Currency;
+* Timezone;
+* Data Retention;
+* Notifications;
+* Security.
+________________
+
+
+107. SCREEN PERMISSION RULE
+Mỗi screen phải có:
+required_permission
+
+
+Ví dụ:
+SCR-100 Organization List
+crm.organization.view
+
+
+SCR-201 Pipeline
+sales.opportunity.view
+
+
+SCR-400 Unified Inbox
+messaging.conversation.view
+
+
+SCR-600 AI Copilot
+ai.assistant.use
+
+
+Frontend chỉ ẩn UI.
+Backend vẫn bắt buộc kiểm tra quyền.
+________________
+
+
+108. PAGE TYPES
+Omni CRM dùng 6 page pattern chuẩn.
+Type 1 – Dashboard
+Ví dụ Home, Sales Dashboard.
+Type 2 – List
+Ví dụ Organizations, Leads.
+Type 3 – Record Detail / 360°
+Ví dụ Customer 360°, Opportunity.
+Type 4 – Workspace
+Ví dụ Inbox, AI Copilot.
+Type 5 – Builder
+Ví dụ Quote, Chatbot Flow, Workflow.
+Type 6 – Settings
+Ví dụ Roles, Pipeline.
+________________
+
+
+109. LIST PAGE STANDARD
+Mọi List Screen nên thống nhất:
+Title
+Description
+Primary Action
+
+
+Search
+Filter
+Saved View
+Sort
+
+
+Table
+
+
+Pagination
+
+
+________________
+
+
+110. SAVED VIEWS
+Người dùng có thể lưu:
+My VIP Customers
+
+
+Deals Closing This Month
+
+
+Hot Leads
+
+
+Overdue Follow-ups
+
+
+Saved View gồm:
+* filters;
+* sort;
+* columns;
+* ownership.
+________________
+
+
+111. TABLE CONFIGURATION
+Cho phép:
+* chọn cột;
+* đổi thứ tự;
+* sort;
+* resize;
+* sticky column;
+* saved view.
+Không cần xây Spreadsheet phức tạp ở MVP.
+________________
+
+
+112. DETAIL PAGE STANDARD
+Record Detail nên có:
+Record Header
+
+
+Primary Information
+
+
+Actions
+
+
+Summary / AI
+
+
+Tabs
+
+
+Activity
+
+
+Không mỗi module thiết kế một kiểu.
+________________
+
+
+113. DRAWER PATTERN
+Side Drawer dùng cho các thao tác nhanh:
+* Create Task;
+* Quick Contact;
+* Add Note;
+* Log Call;
+* Assign;
+* AI Detail.
+Drawer không dùng cho form phức tạp như Quote Builder.
+________________
+
+
+114. MODAL PATTERN
+Modal chỉ dùng cho:
+* Confirm;
+* Delete;
+* Stage Change;
+* Won/Lost;
+* Approval;
+* Reassign.
+Không dùng Modal cho form dài.
+________________
+
+
+115. AI VISUAL LANGUAGE
+AI content phải nhận biết được nhưng không tách khỏi UI.
+Dùng label:
+AI Summary
+AI Suggestion
+AI Generated Draft
+
+
+Không được trình bày AI output như dữ liệu xác nhận bởi con người.
+________________
+
+
+116. AI CONFIDENCE
+Khi cần có thể hiển thị:
+High confidence
+Medium confidence
+Low confidence
+
+
+Không cần luôn hiển thị phần trăm cho người dùng thông thường.
+Admin/debug có thể xem score chi tiết.
+________________
+
+
+117. EVIDENCE / SOURCE
+Các AI Summary dựa trên CRM/Knowledge nên có:
+View Sources
+
+
+Ví dụ:
+* WhatsApp Sep 15;
+* Meeting Sep 16;
+* Quote Q1024.
+Điều này tăng khả năng kiểm tra.
+________________
+
+
+118. HUMAN-IN-THE-LOOP UI
+AI hành động có rủi ro cần hiển thị:
+Suggested by AI
+Requires approval
+
+
+Buttons:
+Approve
+Edit
+Reject
+
+
+________________
+
+
+119. MOBILE NAVIGATION
+Mobile nên sử dụng Bottom Navigation:
+Home
+Customers
+Inbox
+Tasks
+More
+
+
+AI Copilot:
+Floating AI button hoặc trong More.
+________________
+
+
+120. MOBILE CUSTOMER 360°
+Ưu tiên hiển thị:
+* Name;
+* Phone;
+* Owner;
+* Next Action;
+* AI Summary.
+Quick buttons:
+Call
+Message
+Task
+Note
+
+
+Sau đó:
+Accordion/Tabs.
+________________
+
+
+121. MOBILE INBOX
+Mobile:
+Conversation List
+      ↓
+Message Screen
+      ↓
+Customer Info Drawer
+
+
+Không cố giữ 3 cột.
+________________
+
+
+122. RESPONSIVE BREAKPOINT LOGIC
+Desktop:
+Sidebar + Workspace.
+Tablet:
+Collapsed Sidebar.
+Mobile:
+Bottom Navigation + Drawer.
+Implementation nên dùng Design System responsive thay vì code layout riêng cho từng screen.
+________________
+
+
+123. EMPTY STATES
+Mỗi screen phải có Empty State.
+Ví dụ:
+Pipeline không có Deal:
+No opportunities yet.
+
+
+Create your first opportunity to start tracking your sales pipeline.
+
+
+[Create Opportunity]
+
+
+________________
+
+
+124. LOADING STATES
+Không dùng blank screen.
+Dùng:
+* Skeleton;
+* Spinner cho action nhỏ;
+* Progress cho upload/indexing.
+________________
+
+
+125. ERROR STATES
+Ví dụ Channel mất kết nối:
+WhatsApp connection interrupted.
+
+
+Messages may not be synchronized.
+
+
+[Reconnect]
+
+
+________________
+
+
+126. AI ERROR STATE
+Nếu AI unavailable:
+CRM vẫn phải hoạt động.
+Hiển thị:
+AI service is temporarily unavailable.
+CRM data and messaging remain available.
+
+
+AI không được là dependency bắt buộc cho CRM Core.
+________________
+
+
+127. CHATBOT ERROR STATE
+Nếu Chatbot AI lỗi:
+Có thể:
+* fallback message;
+* human handoff;
+* queue.
+Không làm mất Conversation.
+________________
+
+
+128. NOTIFICATION CENTER
+Global Notification Drawer.
+Groups:
+* Tasks;
+* Meetings;
+* Sales;
+* Messages;
+* Approvals;
+* System.
+Actions:
+* Mark Read;
+* Open Record.
+________________
+
+
+129. SCREEN ↔ ENTITY MAP
+Organization 360
+Uses:
+organizations
+contacts
+activities
+opportunities
+conversations
+quotes
+contracts
+payments
+tasks
+meetings
+notes
+files
+ai_insights
+
+
+________________
+
+
+130. UNIFIED INBOX
+Uses:
+channels
+conversations
+conversation_participants
+messages
+message_attachments
+contacts
+organizations
+chatbot_sessions
+chatbot_handoffs
+ai_insights
+
+
+________________
+
+
+131. CHATBOT DETAIL
+Uses:
+chatbots
+chatbot_channels
+chatbot_intents
+chatbot_flows
+chatbot_sessions
+chatbot_events
+chatbot_handoffs
+knowledge_bases
+
+
+________________
+
+
+132. AI COPILOT
+Uses:
+ai_assistants
+ai_conversations
+ai_messages
+ai_tools
+ai_tool_calls
+ai_insights
+ai_action_suggestions
+knowledge_bases
+
+
+________________
+
+
+133. KNOWLEDGE HUB
+Uses:
+knowledge_bases
+knowledge_documents
+knowledge_document_versions
+knowledge_chunks
+knowledge_queries
+files
+
+
+________________
+
+
+134. SALES PIPELINE
+Uses:
+pipelines
+pipeline_stages
+opportunities
+opportunity_stage_history
+organizations
+contacts
+ai_insights
+
+
+________________
+
+
+135. MAIN API MAP – HOME
+Likely endpoints:
+GET /api/home/summary
+
+
+GET /api/tasks/today
+
+
+GET /api/meetings/today
+
+
+GET /api/opportunities/closing-soon
+
+
+GET /api/ai/actions/recommended
+
+
+________________
+
+
+136. MAIN API MAP – CUSTOMER 360
+GET /api/organizations/:id
+
+
+GET /api/organizations/:id/360
+
+
+GET /api/organizations/:id/timeline
+
+
+GET /api/organizations/:id/opportunities
+
+
+GET /api/organizations/:id/conversations
+
+
+GET /api/organizations/:id/ai-insights
+
+
+________________
+
+
+137. MAIN API MAP – PIPELINE
+GET /api/pipelines
+
+
+GET /api/pipelines/:id/board
+
+
+PATCH /api/opportunities/:id/stage
+
+
+________________
+
+
+138. MAIN API MAP – INBOX
+GET /api/conversations
+
+
+GET /api/conversations/:id
+
+
+GET /api/conversations/:id/messages
+
+
+POST /api/conversations/:id/messages
+
+
+POST /api/conversations/:id/assign
+
+
+POST /api/conversations/:id/close
+
+
+________________
+
+
+139. MAIN API MAP – CHATBOT
+GET /api/chatbots
+
+
+GET /api/chatbots/:id
+
+
+POST /api/chatbots
+
+
+PATCH /api/chatbots/:id
+
+
+GET /api/chatbots/:id/sessions
+
+
+GET /api/chatbots/:id/analytics
+
+
+________________
+
+
+140. MAIN API MAP – AI
+POST /api/ai/copilot
+
+
+POST /api/ai/suggest-reply
+
+
+POST /api/ai/customer-summary
+
+
+POST /api/ai/opportunity-analysis
+
+
+GET /api/ai/insights
+
+
+GET /api/ai/actions
+
+
+________________
+
+
+141. MAIN API MAP – KNOWLEDGE
+GET /api/knowledge-bases
+
+
+POST /api/knowledge-bases
+
+
+GET /api/knowledge-bases/:id/documents
+
+
+POST /api/knowledge-bases/:id/documents
+
+
+POST /api/knowledge/search
+
+
+POST /api/knowledge/test
+
+
+________________
+
+
+142. ROUTE ARCHITECTURE ĐỀ XUẤT
+Frontend routes:
+/
+
+
+ /crm/organizations
+ /crm/organizations/:id
+
+
+ /crm/contacts
+ /crm/contacts/:id
+
+
+ /crm/leads
+ /crm/leads/:id
+
+
+ /sales/pipeline
+ /sales/opportunities
+ /sales/opportunities/:id
+ /sales/products
+ /sales/quotes
+ /sales/contracts
+ /sales/payments
+
+
+ /activities/tasks
+ /activities/calendar
+ /activities/meetings
+
+
+ /inbox
+ /inbox/:conversationId
+ /channels
+
+
+ /chatbots
+ /chatbots/:id
+ /chatbots/:id/intents
+ /chatbots/:id/flows
+ /chatbots/:id/handoffs
+
+
+ /ai
+ /ai/insights
+ /ai/actions
+ /ai/risk
+
+
+ /knowledge
+ /knowledge/:id
+
+
+ /automation/workflows
+ /automation/approvals
+
+
+ /reports/sales
+ /reports/customers
+ /reports/omnichannel
+ /reports/chatbot
+ /reports/ai
+
+
+ /settings/users
+ /settings/roles
+ /settings/pipelines
+ /settings/integrations
+ /settings/ai
+ /settings/audit
+
+
+________________
+
+
+143. FRONTEND MODULE STRUCTURE
+Claude nên chia frontend theo domain:
+src/
+
+
+app/
+components/
+layouts/
+
+
+modules/
+ ├ auth/
+ ├ home/
+ ├ crm/
+ │  ├ organizations/
+ │  ├ contacts/
+ │  └ leads/
+ │
+ ├ sales/
+ │  ├ opportunities/
+ │  ├ pipeline/
+ │  ├ products/
+ │  ├ quotes/
+ │  ├ contracts/
+ │  └ payments/
+ │
+ ├ activities/
+ │
+ ├ messaging/
+ │
+ ├ chatbot/
+ │
+ ├ ai/
+ │
+ ├ knowledge/
+ │
+ ├ automation/
+ │
+ ├ reports/
+ │
+ └ settings/
+
+
+________________
+
+
+144. SHARED COMPONENTS
+Các component cần xây reusable:
+AppShell
+
+
+Sidebar
+TopHeader
+Breadcrumb
+
+
+DataTable
+FilterBar
+SavedViewSelector
+
+
+RecordHeader
+RecordTabs
+
+
+CustomerCard
+ContactCard
+OpportunityCard
+
+
+Timeline
+
+
+ActivityComposer
+
+
+TaskDrawer
+MeetingDrawer
+
+
+ConversationList
+MessageBubble
+MessageComposer
+
+
+AISummaryCard
+AIInsightCard
+AISuggestionCard
+
+
+EmptyState
+ErrorState
+LoadingSkeleton
+
+
+ConfirmDialog
+ApprovalDialog
+
+
+________________
+
+
+145. DESIGN TOKEN
+Không hard-code style trong từng màn hình.
+Cần Design System:
+Color
+Typography
+Spacing
+Radius
+Shadow
+Icon
+Breakpoints
+
+
+________________
+
+
+146. ACCESSIBILITY
+Tối thiểu:
+* keyboard navigation;
+* labels;
+* sufficient contrast;
+* focus state;
+* screen reader labels cho button/icon quan trọng.
+________________
+
+
+147. PERFORMANCE
+List lớn phải:
+* pagination hoặc virtual scroll;
+* server-side filters;
+* server-side sort.
+Inbox:
+không tải toàn bộ lịch sử message cùng lúc.
+Timeline:
+pagination/infinite loading.
+________________
+
+
+148. REALTIME SCREENS
+Các màn hình cần realtime:
+Unified Inbox
+* new message;
+* unread;
+* assignment.
+Notifications
+Human Handoff Queue
+Optional Pipeline
+khi nhiều Sales cùng dùng.
+Có thể dùng:
+* WebSocket;
+* Server-Sent Events.
+________________
+
+
+149. BREADCRUMB EXAMPLE
+CRM
+>
+ABC Company
+>
+Opportunity
+>
+Omni CRM Project
+
+
+________________
+
+
+150. CONTEXT PRESERVATION
+Nếu User từ Inbox mở Customer:
+sau khi quay lại phải trở về:
+* đúng Conversation;
+* đúng scroll position.
+Tương tự:
+Pipeline → Opportunity → Back
+phải giữ:
+* filter;
+* pipeline;
+* scroll.
+________________
+
+
+151. COMMAND PALETTE – OPTIONAL
+Có thể bổ sung:
+Ctrl / Cmd + K
+
+
+Actions:
+* Search Customer;
+* Create Task;
+* Create Lead;
+* Open Inbox;
+* Ask AI.
+Có thể triển khai sau MVP.
+________________
+
+
+152. SCREEN PRIORITY – P0
+Các màn hình bắt buộc MVP:
+Login
+Home
+
+
+Organization List
+Organization 360
+Contact List
+Contact Detail
+Lead List
+Lead Detail
+Lead Convert
+
+
+Pipeline
+Opportunity Detail
+
+
+Tasks
+Calendar
+Meetings
+
+
+Unified Inbox
+Conversation
+
+
+Chatbot List
+Chatbot Detail
+Chatbot Flow
+Handoff
+
+
+AI Copilot
+AI Insights
+
+
+Knowledge Base
+Knowledge Document
+Knowledge Test
+
+
+Users
+Roles
+Pipelines
+Channels
+AI Configuration
+Audit
+
+
+________________
+
+
+153. SCREEN PRIORITY – P1
+Sau MVP:
+Advanced Quote Builder
+Contracts
+Payments
+
+
+Workflow Builder
+Approval Center
+
+
+Advanced Analytics
+SLA
+Customer Segments
+Advanced AI Scoring
+
+
+________________
+
+
+154. UX NGUYÊN TẮC 1
+Không bắt người dùng nhớ Customer ở màn hình này rồi nhập lại ở màn hình khác.
+Context phải được truyền tự động.
+________________
+
+
+155. UX NGUYÊN TẮC 2
+Một tương tác khách hàng không nên tạo nhiều bản ghi thủ công.
+Ví dụ:
+Agent kết thúc Meeting:
+UI có thể cùng lúc:
+* Save Meeting;
+* Create Activity;
+* Create Follow-up Task;
+* Update Next Action.
+________________
+
+
+156. UX NGUYÊN TẮC 3
+Chatbot → Agent phải liền mạch.
+Agent không được hỏi lại:
+Anh/chị cần gì?
+nếu Bot đã thu thập.
+Agent phải thấy AI Summary ngay khi nhận.
+________________
+
+
+157. UX NGUYÊN TẮC 4
+AI phải nằm trong workflow chứ không phải một chatbot riêng biệt ở góc màn hình.
+Ví dụ:
+Trong Quote:
+AI hỗ trợ nội dung.
+Trong Inbox:
+AI Draft Reply.
+Trong Meeting:
+AI Summary.
+Trong Customer:
+AI Customer Summary.
+Trong Pipeline:
+AI Risk.
+AI Copilot Global chỉ là một trong nhiều cách dùng AI.
+________________
+
+
+158. UX NGUYÊN TẮC 5
+Customer 360° là Single Source of Truth trên giao diện.
+Nếu bất kỳ màn hình nào cần biết Customer:
+phải có thể mở Customer 360° trực tiếp.
+________________
+
+
+159. 5 MÀN HÌNH QUAN TRỌNG NHẤT
+Nếu ưu tiên thiết kế UI trước, thứ tự:
+1. Organization 360°
+Trung tâm khách hàng.
+2. Unified Inbox
+Trung tâm Omnichannel.
+3. Sales Pipeline
+Trung tâm bán hàng.
+4. AI Copilot / Insight
+Trung tâm AI.
+5. Chatbot Studio
+Trung tâm tự động hóa hội thoại.
+________________
+
+
+160. PRODUCT EXPERIENCE TỔNG THỂ
+Người dùng đăng nhập:
+HOME
+
+
+biết:
+Tôi cần làm gì hôm nay?
+Mở Customer:
+CUSTOMER 360
+
+
+biết:
+Khách hàng này đang ở đâu trong toàn bộ hành trình?
+Mở Inbox:
+UNIFIED INBOX
+
+
+biết:
+Khách hàng đang nói gì và tôi nên trả lời thế nào?
+Mở Pipeline:
+PIPELINE
+
+
+biết:
+Cơ hội nào có khả năng tạo doanh thu và cơ hội nào đang có vấn đề?
+Mở AI:
+AI COPILOT
+
+
+có thể hỏi:
+Điều gì đang diễn ra trong hoạt động bán hàng của tôi?
+Mở Chatbot:
+CHATBOT STUDIO
+
+
+biết:
+Bot đang xử lý khách hàng như thế nào và khi nào cần chuyển cho con người?
+Đó là trải nghiệm tổng thể cần hướng tới cho Omni CRM.
+________________
+
+
+161. KẾT LUẬN KIẾN TRÚC MÀN HÌNH
+Screen Architecture của Omni CRM được tổ chức quanh 5 Workspace chính:
+CUSTOMER 360
+        +
+SALES PIPELINE
+        +
+UNIFIED INBOX
+        +
+CHATBOT STUDIO
+        +
+AI COPILOT
+
+
+và cùng sử dụng:
+Shared CRM Data
+Shared Conversation
+Shared Knowledge
+Shared Identity
+Shared RBAC
+Shared Audit
+
+
+Không được xây UI theo tư duy:
+CRM riêng
+Chatbot riêng
+AI riêng
+Inbox riêng
+
+
+mà phải tạo cảm giác đây là một sản phẩm Omni CRM thống nhất.
+Nguyên tắc thiết kế cuối cùng:
+One Customer – One Timeline – One Conversation History – One Workspace – AI Everywhere.

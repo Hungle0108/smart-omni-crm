@@ -1,0 +1,287 @@
+{
+  "checked": 23,
+  "failures": [],
+  "height": 720,
+  "min": 5.12,
+  "overflow": false,
+  "page": "",
+  "rows": [
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 15.56,
+      "selector": "strong.",
+      "text": "Kiểm tra giao diện"
+    },
+    {
+      "background": [
+        29,
+        78,
+        216
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "a.nav-link on",
+      "text": "Đang chọn"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "a.nav-link",
+      "text": "Mục thông thường"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 14.85,
+      "selector": "h2.",
+      "text": "Trạng thái tương tác — mẫu kiểm tra"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "p.lead",
+      "text": "Dùng CSS hiện tại của CRM; không kết nối dữ liệu."
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "h3.",
+      "text": "Nút và ô nhập"
+    },
+    {
+      "background": [
+        30,
+        64,
+        175
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 8.72,
+      "selector": "button.major",
+      "text": "Hành động chính"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Nút phụ"
+    },
+    {
+      "background": [
+        226,
+        232,
+        240
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.12,
+      "selector": "button.",
+      "text": "Không khả dụng"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Ô nhập bình thường / focus"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Ô nhập có lỗi"
+    },
+    {
+      "background": [
+        254,
+        226,
+        226
+      ],
+      "foreground": "rgb(153, 27, 27)",
+      "pass": true,
+      "ratio": 6.8,
+      "selector": "div.dialog-error",
+      "text": "Vui lòng kiểm tra nội dung đã nhập."
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Ô nhập bị khóa"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "button.selected",
+      "text": "Đang chọn"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Chưa chọn"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "h3.",
+      "text": "Trạng thái nghiệp vụ"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "span.tag status-info",
+      "text": "Đang thực hiện"
+    },
+    {
+      "background": [
+        220,
+        252,
+        231
+      ],
+      "foreground": "rgb(22, 101, 52)",
+      "pass": true,
+      "ratio": 6.49,
+      "selector": "span.tag status-success",
+      "text": "Hoàn thành"
+    },
+    {
+      "background": [
+        254,
+        226,
+        226
+      ],
+      "foreground": "rgb(153, 27, 27)",
+      "pass": true,
+      "ratio": 6.8,
+      "selector": "span.tag status-danger",
+      "text": "Quá hạn"
+    },
+    {
+      "background": [
+        226,
+        232,
+        240
+      ],
+      "foreground": "rgb(71, 85, 105)",
+      "pass": true,
+      "ratio": 6.15,
+      "selector": "span.tag status-neutral",
+      "text": "Chưa bắt đầu"
+    },
+    {
+      "background": [
+        254,
+        243,
+        199
+      ],
+      "foreground": "rgb(146, 64, 14)",
+      "pass": true,
+      "ratio": 6.37,
+      "selector": "span.tag status-warning",
+      "text": "Đang vướng mắc"
+    },
+    {
+      "background": [
+        237,
+        233,
+        254
+      ],
+      "foreground": "rgb(91, 33, 182)",
+      "pass": true,
+      "ratio": 7.57,
+      "selector": "span.tag status-sent",
+      "text": "Đã gửi"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(146, 64, 14)",
+      "pass": true,
+      "ratio": 7.09,
+      "selector": "span.task-priority",
+      "text": "↑ Ưu tiên cao"
+    }
+  ],
+  "width": 1280
+}

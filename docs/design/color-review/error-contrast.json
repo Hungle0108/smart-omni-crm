@@ -1,0 +1,1079 @@
+{
+  "checked": 89,
+  "failures": [],
+  "height": 720,
+  "min": 5.76,
+  "overflow": false,
+  "page": "#/customer/3",
+  "rows": [
+    {
+      "background": [
+        29,
+        78,
+        216
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "span.brand-mark",
+      "text": "iV"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 15.56,
+      "selector": "span.wordmark",
+      "text": "omni"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "small.",
+      "text": "CRM"
+    },
+    {
+      "background": [
+        34,
+        59,
+        93
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 11.34,
+      "selector": "strong.",
+      "text": "iViTech"
+    },
+    {
+      "background": [
+        34,
+        59,
+        93
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 6.54,
+      "selector": "div.who",
+      "text": "Bản thử nội bộ trên máy"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "div.nav-group-title",
+      "text": "KHÔNG GIAN LÀM VIỆC"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Tổng quan"
+    },
+    {
+      "background": [
+        29,
+        78,
+        216
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "span.",
+      "text": "Danh bạ khách hàng"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Kế hoạch tiếp xúc"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Tiến trình khách hàng"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "div.nav-group-title",
+      "text": "KẾT NỐI & BÁN HÀNG"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Hộp thư Zalo"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Cơ hội bán hàng"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Báo giá & phê duyệt"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "div.nav-group-title",
+      "text": "BOT & KÊNH KẾT NỐI"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Nội dung & bot FAQ"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Kênh kết nối"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "div.nav-group-title",
+      "text": "QUẢN TRỊ"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Mẫu & nhận diện"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Cấu hình công ty"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Hướng dẫn kiểm thử"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "span.avatar ",
+      "text": "TH"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 15.56,
+      "selector": "strong.",
+      "text": "Nguyễn Thu Hoa"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "small.",
+      "text": "Trưởng nhóm"
+    },
+    {
+      "background": [
+        34,
+        59,
+        93
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 9.2,
+      "selector": "button.",
+      "text": "Đăng xuất"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "p.small",
+      "text": "Dữ liệu lưu trên máy · v0.5"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Không gian làm việc"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "›"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "strong.",
+      "text": "Danh bạ khách hàng"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "span.search-label",
+      "text": "Tìm kiếm…"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "kbd.",
+      "text": "Ctrl K"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.local-state",
+      "text": "Bản thử nội bộ"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "span.avatar ",
+      "text": "TH"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(29, 78, 216)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "span.account-label",
+      "text": "Đổi tài khoản"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "span.small",
+      "text": "Quản lý khách hàng"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Lưu trữ"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Đã lưu trữ"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "div.eyebrow",
+      "text": "SMART OMNI CRM / iViTech"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 14.85,
+      "selector": "h2.",
+      "text": "Đơn vị Bình Minh (mẫu)"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "p.lead",
+      "text": "Một hồ sơ xuyên suốt quá trình chăm sóc và bán hàng."
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Chỉnh sửa hồ sơ"
+    },
+    {
+      "background": [
+        220,
+        252,
+        231
+      ],
+      "foreground": "rgb(22, 101, 52)",
+      "pass": true,
+      "ratio": 6.49,
+      "selector": "a.tag ok",
+      "text": "Xem tiến trình công việc →"
+    },
+    {
+      "background": [
+        29,
+        78,
+        216
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "button.major",
+      "text": "+ Đơn vị con"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "span.small",
+      "text": "Quản lý ghi chú"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Đã lưu trữ / Khôi phục"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "span.avatar large peach",
+      "text": "BM"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "h3.",
+      "text": "Đơn vị Bình Minh (mẫu)"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "p.small",
+      "text": "Cơ quan hành chính"
+    },
+    {
+      "background": [
+        226,
+        232,
+        240
+      ],
+      "foreground": "rgb(71, 85, 105)",
+      "pass": true,
+      "ratio": 6.15,
+      "selector": "span.tag status-neutral",
+      "text": "Chưa đăng ký Gói 1"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Hội thoại"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Lên lịch"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Cơ hội"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Báo giá"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Phụ trách"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "span.",
+      "text": "Trần Thị Lan"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Điện thoại"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "span.",
+      "text": "02839004455"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Email"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "span.",
+      "text": "vp@binhminh.example"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Dịch vụ"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "span.",
+      "text": "Smart iVier"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Chăm sóc"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "span.",
+      "text": "Cần tiếp tục xử lý"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Tổ chức & đơn vị con"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "button.selected",
+      "text": "Người liên hệ (0)"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Lịch sử tương tác"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Cơ hội & báo giá"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Kế hoạch"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Ghi chú"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "h3.",
+      "text": "Người liên hệ tại Đơn vị Bình Minh (mẫu)"
+    },
+    {
+      "background": [
+        29,
+        78,
+        216
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "button.major",
+      "text": "+ Thêm người liên hệ"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "p.small",
+      "text": "Thông tin cá nhân phục vụ liên hệ với đơn vị này. Chọn một đầu mố"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "strong.",
+      "text": "Chưa có người liên hệ phù hợp"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "label.small",
+      "text": "Ghi chú cho lần tiếp xúc tiếp theo"
+    },
+    {
+      "background": [
+        29,
+        78,
+        216
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "button.major",
+      "text": "Lưu ghi chú"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "span.",
+      "text": "Dữ liệu lưu tại localhost · Xem trạng thái từng kênh trong Kênh k"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "span.",
+      "text": "Smart Omni CRM / iViTech"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "h2.",
+      "text": "Thêm người liên hệ của Đơn vị Bình Minh (mẫu)"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Họ và tên *"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Chức vụ"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Phòng / ban"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Vai trò trong giao dịch"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Điện thoại"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Email"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Đầu mối liên hệ chính của đơn vị"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Ghi chú về người liên hệ"
+    },
+    {
+      "background": [
+        254,
+        226,
+        226
+      ],
+      "foreground": "rgb(153, 27, 27)",
+      "pass": true,
+      "ratio": 6.8,
+      "selector": "div.dialog-error",
+      "text": "Kiểm tra nội dung bắt buộc và độ dài tối đa 250 ký tự."
+    },
+    {
+      "background": [
+        29,
+        78,
+        216
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "button.major",
+      "text": "Lưu"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Hủy"
+    }
+  ],
+  "width": 1280
+}

@@ -1,0 +1,343 @@
+[
+  {
+    "foreground": "text-primary",
+    "background": "surface-page",
+    "colors": [
+      "#172033",
+      "#F1F5F9"
+    ],
+    "ratio": 14.85,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "text-secondary",
+    "background": "surface-page",
+    "colors": [
+      "#526176",
+      "#F1F5F9"
+    ],
+    "ratio": 5.76,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "text-primary",
+    "background": "surface-card",
+    "colors": [
+      "#172033",
+      "#FFFFFF"
+    ],
+    "ratio": 16.27,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "text-secondary",
+    "background": "surface-card",
+    "colors": [
+      "#526176",
+      "#FFFFFF"
+    ],
+    "ratio": 6.31,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "text-primary",
+    "background": "surface-subtle",
+    "colors": [
+      "#172033",
+      "#F8FAFC"
+    ],
+    "ratio": 15.55,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "text-secondary",
+    "background": "surface-subtle",
+    "colors": [
+      "#526176",
+      "#F8FAFC"
+    ],
+    "ratio": 6.03,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "text-primary",
+    "background": "surface-heading",
+    "colors": [
+      "#172033",
+      "#E2EAF4"
+    ],
+    "ratio": 13.41,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "text-secondary",
+    "background": "surface-heading",
+    "colors": [
+      "#526176",
+      "#E2EAF4"
+    ],
+    "ratio": 5.2,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "text-primary",
+    "background": "surface-hover",
+    "colors": [
+      "#172033",
+      "#EFF6FF"
+    ],
+    "ratio": 14.95,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "text-secondary",
+    "background": "surface-hover",
+    "colors": [
+      "#526176",
+      "#EFF6FF"
+    ],
+    "ratio": 5.79,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "text-primary",
+    "background": "surface-selected",
+    "colors": [
+      "#172033",
+      "#DBEAFE"
+    ],
+    "ratio": 13.33,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "text-secondary",
+    "background": "surface-selected",
+    "colors": [
+      "#526176",
+      "#DBEAFE"
+    ],
+    "ratio": 5.17,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "success-text",
+    "background": "success-bg",
+    "colors": [
+      "#166534",
+      "#DCFCE7"
+    ],
+    "ratio": 6.49,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "info-text",
+    "background": "info-bg",
+    "colors": [
+      "#1E40AF",
+      "#DBEAFE"
+    ],
+    "ratio": 7.15,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "warning-text",
+    "background": "warning-bg",
+    "colors": [
+      "#92400E",
+      "#FEF3C7"
+    ],
+    "ratio": 6.37,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "danger-text",
+    "background": "danger-bg",
+    "colors": [
+      "#991B1B",
+      "#FEE2E2"
+    ],
+    "ratio": 6.8,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "neutral-text",
+    "background": "neutral-bg",
+    "colors": [
+      "#475569",
+      "#E2E8F0"
+    ],
+    "ratio": 6.15,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "sent-text",
+    "background": "sent-bg",
+    "colors": [
+      "#5B21B6",
+      "#EDE9FE"
+    ],
+    "ratio": 7.57,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "action-text",
+    "background": "action-primary",
+    "colors": [
+      "#FFFFFF",
+      "#1D4ED8"
+    ],
+    "ratio": 6.7,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "action-text",
+    "background": "action-hover",
+    "colors": [
+      "#FFFFFF",
+      "#1E40AF"
+    ],
+    "ratio": 8.72,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "action-primary",
+    "background": "surface-card",
+    "colors": [
+      "#1D4ED8",
+      "#FFFFFF"
+    ],
+    "ratio": 6.7,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "action-primary",
+    "background": "surface-heading",
+    "colors": [
+      "#1D4ED8",
+      "#E2EAF4"
+    ],
+    "ratio": 5.52,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "nav-text",
+    "background": "nav-bg",
+    "colors": [
+      "#E2E8F0",
+      "#14243D"
+    ],
+    "ratio": 12.62,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "nav-muted",
+    "background": "nav-bg",
+    "colors": [
+      "#B8C6D9",
+      "#14243D"
+    ],
+    "ratio": 8.98,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "nav-muted",
+    "background": "nav-hover",
+    "colors": [
+      "#B8C6D9",
+      "#223B5D"
+    ],
+    "ratio": 6.54,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "action-text",
+    "background": "nav-active",
+    "colors": [
+      "#FFFFFF",
+      "#1D4ED8"
+    ],
+    "ratio": 6.7,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "disabled-text",
+    "background": "disabled-bg",
+    "colors": [
+      "#526176",
+      "#E2E8F0"
+    ],
+    "ratio": 5.12,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "warning-text",
+    "background": "surface-subtle",
+    "colors": [
+      "#92400E",
+      "#F8FAFC"
+    ],
+    "ratio": 6.78,
+    "minimum": 4.5,
+    "pass": true
+  },
+  {
+    "foreground": "border-input",
+    "background": "surface-card",
+    "colors": [
+      "#7B8AA0",
+      "#FFFFFF"
+    ],
+    "ratio": 3.51,
+    "minimum": 3,
+    "pass": true
+  },
+  {
+    "foreground": "focus-ring",
+    "background": "surface-card",
+    "colors": [
+      "#2563EB",
+      "#FFFFFF"
+    ],
+    "ratio": 5.17,
+    "minimum": 3,
+    "pass": true
+  },
+  {
+    "foreground": "focus-ring",
+    "background": "surface-selected",
+    "colors": [
+      "#2563EB",
+      "#DBEAFE"
+    ],
+    "ratio": 4.24,
+    "minimum": 3,
+    "pass": true
+  }
+]

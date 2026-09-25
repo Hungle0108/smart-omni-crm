@@ -1,0 +1,67 @@
+import assert from 'node:assert/strict';
+import {DatabaseSync} from 'node:sqlite';
+import {createHash} from 'node:crypto';
+import {mkdirSync,readFileSync,writeFileSync} from 'node:fs';
+import {dirname,join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {installZaloOA} from './zalo-oa.js';
+import {zaloProvider,ZaloError} from './zalo-provider.js';
+const out=join(dirname(fileURLToPath(import.meta.url)),'test-output');mkdirSync(out,{recursive:true});
+const db=new DatabaseSync(':memory:'),q=s=>db.prepare(s),now=()=>new Date().toISOString();
+db.exec(`PRAGMA foreign_keys=ON;
+CREATE TABLE teams(id INTEGER PRIMARY KEY,name TEXT);
+INSERT INTO teams VALUES(1,'Sales');
+CREATE TABLE customers(id INTEGER PRIMARY KEY,kind TEXT,name TEXT,team_id INTEGER,owner_id INTEGER,created_at TEXT,do_not_contact INTEGER DEFAULT 0);
+CREATE TABLE conversations(id INTEGER PRIMARY KEY,customer_id INTEGER,channel TEXT,assignee_id INTEGER,bot_active INTEGER,status TEXT DEFAULT 'OPEN',last_at TEXT);
+CREATE TABLE messages(id INTEGER PRIMARY KEY,conv_id INTEGER,sender TEXT,user_id INTEGER,body TEXT,at TEXT,client_key TEXT,metadata TEXT);
+CREATE TABLE schema_migrations(version TEXT PRIMARY KEY,at TEXT);
+CREATE TABLE knowledge(id INTEGER PRIMARY KEY,approved_version INTEGER,status TEXT);
+CREATE TABLE quotes(id INTEGER PRIMARY KEY,customer_id INTEGER);`);
+class Err extends Error{constructor(code,msg){super(msg);this.code=code;}}
+const admin={id:1,role:'admin',team_id:1},leader={id:2,role:'leader',team_id:1},sales={id:3,role:'sales',team_id:1},other={id:4,role:'sales',team_id:1};
+const role=(u,...roles)=>{if(!roles.includes(u.role))throw new Err(403,'No permission');};
+const cust=(u,id)=>{const c=q('SELECT * FROM customers WHERE id=?').get(id);if(!c||!(u.role==='leader'&&u.team_id===c.team_id||u.role==='sales'&&u.id===c.owner_id))throw new Err(403,'Out of scope');return c;};
+const conv=(u,id)=>{const v=q('SELECT * FROM conversations WHERE id=?').get(id);if(!v)throw new Err(404,'Missing');cust(u,v.customer_id);return v;};
+const myConv=(u,id)=>{role(u,'leader','sales');const v=conv(u,id);if(!v.assignee_id)throw new Err(400,'Assign first');return v;};
+const message=(id,sender,user,body,key,meta)=>Number(q('INSERT INTO messages(conv_id,sender,user_id,body,at,client_key,metadata) VALUES(?,?,?,?,?,?,?)').run(id,sender,user,body,now(),key,JSON.stringify(meta||{})).lastInsertRowid);
+const routes=new Map(),on=(m,p,fn)=>routes.set(m+' '+p,fn),call=(m,p,body={},user=admin,params={})=>routes.get(m+' '+p)({body,user,params});
+let sends=0,refreshes=0,mode='ok';const refreshInputs=[];
+const mock={info:async()=>({oaid:'200',name:'OA kiểm thử'}),refresh:async c=>{refreshInputs.push(c.refresh_token);refreshes++;return{access_token:'refreshed-secret',refresh_token:'rotated-secret',expires_at:Date.now()+900000};},send:async()=>{sends++;if(mode==='timeout')throw new ZaloError('Uncertain',true);if(mode==='reject')throw new ZaloError('Rejected');return 'provider-'+sends;}};
+const options={db,q,on,Err,now,log:()=>{},helpers:{role,cust,conv,myConv,message,answer:()=>({body:'FAQ đã duyệt',source:{id:1,version:1}}),inHours:()=>false},legacy:{messages:()=>({simulated:true}),incoming:()=>({simulated:true}),bot:()=>({ok:true}),quoteSend:()=>({simulated:true})},keyPath:join(out,`test-zalo-${Date.now()}.zalo-key`),provider:mock};
+let plugin=installZaloOA(options);const checks=[];const done=s=>{checks.push(s);console.log(' ✓ '+s);};
+const configPath='/api/integrations/zalo-oa';
+const settings={app_id:'100',oa_id:'200',team_id:1,public_url:'https://example.test/zalo/oa/webhook',app_secret:'app-secret-test',webhook_secret:'webhook-secret-test',access_token:'access-secret-test',refresh_token:'refresh-secret-test',token_hours:1};
+const signed=(id='m1',uid='300',extra={})=>{const raw=JSON.stringify({app_id:'100',event_name:'user_send_text',recipient:{id:'200'},sender:{id:uid},timestamp:String(Date.now()),message:{msg_id:id,text:'Xin chào'},...extra});return{raw,signature:createHash('sha256').update('100'+raw+JSON.parse(raw).timestamp+'webhook-secret-test').digest('hex')};};
+const receive=e=>plugin.receive(Buffer.from(e.raw),e.signature);
+try{
+ assert.throws(()=>call('PUT',configPath,settings,sales),e=>e.code===403);call('PUT',configPath,settings);
+ const serialized=JSON.stringify(call('GET',configPath));for(const secret of ['app-secret-test','webhook-secret-test','access-secret-test','refresh-secret-test']){assert.ok(!serialized.includes(secret));assert.ok(!q('SELECT config FROM zalo_connection').get().config.includes(secret));}
+ assert.equal(call('GET',configPath,{},sales).has_access_token,undefined);done('Chỉ admin cấu hình; GET và SQLite không lộ mã bí mật');
+ const pendingCheck=call('POST',configPath+'/check');assert.throws(()=>call('PUT',configPath,settings),e=>e.code===409);await pendingCheck;const ingress=plugin.listen(0);await new Promise(resolve=>ingress.once('listening',resolve));call('POST',configPath+'/enable',{enabled:true});
+ const e=signed();assert.throws(()=>plugin.receive(Buffer.from(e.raw),'bad'),x=>x.code===403);assert.throws(()=>receive(signed('wrong','300',{app_id:'999'})),x=>x.code===403);
+ receive(e);receive(e);assert.equal(q('SELECT count(*) n FROM messages').get().n,1);let v=q('SELECT * FROM conversations').get();assert.equal(v.assignee_id,null);assert.equal(v.bot_active,0);done('Chữ ký, App ID, chống nhận trùng và khách mới chờ phân công');
+ assert.throws(()=>call('POST','/api/conversations/:id/messages',{body:'Chào',client_key:'s1'},leader,{id:v.id}),x=>x.code===400);
+ q('UPDATE customers SET owner_id=3 WHERE id=?').run(v.customer_id);q('UPDATE conversations SET assignee_id=3 WHERE id=?').run(v.id);
+ assert.throws(()=>call('POST','/api/conversations/:id/messages',{body:'Chào',client_key:'s1'},other,{id:v.id}),x=>x.code===403);
+ call('POST','/api/conversations/:id/messages',{body:'Chào',client_key:'s1'},sales,{id:v.id});call('POST','/api/conversations/:id/messages',{body:'Chào',client_key:'s1'},sales,{id:v.id});await plugin.processOne();assert.equal(sends,1);assert.equal(q('SELECT status FROM zalo_outbox').get().status,'accepted');assert.match(q("SELECT metadata FROM messages WHERE sender='agent'").get().metadata,/accepted/);done('Đúng sales, chống gửi trùng và chỉ báo tiếp nhận khi có mã Zalo');
+ mode='timeout';call('POST','/api/conversations/:id/messages',{body:'Thử timeout',client_key:'s2'},sales,{id:v.id});await plugin.processOne();await plugin.processOne();assert.equal(sends,2);assert.equal(q('SELECT status FROM zalo_outbox ORDER BY id DESC').get().status,'unknown');
+ mode='reject';call('POST','/api/conversations/:id/messages',{body:'Thử lỗi',client_key:'s3'},sales,{id:v.id});await plugin.processOne();assert.equal(q('SELECT status FROM zalo_outbox ORDER BY id DESC').get().status,'failed');done('Timeout không tự gửi lại; lỗi Zalo không báo thành công');
+ mode='ok';call('POST','/api/conversations/:id/messages',{body:'Tin chờ',client_key:'s4'},sales,{id:v.id});q('UPDATE customers SET do_not_contact=1 WHERE id=?').run(v.customer_id);await plugin.processOne();assert.equal(q('SELECT status FROM zalo_outbox ORDER BY id DESC').get().status,'cancelled');q('UPDATE customers SET do_not_contact=0').run();done('Kiểm tra lại cờ không liên hệ ngay trước khi gửi');
+ const beforeRevoked=sends;call('POST','/api/conversations/:id/messages',{body:'Không gửi sau thu hồi',client_key:'revoked-channel'},sales,{id:v.id});options.helpers.canSendChannelMessage=()=>false;await plugin.processOne();assert.equal(sends,beforeRevoked);assert.equal(q('SELECT status FROM zalo_outbox ORDER BY id DESC').get().status,'cancelled');delete options.helpers.canSendChannelMessage;done('Thu hồi quyền kênh dừng cả tin nhân viên còn chờ gửi');
+ call('PUT',configPath,{...settings,auto_reply:true});await call('POST',configPath+'/check');call('POST',configPath+'/enable',{enabled:true});q("INSERT INTO knowledge VALUES(1,1,'APPROVED')").run();q('UPDATE conversations SET bot_active=1 WHERE id=?').run(v.id);receive(signed('bot1'));q('UPDATE conversations SET bot_active=0').run();await plugin.processOne();assert.equal(q('SELECT status FROM zalo_outbox ORDER BY id DESC').get().status,'cancelled');
+ q('UPDATE conversations SET bot_active=1').run();receive(signed('bot2'));q("UPDATE knowledge SET status='WITHDRAWN'").run();await plugin.processOne();assert.equal(q('SELECT status FROM zalo_outbox ORDER BY id DESC').get().status,'cancelled');done('FAQ chờ gửi dừng sau tiếp nhận hoặc thu hồi nội dung');
+ assert.throws(()=>call('POST','/api/conversations/:id/incoming',{body:'Fake'},sales,{id:v.id}),x=>x.code===400);
+ assert.throws(()=>call('POST','/api/quotes/:id/send',{conv_id:v.id},sales,{id:1}),x=>x.code===400);done('Không trộn tin giả/báo giá mô phỏng vào hội thoại thật');
+ const oldSend=mock.send;mock.send=async()=>{const id='echo-during-send';receive(signed(id,'300',{event_name:'oa_send_text',sender:{id:'200'},recipient:{id:'300'},message:{msg_id:id,text:'FAQ đã duyệt'}}));return id;};
+ q("UPDATE knowledge SET status='APPROVED'").run();q('UPDATE conversations SET bot_active=1').run();receive(signed('bot-own-echo'));const beforeEcho=q('SELECT count(*) n FROM messages').get().n;await plugin.processOne();assert.equal(q('SELECT count(*) n FROM messages').get().n,beforeEcho);assert.equal(q('SELECT bot_active FROM conversations WHERE id=?').get(v.id).bot_active,1);
+ receive(signed('manual-echo','300',{event_name:'oa_send_text',sender:{id:'200'},recipient:{id:'300'},message:{msg_id:'manual-echo',text:'Nhân viên trả lời từ OA'}}));assert.equal(q('SELECT bot_active FROM conversations WHERE id=?').get(v.id).bot_active,0);mock.send=oldSend;done('Echo đến trước phản hồi API không tạo trùng hoặc dừng nhầm bot; trả lời thủ công dừng bot');
+ const realNow=Date.now;try{Date.now=()=>realNow()+2*3600000;await Promise.all([call('POST',configPath+'/check'),call('POST',configPath+'/check')]);assert.equal(refreshes,1);Date.now=()=>realNow()+6*3600000;await call('POST',configPath+'/check');assert.deepEqual(refreshInputs,['refresh-secret-test','rotated-secret']);}finally{Date.now=realNow;}done('Làm mới mã một lần khi đồng thời và dùng refresh token mới ở lần sau');
+ const port=plugin.status().receiver_port,r=await fetch(`http://127.0.0.1:${port}/api/login`);assert.equal(r.status,404);const ev=signed('http');const good=await fetch(`http://127.0.0.1:${port}/zalo/oa/webhook`,{method:'POST',headers:{'Content-Type':'application/json','X-ZEvent-Signature':ev.signature},body:ev.raw});assert.equal(good.status,200);done('Cổng webhook không công bố API đăng nhập/quản trị CRM');
+ call('POST',configPath+'/enable',{enabled:false});assert.throws(()=>receive(signed('paused')),x=>x.code===503);done('Tạm dừng chặn nhận/gửi');
+ // Expired token fixture is encrypted through the production configuration path.
+ call('PUT',configPath,{...settings,access_token:'',token_hours:1});
+ const seen=[];const adapter=zaloProvider(async(url,opts)=>{seen.push({url,opts});return {ok:true,status:200,json:async()=>url.includes('access_token')?{access_token:'A',refresh_token:'R',expires_in:900}:url.includes('getoa')?{error:0,data:{oaid:'200'}}:{error:0,data:{message_id:'MID'}}};});
+ assert.equal(await adapter.send('TOKEN','300','Xin chào'),'MID');assert.equal(JSON.parse(seen[0].opts.body).recipient.user_id,'300');assert.equal(seen[0].opts.headers.access_token,'TOKEN');assert.equal(seen[0].opts.redirect,'error');assert.equal((await adapter.refresh(settings)).refresh_token,'R');assert.equal((await adapter.info('TOKEN')).oaid,'200');done('Adapter gọi đúng endpoint, header, người nhận và đọc mã làm mới');
+ writeFileSync(join(out,'zalo-results.json'),JSON.stringify({at:now(),checks,liveOATested:false},null,2));
+ console.log(`${checks.length} nhóm kiểm tra Zalo đạt; không gọi OA thật.`);
+}finally{plugin.close();db.close();}

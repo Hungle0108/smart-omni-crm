@@ -1,0 +1,61 @@
+import {spawn} from 'node:child_process';
+import {mkdirSync,writeFileSync} from 'node:fs';
+import {join,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import assert from 'node:assert/strict';
+const root=dirname(fileURLToPath(import.meta.url)),out=join(root,'test-output');mkdirSync(out,{recursive:true});
+const db=join(out,`saas-${Date.now()}.db`),jars={},checks=[];let child;
+async function start(){child=spawn(process.execPath,[join(root,'server.js')],{env:{...process.env,PORT:'4025',CRM_DB:db,CRM_ZALO_WEBHOOK_PORT:'0'},stdio:['ignore','pipe','pipe']});let errors='';child.stderr.on('data',c=>errors+=c);await new Promise((resolve,reject)=>{const t=setTimeout(()=>reject(Error(errors)),15000);child.once('error',reject);child.once('exit',()=>{clearTimeout(t);reject(Error(errors));});child.stdout.once('data',()=>{clearTimeout(t);resolve();});});}
+async function stop(){if(child&&!child.killed){const exited=new Promise(r=>child.once('exit',r));child.kill();await exited;}}
+async function api(who,method,path,body){const r=await fetch('http://127.0.0.1:4025/api'+path,{method,headers:{'Content-Type':'application/json',Cookie:jars[who]||''},body:body===undefined?undefined:JSON.stringify(body)});if(r.headers.getSetCookie().length)jars[who]=r.headers.getSetCookie().map(c=>c.split(';')[0]).join('; ');return {status:r.status,data:await r.json()};}
+const ok=async p=>{const r=await p;assert.equal(r.status,200,JSON.stringify(r.data));return r.data;},deny=async(p,code=403)=>{const r=await p;assert.equal(r.status,code,JSON.stringify(r.data));},done=s=>{checks.push(s);console.log('✓ '+s);};
+const login=(who,company,username,password='QaPassword123!')=>ok(api(who,'POST','/login?company='+company,{username,password}));
+const user=(username,role='sales')=>({username,name:username,role,team_id:1,password:'QaPassword123!'});
+try{
+ await start();for(const u of ['admin','hoa','lan','minh'])await login(u,'ivitech',u,'123456');
+ jars.root=jars.admin;await ok(api('root','POST','/platform/bootstrap',{current_password:'123456',username:'root',name:'Super Admin thử',password:'QaSuperAdmin123!',confirm_password:'QaSuperAdmin123!'}));
+ const tenant={code:'cong-ty-a',name:'Công ty A',username:'boss',admin_name:'Admin A',password:'QaPassword123!',usage:'customer'};
+ await deny(api('hoa','POST','/platform/companies',tenant));await ok(api('root','POST','/platform/companies',tenant));await ok(api('root','POST','/platform/companies',{...tenant,code:'cong-ty-b',name:'Công ty B'}));
+ await deny(api('root','POST','/platform/companies',tenant),409);await deny(api('root','POST','/platform/companies',{...tenant,code:'../escape'}),400);
+ await login('a','cong-ty-a','boss');await login('b','cong-ty-b','boss');
+ assert.equal((await ok(api('a','GET','/me'))).company.code,'cong-ty-a');await deny(api('a','GET','/platform/companies'));
+ for(const path of ['/products','/product-categories','/customers','/knowledge'])assert.deepEqual(await ok(api('a','GET',path)),[]);
+ assert.equal((await ok(api('a','GET','/templates'))).templates.length,0);assert.equal((await ok(api('a','GET','/admin/users'))).length,1);
+ await deny(api('bad','POST','/login?company=cong-ty-a',{username:'hoa',password:'123456'}),401);done('Tạo công ty trống, không sao chép dữ liệu mẫu; admin công ty không có quyền nền tảng');
+ const aSales=await ok(api('a','POST','/admin/users',user('sales'))),bSales=await ok(api('b','POST','/admin/users',user('sales')));
+ await login('as','cong-ty-a','sales');await login('bs','cong-ty-b','sales');
+ const ac=await ok(api('as','POST','/customers',{kind:'org',name:'Khách riêng của A'})),bc=await ok(api('bs','POST','/customers',{kind:'org',name:'Khách riêng của B'}));assert.equal(ac.id,bc.id);
+ assert.equal((await ok(api('as','GET','/customers')))[0].name,'Khách riêng của A');assert.equal((await ok(api('bs','GET','/customers')))[0].name,'Khách riêng của B');
+ jars.forged=jars.as.replace('crm_company=cong-ty-a','crm_company=cong-ty-b');await deny(api('forged','GET','/customers'),401);
+ await ok(api('a','POST','/product-categories',{id:'partner',name:'Dịch vụ đối tác'}));assert.deepEqual(await ok(api('b','GET','/product-categories')),[]);
+ await ok(api('a','PUT','/brand',{name:'Công ty A',short:'A',color:'#112233'}));assert.equal((await ok(api('b','GET','/templates'))).brand.name,'Công ty B');
+ const stale=await fetch('http://127.0.0.1:4025/api/customers',{headers:{Cookie:jars.bs,'X-CRM-Company':'cong-ty-a'}});assert.equal(stale.status,409);
+ done('Hai công ty trùng ID/tên tài khoản vẫn tách khách, danh mục, nhận diện; đổi cookie không vượt quyền');
+ const sub=await ok(api('a','POST','/admin/users',user('assistant','subadmin')));await login('sub','cong-ty-a','assistant');assert.equal((await ok(api('sub','GET','/me'))).admin_level,'subadmin');
+ await ok(api('sub','POST','/admin/users',user('staff')));await ok(api('sub','POST','/product-categories',{id:'support',name:'Hỗ trợ'}));
+ for(const role of ['admin','subadmin'])await deny(api('sub','POST','/admin/users',user('no-'+role,role)));
+ await deny(api('sub','PUT','/admin/users/1',{name:'Hijack',password:'ChangedPassword!',active:true}));await deny(api('sub','POST','/admin/users/1/status',{active:false}));
+ await deny(api('sub','POST','/admin/users/'+sub.id+'/admin-level',{admin_level:'admin'}));await deny(api('sub','PUT','/settings',{work_hours:'abc'}));await deny(api('sub','POST','/admin/teams',{name:'No'}));await deny(api('sub','POST','/platform/companies',{...tenant,code:'no-company'}));
+ const product={name:'Dịch vụ đối tác',family:'partner',unit:'Gói',first_year:1000000,renewal:0,active:true,supply_type:'distributor',partner_name:'Đối tác thử nghiệm'};
+ await ok(api('sub','PUT','/products/SP',product));await deny(api('sub','PUT','/products/BAD',{...product,partner_name:''}),400);assert.equal((await ok(api('a','GET','/products'))).length,1);
+ await ok(api('sub','PUT','/templates/partner',{name:'Báo giá đối tác',family:'partner',product_codes:['SP']}));
+ const quote=await ok(api('as','POST','/quotes',{customer_id:ac.id,template_id:'partner'}));await ok(api('a','PUT','/products/SP',{...product,supply_type:'self',partner_name:''}));
+ assert.ok(JSON.stringify(await ok(api('as','GET','/quotes/'+quote.id))).includes('Đối tác thử nghiệm'));done('Subadmin quản lý danh mục/người dùng thường, chặn nâng quyền; nguồn cung đối tác giữ trong báo giá đã tạo');
+ const conn=await ok(api('a','POST','/channel-connections',{name:'Tổng đài riêng A',provider:'vnpt_sip',team_id:1,config:{}}));
+ assert.equal((await ok(api('b','GET','/channel-connections'))).channels.length,0);await deny(api('sub','PUT','/channel-connections/'+conn.id,{name:'Không',team_id:1,revision:conn.revision,config:{}}));
+ const rule={mode:'selected',revision:0,members:[{user_id:aSales.id,permission:'read'}]};await ok(api('sub','PUT','/channel-access/oa',rule));
+ assert.equal((await ok(api('as','GET','/conversations'))).length,0);await deny(api('as','POST','/conversations',{customer_id:ac.id,channel:'oa'}));
+ await ok(api('sub','PUT','/channel-access/oa',{...rule,revision:1,members:[{user_id:aSales.id,permission:'send'}]}));
+ const conv=await ok(api('as','POST','/conversations',{customer_id:ac.id,channel:'oa'}));await ok(api('as','POST','/conversations/'+conv.id+'/messages',{body:'Tin thử',client_key:'test'}));
+ await ok(api('sub','PUT','/channel-access/oa',{...rule,revision:2}));await ok(api('as','GET','/conversations/'+conv.id));await deny(api('as','POST','/conversations/'+conv.id+'/messages',{body:'Bị chặn',client_key:'blocked'}));await deny(api('as','POST','/conversations/'+conv.id+'/bot',{active:true}));
+ await ok(api('sub','PUT','/channel-access/oa',{mode:'selected',revision:3,members:[]}));assert.deepEqual(await ok(api('as','GET','/conversations')),[]);await deny(api('as','GET','/conversations/'+conv.id));
+ await deny(api('sub','PUT','/channel-access/oa',{mode:'team',revision:3,members:[]}),409);await deny(api('sub','PUT','/channel-access/oa',{mode:'selected',revision:4,members:[{user_id:99999,permission:'send'}]}),400);
+ await ok(api('admin','PUT','/channel-access/oa',{mode:'selected',revision:0,members:[{user_id:2,permission:'send'}]}));await deny(api('minh','GET','/conversations/1'));await deny(api('lan','GET','/conversations/1'));
+ done('Phân kênh nhiều người; chỉ xem không gửi/thao tác; thu hồi có hiệu lực ngay; không mở rộng quyền khách');
+ await ok(api('root','POST','/platform/companies/cong-ty-a/state',{state:'paused'}));await deny(api('as','GET','/me'),401);await deny(api('a','POST','/login?company=cong-ty-a',{username:'boss',password:'QaPassword123!'}),401);
+ await ok(api('root','POST','/platform/companies/cong-ty-a/state',{state:'active'}));await deny(api('as','GET','/me'),401);await login('as','cong-ty-a','sales');assert.equal((await ok(api('as','GET','/customers')))[0].name,'Khách riêng của A');
+ await stop();await start();await login('a','cong-ty-a','boss');await login('sub','cong-ty-a','assistant');await login('as','cong-ty-a','sales');await login('b','cong-ty-b','boss');
+ assert.equal((await ok(api('sub','GET','/me'))).admin_level,'subadmin');assert.deepEqual(await ok(api('as','GET','/conversations')),[]);assert.deepEqual(await ok(api('b','GET','/product-categories')),[]);assert.equal((await ok(api('a','GET','/products')))[0].supply_type,'self');
+ done('Tạm dừng thu hồi phiên, mở lại giữ dữ liệu; công ty, nguồn cung và phân quyền bền vững sau khởi động lại');
+ writeFileSync(join(out,'saas-results.json'),JSON.stringify({at:new Date().toISOString(),checks,db},null,2));
+}finally{await stop();}

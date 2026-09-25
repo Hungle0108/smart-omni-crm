@@ -1,0 +1,1528 @@
+﻿OMNI CRM ARCHITECTURE v2.0
+CRM + Omnichannel + Chatbot + AI
+Mục tiêu: Xây dựng một nền tảng quản trị khách hàng thống nhất, trong đó CRM, giao tiếp đa kênh, Chatbot và AI hoạt động trên cùng một Customer 360° và cùng một Knowledge/Data Layer.
+________________
+
+
+1. ĐỊNH VỊ SẢN PHẨM
+Omni CRM không chỉ là phần mềm CRM truyền thống.
+Hệ thống cần gồm 4 lớp năng lực chính:
+Lớp 1 – CRM Core
+Quản lý:
+* khách hàng;
+* tổ chức;
+* Contact;
+* Lead;
+* Opportunity;
+* Pipeline;
+* Task;
+* Meeting;
+* Quote;
+* Contract;
+* Payment;
+* File;
+* Note;
+* Dashboard.
+________________
+
+
+Lớp 2 – Omnichannel Communication
+Quản lý giao tiếp qua:
+* Zalo;
+* Viber;
+* WhatsApp;
+* Email;
+* SMS;
+* Webchat;
+* Facebook Messenger;
+* các kênh khác có thể mở rộng.
+________________
+
+
+Lớp 3 – Chatbot
+Chatbot phục vụ:
+* tiếp nhận khách hàng;
+* trả lời câu hỏi;
+* thu thập thông tin;
+* tạo Lead;
+* xác định nhu cầu;
+* đặt lịch;
+* chuyển người thật;
+* cập nhật CRM;
+* gửi tài liệu;
+* hỗ trợ chăm sóc sau bán.
+________________
+
+
+Lớp 4 – AI Intelligence
+AI hỗ trợ:
+* tóm tắt khách hàng;
+* tóm tắt hội thoại;
+* phân tích nhu cầu;
+* phân loại Lead;
+* đánh giá Opportunity;
+* đề xuất Next Best Action;
+* soạn nội dung trả lời;
+* soạn Email;
+* soạn tin nhắn;
+* phân tích Meeting;
+* tạo Task;
+* phát hiện rủi ro;
+* hỗ trợ dự báo;
+* truy vấn dữ liệu CRM bằng ngôn ngữ tự nhiên.
+________________
+
+
+2. KIẾN TRÚC TỔNG THỂ
+┌─────────────────────────────────────────────┐
+│                 FRONTEND                    │
+│ Web CRM / Mobile Web / Agent Console       │
+│ Chatbot Admin / AI Assistant / Dashboard   │
+└──────────────────────┬──────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────┐
+│              APPLICATION API                │
+│ Auth / RBAC / CRM / Sales / Messaging      │
+│ Chatbot / AI / Workflow / Reporting        │
+└───────────────┬───────────────┬─────────────┘
+                │               │
+                ▼               ▼
+┌────────────────────┐   ┌────────────────────┐
+│     CRM DOMAIN     │   │ MESSAGING DOMAIN   │
+│ Customer           │   │ Conversation       │
+│ Contact            │   │ Message            │
+│ Lead               │   │ Channel            │
+│ Opportunity        │   │ Inbox              │
+│ Quote              │   │ Routing            │
+└────────────────────┘   └────────────────────┘
+                │               │
+                └──────┬────────┘
+                       ▼
+┌─────────────────────────────────────────────┐
+│            CHATBOT ORCHESTRATION            │
+│ Intent / Flow / Knowledge / Handoff         │
+│ Lead Capture / Context / Session            │
+└──────────────────────┬──────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────┐
+│               AI SERVICES                   │
+│ LLM Gateway                                 │
+│ RAG                                         │
+│ Summarization                               │
+│ Classification                              │
+│ Recommendation                              │
+│ Extraction                                  │
+│ Scoring                                     │
+└───────────────┬─────────────────────────────┘
+                │
+                ▼
+┌─────────────────────────────────────────────┐
+│            KNOWLEDGE & DATA LAYER           │
+│ CRM Database                                │
+│ Knowledge Base                              │
+│ Embeddings / Vector Search                  │
+│ Documents                                   │
+│ Audit                                       │
+└─────────────────────────────────────────────┘
+
+
+              +
+
+
+┌─────────────────────────────────────────────┐
+│           CHANNEL CONNECTORS                │
+│ Zalo / WhatsApp / Viber / Email / SMS      │
+│ Webchat / Messenger / Future Channels      │
+└─────────────────────────────────────────────┘
+
+
+________________
+
+
+3. NGUYÊN TẮC KIẾN TRÚC MỚI
+Chatbot và AI phải:
+* dùng chung Customer ID;
+* dùng chung Contact ID;
+* dùng chung Conversation;
+* dùng chung Opportunity;
+* ghi Activity vào CRM;
+* đọc được dữ liệu CRM theo quyền;
+* không tạo một database khách hàng riêng;
+* không tạo Timeline riêng;
+* không tách biệt với Unified Inbox.
+Nguyên tắc:
+One Customer – One Profile – One Timeline – Multiple Channels – Multiple AI Capabilities
+________________
+
+
+4. CUSTOMER 360° PHẢI ĐƯỢC MỞ RỘNG
+Customer 360° mới gồm:
+Overview
+* Customer Summary;
+* Sales Status;
+* AI Summary;
+* Customer Health;
+* Last Activity;
+* Next Best Action.
+Contacts
+Timeline
+Opportunities
+Quotes
+Contracts
+Payments
+Messages
+Chatbot Conversations
+AI Insights
+Tasks
+Meetings
+Files
+Notes
+________________
+
+
+5. AI CUSTOMER SUMMARY
+AI phải có khả năng đọc:
+* Customer;
+* Contact;
+* Opportunity;
+* Activity;
+* Messages;
+* Meetings;
+* Quotes;
+* Contracts;
+* Payments.
+Và tạo tóm tắt:
+Khách hàng ABC đang quan tâm gói Omni CRM cho 150 user.
+
+
+Đã thực hiện:
+- Demo ngày 12/09.
+- Gửi báo giá 480 triệu ngày 15/09.
+- Khách hàng phản hồi cần bổ sung chức năng WhatsApp và AI Chatbot.
+
+
+Người quyết định:
+Nguyễn Văn A – Tổng Giám đốc.
+
+
+Tình trạng hiện tại:
+Đang đàm phán.
+
+
+Việc nên thực hiện tiếp:
+Liên hệ lại trước ngày 20/09 để xác nhận phạm vi tích hợp.
+
+
+________________
+
+
+6. DATABASE – AI & CHATBOT DOMAIN
+Cần bổ sung các bảng sau.
+________________
+
+
+7. AI PROVIDERS
+ai_providers
+id UUID PK
+
+
+name VARCHAR
+provider_code VARCHAR
+
+
+api_endpoint VARCHAR
+model_default VARCHAR
+
+
+status VARCHAR
+
+
+configuration JSONB
+
+
+created_at
+updated_at
+
+
+Không lưu API key plain text.
+________________
+
+
+8. AI MODELS
+ai_models
+id UUID PK
+
+
+provider_id UUID FK
+
+
+name VARCHAR
+model_code VARCHAR
+
+
+model_type VARCHAR
+
+
+context_window INTEGER
+
+
+supports_tools BOOLEAN
+supports_vision BOOLEAN
+supports_structured_output BOOLEAN
+
+
+status VARCHAR
+
+
+Model Type:
+CHAT
+EMBEDDING
+VISION
+SPEECH
+OTHER
+
+
+________________
+
+
+9. AI ASSISTANTS
+ai_assistants
+id UUID PK
+
+
+name VARCHAR
+code VARCHAR
+
+
+description TEXT
+
+
+assistant_type VARCHAR
+
+
+system_instruction TEXT
+
+
+model_id UUID FK
+
+
+temperature DECIMAL
+
+
+status VARCHAR
+
+
+created_at
+updated_at
+
+
+Assistant Type:
+SALES_ASSISTANT
+CUSTOMER_SERVICE
+CHATBOT
+DATA_ANALYST
+WRITING_ASSISTANT
+MEETING_ASSISTANT
+
+
+________________
+
+
+10. AI CONVERSATION
+ai_conversations
+id UUID PK
+
+
+assistant_id UUID FK
+user_id UUID FK
+
+
+organization_id UUID NULL
+contact_id UUID NULL
+opportunity_id UUID NULL
+
+
+title VARCHAR
+
+
+status VARCHAR
+
+
+created_at
+updated_at
+
+
+________________
+
+
+11. AI MESSAGE
+ai_messages
+id UUID PK
+
+
+ai_conversation_id UUID FK
+
+
+role VARCHAR
+content TEXT
+
+
+model_id UUID NULL
+
+
+input_tokens INTEGER
+output_tokens INTEGER
+
+
+metadata JSONB
+
+
+created_at
+
+
+Role:
+SYSTEM
+USER
+ASSISTANT
+TOOL
+
+
+________________
+
+
+12. AI INSIGHT
+ai_insights
+id UUID PK
+
+
+insight_type VARCHAR
+
+
+organization_id UUID NULL
+contact_id UUID NULL
+lead_id UUID NULL
+opportunity_id UUID NULL
+conversation_id UUID NULL
+
+
+title VARCHAR
+summary TEXT
+details JSONB
+
+
+confidence_score DECIMAL
+
+
+generated_by_model_id UUID
+
+
+status VARCHAR
+
+
+generated_at TIMESTAMP
+reviewed_by UUID NULL
+reviewed_at TIMESTAMP NULL
+
+
+Insight Type:
+CUSTOMER_SUMMARY
+NEXT_BEST_ACTION
+LEAD_SCORE
+OPPORTUNITY_RISK
+SENTIMENT
+INTENT
+MEETING_SUMMARY
+CONVERSATION_SUMMARY
+RECOMMENDATION
+
+
+________________
+
+
+13. AI ACTION SUGGESTION
+ai_action_suggestions
+id UUID PK
+
+
+insight_id UUID FK
+
+
+action_type VARCHAR
+
+
+title VARCHAR
+description TEXT
+
+
+priority VARCHAR
+
+
+due_date TIMESTAMP NULL
+
+
+status VARCHAR
+
+
+approved_by UUID NULL
+approved_at TIMESTAMP NULL
+
+
+created_at
+
+
+AI không tự ý thực hiện hành động quan trọng.
+Có trạng thái:
+SUGGESTED
+APPROVED
+REJECTED
+EXECUTED
+
+
+________________
+
+
+14. KNOWLEDGE BASE
+knowledge_bases
+id UUID PK
+
+
+name VARCHAR
+description TEXT
+
+
+scope VARCHAR
+
+
+status VARCHAR
+
+
+created_at
+updated_at
+
+
+Scope có thể là:
+GLOBAL
+DEPARTMENT
+CHATBOT
+SALES
+CUSTOMER_SERVICE
+
+
+________________
+
+
+15. KNOWLEDGE DOCUMENT
+knowledge_documents
+id UUID PK
+
+
+knowledge_base_id UUID FK
+
+
+title VARCHAR
+source_type VARCHAR
+
+
+file_id UUID NULL
+source_url VARCHAR NULL
+
+
+content_text TEXT
+
+
+document_status VARCHAR
+
+
+version INTEGER
+
+
+created_at
+updated_at
+
+
+________________
+
+
+16. KNOWLEDGE CHUNK
+knowledge_chunks
+id UUID PK
+
+
+document_id UUID FK
+
+
+chunk_index INTEGER
+content TEXT
+
+
+embedding_reference VARCHAR
+
+
+metadata JSONB
+
+
+created_at
+
+
+Có thể dùng Vector Database riêng.
+________________
+
+
+17. CHATBOT
+chatbots
+id UUID PK
+
+
+name VARCHAR
+code VARCHAR
+
+
+description TEXT
+
+
+assistant_id UUID FK
+
+
+default_language VARCHAR
+
+
+status VARCHAR
+
+
+created_at
+updated_at
+
+
+________________
+
+
+18. CHATBOT CHANNEL
+chatbot_channels
+id UUID PK
+
+
+chatbot_id UUID FK
+channel_id UUID FK
+
+
+configuration JSONB
+
+
+status VARCHAR
+
+
+Một Chatbot có thể chạy đồng thời trên:
+* Webchat;
+* Zalo;
+* WhatsApp;
+* Viber;
+* Messenger.
+________________
+
+
+19. CHATBOT SESSION
+chatbot_sessions
+id UUID PK
+
+
+chatbot_id UUID FK
+channel_id UUID FK
+
+
+conversation_id UUID FK
+
+
+external_user_id VARCHAR
+
+
+organization_id UUID NULL
+contact_id UUID NULL
+lead_id UUID NULL
+
+
+session_status VARCHAR
+
+
+started_at TIMESTAMP
+ended_at TIMESTAMP
+
+
+handoff_status VARCHAR
+
+
+context JSONB
+
+
+________________
+
+
+20. CHATBOT INTENT
+chatbot_intents
+id UUID PK
+
+
+chatbot_id UUID FK
+
+
+name VARCHAR
+code VARCHAR
+
+
+description TEXT
+
+
+status VARCHAR
+
+
+Ví dụ:
+PRODUCT_INQUIRY
+PRICE_REQUEST
+BOOK_DEMO
+TECHNICAL_SUPPORT
+CONTACT_SALES
+REQUEST_QUOTE
+OTHER
+
+
+________________
+
+
+21. CHATBOT FLOW
+chatbot_flows
+id UUID PK
+
+
+chatbot_id UUID FK
+
+
+name VARCHAR
+trigger_type VARCHAR
+
+
+flow_definition JSONB
+
+
+status VARCHAR
+
+
+version INTEGER
+
+
+created_at
+updated_at
+
+
+________________
+
+
+22. CHATBOT HANDOFF
+chatbot_handoffs
+id UUID PK
+
+
+session_id UUID FK
+
+
+requested_at TIMESTAMP
+
+
+reason VARCHAR
+
+
+assigned_user_id UUID NULL
+
+
+status VARCHAR
+
+
+accepted_at TIMESTAMP NULL
+closed_at TIMESTAMP NULL
+
+
+summary TEXT
+
+
+Status:
+REQUESTED
+QUEUED
+ASSIGNED
+ACCEPTED
+CLOSED
+
+
+________________
+
+
+23. LEAD CAPTURE TỪ CHATBOT
+Chatbot phải có khả năng thu thập:
+* họ tên;
+* công ty;
+* điện thoại;
+* email;
+* nhu cầu;
+* sản phẩm quan tâm;
+* ngân sách;
+* thời gian dự kiến;
+* kênh liên hệ.
+Sau đó:
+Chatbot
+   ↓
+Lead Capture
+   ↓
+Duplicate Check
+   ↓
+Existing Customer?
+
+
+Nếu có:
+Link Conversation
+→ Existing Customer
+
+
+Nếu chưa:
+Create Lead
+
+
+________________
+
+
+24. CHATBOT USER FLOW
+Customer sends message
+        ↓
+Channel Connector
+        ↓
+Unified Conversation
+        ↓
+Chatbot Engine
+        ↓
+Identify Customer
+        ↓
+Load CRM Context
+        ↓
+Load Knowledge
+        ↓
+AI Response
+        ↓
+Send Response
+        ↓
+Save Message
+        ↓
+Update Timeline
+
+
+________________
+
+
+25. HANDOFF FLOW
+Nếu:
+* khách hàng yêu cầu gặp nhân viên;
+* AI không chắc;
+* nội dung vượt phạm vi;
+* giá trị cơ hội cao;
+* sentiment tiêu cực;
+* policy yêu cầu người thật.
+Flow:
+Chatbot
+   ↓
+Handoff Requested
+   ↓
+Queue
+   ↓
+Assigned Sales / Agent
+   ↓
+Agent receives Summary
+   ↓
+Agent continues conversation
+
+
+Agent phải thấy:
+* Customer Profile;
+* Conversation History;
+* AI Summary;
+* Intent;
+* Opportunity;
+* Suggested Response.
+________________
+
+
+26. UNIFIED INBOX MỚI
+Unified Inbox phải hỗ trợ ba loại người trả lời:
+BOT
+AI ASSIST
+HUMAN
+
+
+Mỗi Conversation hiển thị:
+* Channel;
+* Customer;
+* Assigned User;
+* Bot Status;
+* AI Status;
+* Intent;
+* Sentiment;
+* Priority;
+* Opportunity;
+* Last Message.
+________________
+
+
+27. SCREEN – CHATBOT MANAGEMENT
+Cần bổ sung:
+SCR-150 – Chatbot List
+Hiển thị:
+* Chatbot;
+* Channels;
+* Assistant;
+* Status;
+* Conversations Today;
+* Handoff Rate.
+________________
+
+
+SCR-151 – Chatbot Detail
+Tabs:
+1. Overview
+2. Channels
+3. Knowledge
+4. Intents
+5. Flows
+6. Conversations
+7. Handoff
+8. Analytics
+9. Settings
+________________
+
+
+28. SCREEN – CHATBOT FLOW BUILDER
+SCR-152
+Cho phép cấu hình:
+* Greeting;
+* Collect Information;
+* Ask Question;
+* AI Answer;
+* Condition;
+* Create Lead;
+* Create Task;
+* Book Meeting;
+* Send File;
+* Handoff;
+* End Conversation.
+Giai đoạn đầu có thể dùng form-based builder, chưa cần visual builder phức tạp.
+________________
+
+
+29. SCREEN – KNOWLEDGE BASE
+SCR-160 – Knowledge Base List
+SCR-161 – Knowledge Base Detail
+Cho phép:
+* Upload File;
+* Add URL;
+* Add Text;
+* View Documents;
+* Re-index;
+* Disable Document;
+* Versioning.
+________________
+
+
+30. SCREEN – AI ASSISTANT
+SCR-170 – AI Assistant Workspace
+Giao diện tương tự Copilot.
+AI có thể trả lời:
+* khách hàng nào cần follow-up;
+* cơ hội nào có rủi ro;
+* tổng hợp khách hàng;
+* tạo báo cáo;
+* tìm giao dịch;
+* phân tích pipeline.
+________________
+
+
+31. AI TOOL ACCESS
+AI Assistant không chỉ Chat.
+Nó phải có Tool Layer.
+Ví dụ Tool:
+search_customer
+get_customer_profile
+get_opportunity
+search_messages
+create_task
+draft_message
+create_meeting
+get_pipeline
+get_quote
+search_contract
+
+
+Quyền sử dụng Tool phải kế thừa quyền của User.
+________________
+
+
+32. USER FLOW – AI ASSISTANT
+Ví dụ người dùng hỏi:
+Những khách hàng nào tôi cần gọi lại hôm nay?
+
+
+Flow:
+User
+ ↓
+AI Assistant
+ ↓
+Intent Detection
+ ↓
+Tool: Search Task + Next Activity
+ ↓
+Permission Check
+ ↓
+CRM Query
+ ↓
+AI formats answer
+
+
+________________
+
+
+33. AI NEXT BEST ACTION
+AI phân tích:
+* Last Activity;
+* Messages;
+* Stage;
+* Expected Close;
+* Customer Response;
+* Pending Task;
+* Quote Status.
+Sau đó đề xuất:
+Call Customer
+Send Follow-up
+Book Demo
+Send Quote
+Escalate
+Create Meeting
+Wait
+
+
+AI chỉ đề xuất.
+Người dùng quyết định.
+________________
+
+
+34. AI LEAD SCORING
+Lead Score có thể dựa trên:
+* Source;
+* Profile completeness;
+* Product interest;
+* Budget;
+* Engagement;
+* Message frequency;
+* Meeting booked;
+* Response rate.
+Kết quả:
+Score: 82/100
+Rating: HOT
+
+
+Phải lưu:
+* Score;
+* Factors;
+* AI Model;
+* Generated Date.
+________________
+
+
+35. AI OPPORTUNITY RISK
+Phân tích:
+* Opportunity không có Activity;
+* Close Date gần;
+* chưa có Decision Maker;
+* Quote lâu không phản hồi;
+* sentiment tiêu cực;
+* Stage đứng yên quá lâu.
+Output ví dụ:
+Risk: HIGH
+
+
+Reasons:
+- 12 ngày chưa liên hệ.
+- Báo giá chưa phản hồi.
+- Chưa xác định người quyết định.
+
+
+________________
+
+
+36. AI MEETING ASSISTANT
+Sau cuộc họp:
+Input có thể là:
+* notes;
+* transcript;
+* file text.
+AI tạo:
+* Summary;
+* Key Points;
+* Customer Needs;
+* Decisions;
+* Action Items;
+* Follow-up Date.
+Người dùng xác nhận.
+Sau khi xác nhận:
+* tạo Activity;
+* tạo Task;
+* cập nhật Opportunity.
+________________
+
+
+37. AI MESSAGE COPILOT
+Trong Unified Inbox, Agent có nút:
+Suggest Reply
+AI sử dụng:
+* Customer Profile;
+* Conversation;
+* Product Information;
+* Knowledge Base;
+* Opportunity Stage.
+Output:
+* Draft Reply.
+Agent phải duyệt trước khi gửi mặc định.
+________________
+
+
+38. AI EMAIL DRAFT
+Cho phép:
+* Follow-up;
+* Proposal Email;
+* Meeting Confirmation;
+* Payment Reminder;
+* Thank You;
+* Renewal Reminder.
+AI chỉ tạo bản nháp.
+________________
+
+
+39. CONVERSATION SUMMARY
+Khi Conversation dài:
+AI tự tạo:
+Customer Intent
+Main Questions
+Products Discussed
+Pending Issues
+Sentiment
+Next Action
+
+
+Summary được lưu riêng để không phải đọc lại toàn bộ Message mỗi lần.
+________________
+
+
+40. SENTIMENT
+Có thể lưu:
+POSITIVE
+NEUTRAL
+NEGATIVE
+MIXED
+
+
+Không dùng sentiment như quyết định tự động duy nhất.
+________________
+
+
+41. CUSTOMER INTENT
+Intent có thể là:
+* hỏi sản phẩm;
+* yêu cầu báo giá;
+* yêu cầu Demo;
+* hỗ trợ;
+* khiếu nại;
+* thanh toán;
+* gia hạn;
+* liên hệ Sales.
+________________
+
+
+42. AI AUDIT
+Tất cả các hoạt động AI quan trọng cần log:
+ai_audit_logs
+id UUID
+
+
+user_id UUID NULL
+assistant_id UUID
+
+
+action VARCHAR
+
+
+input_reference JSONB
+output_reference JSONB
+
+
+model_id UUID
+
+
+tool_used VARCHAR NULL
+
+
+approved_by UUID NULL
+
+
+created_at
+
+
+________________
+
+
+43. AI PERMISSION
+AI chỉ được truy cập đúng dữ liệu user có quyền.
+Ví dụ:
+Sales A không được hỏi AI:
+Doanh thu của Sales B bao nhiêu?
+
+
+nếu không có quyền.
+AI phải thực hiện permission check trước Tool Call.
+________________
+
+
+44. AI HUMAN-IN-THE-LOOP
+Các hành động sau mặc định phải có người duyệt:
+* gửi tin nhắn;
+* gửi Email;
+* tạo báo giá;
+* thay đổi Stage;
+* chuyển Opportunity Won/Lost;
+* sửa hợp đồng;
+* ghi nhận thanh toán;
+* xóa dữ liệu;
+* thay đổi quyền.
+Có thể cấu hình tự động cho các hành động ít rủi ro.
+________________
+
+
+45. CHATBOT KNOWLEDGE
+Chatbot có thể dùng Knowledge Base để trả lời:
+* giới thiệu doanh nghiệp;
+* sản phẩm;
+* dịch vụ;
+* bảng giá;
+* FAQ;
+* tài liệu kỹ thuật;
+* quy trình hỗ trợ;
+* chính sách;
+* hướng dẫn.
+________________
+
+
+46. KNOWLEDGE PRIORITY
+Thứ tự trả lời:
+CRM Context
+      ↓
+Approved Knowledge Base
+      ↓
+Configured Business Rules
+      ↓
+AI General Reasoning
+
+
+Không để Chatbot tự suy đoán thông tin kinh doanh quan trọng khi không có nguồn.
+________________
+
+
+47. CHATBOT ANALYTICS
+Dashboard gồm:
+* Conversations;
+* Unique Customers;
+* Leads Created;
+* Opportunities Created;
+* Handoff Rate;
+* Bot Resolution Rate;
+* Average Response Time;
+* Most Common Intent;
+* Unanswered Questions;
+* Negative Sentiment;
+* Conversion.
+________________
+
+
+48. AI DASHBOARD
+Dashboard AI gồm:
+* Leads scored;
+* High-risk Opportunities;
+* Customers needing attention;
+* Suggested Actions;
+* AI summaries generated;
+* Suggested Replies;
+* Accepted Suggestions;
+* Rejected Suggestions.
+________________
+
+
+49. SIDEBAR MỚI
+Home
+CRM
+* Organizations
+* Contacts
+* Leads
+Sales
+* Opportunities
+* Pipeline
+* Quotes
+* Contracts
+* Payments
+Activities
+* Tasks
+* Calendar
+* Meetings
+Omnichannel
+* Unified Inbox
+* Conversations
+* Channels
+Chatbot
+* Chatbots
+* Intents
+* Flows
+* Handoff
+* Analytics
+AI
+* AI Assistant
+* AI Insights
+* Next Best Actions
+* Lead Scoring
+* Opportunity Risk
+Knowledge
+* Knowledge Bases
+* Documents
+Products
+Dashboard
+Reports
+Settings
+________________
+
+
+50. DOMAIN ARCHITECTURE MỚI
+auth
+users
+permissions
+
+
+organizations
+contacts
+leads
+
+
+activities
+tasks
+meetings
+
+
+pipelines
+opportunities
+
+
+products
+quotes
+contracts
+payments
+
+
+messaging
+channels
+conversations
+
+
+chatbots
+chatbot_sessions
+chatbot_flows
+handoffs
+
+
+ai
+ai_assistants
+ai_insights
+ai_actions
+ai_audit
+
+
+knowledge
+documents
+embeddings
+
+
+notifications
+files
+notes
+
+
+workflow
+dashboard
+reports
+settings
+audit
+
+
+________________
+
+
+51. ƯU TIÊN PHÁT TRIỂN MỚI
+Không còn chia AI/Chatbot thành Phase cuối.
+Foundation
+* Auth;
+* User;
+* Role;
+* Permission;
+* Department;
+* Database;
+* Audit.
+CRM Core
+* Organization;
+* Contact;
+* Lead;
+* Customer 360°;
+* Activity;
+* Task.
+Sales
+* Opportunity;
+* Pipeline;
+* Product;
+* Quote.
+Omnichannel Core
+* Channel;
+* Conversation;
+* Message;
+* Unified Inbox;
+* Connector Framework.
+AI Foundation
+* AI Gateway;
+* AI Provider;
+* AI Model;
+* Tool Calling;
+* AI Audit;
+* Permission Guard.
+Knowledge Foundation
+* Knowledge Base;
+* Document;
+* Chunk;
+* Search/RAG.
+Chatbot Foundation
+* Chatbot;
+* Chatbot Session;
+* Intent;
+* Basic Flow;
+* Lead Capture;
+* Human Handoff.
+AI CRM Capabilities
+* Customer Summary;
+* Conversation Summary;
+* Next Best Action;
+* Message Draft;
+* Lead Scoring.
+Commercial Expansion
+* Contract;
+* Payment;
+* advanced reporting.
+________________
+
+
+52. MVP MỚI
+MVP Omni CRM nên có tối thiểu:
+CRM
+* Organization;
+* Contact;
+* Lead;
+* Opportunity;
+* Pipeline;
+* Activity;
+* Task;
+* Customer 360°.
+Omnichannel
+* Unified Inbox;
+* Conversation;
+* Message;
+* ít nhất một Connector thật;
+* Manual Channel Logging.
+Chatbot
+* Webchat hoặc một Channel;
+* Knowledge Base;
+* FAQ;
+* Lead Capture;
+* Create Lead;
+* Handoff to Human.
+AI
+* AI Customer Summary;
+* Conversation Summary;
+* Suggested Reply;
+* Next Best Action;
+* AI Assistant cơ bản.
+Management
+* Dashboard;
+* User;
+* Role;
+* Permission;
+* Audit Log.
+Đây mới đúng nghĩa Omni CRM MVP.
+________________
+
+
+53. NGUYÊN TẮC QUAN TRỌNG CHO CLAUDE
+Không được thiết kế:
+CRM App
++
+Chatbot App riêng
++
+AI App riêng
+
+
+Phải thiết kế:
+              OMNI CRM PLATFORM
+                      │
+        ┌─────────────┼─────────────┐
+        │             │             │
+       CRM       Omnichannel    AI/Chatbot
+        │             │             │
+        └─────────────┼─────────────┘
+                      │
+                Shared Data
+                      │
+              Customer 360°
+
+
+Mọi module phải dùng chung:
+* Identity;
+* RBAC;
+* Customer;
+* Contact;
+* Conversation;
+* Timeline;
+* Audit;
+* Knowledge;
+* API.
+________________
+
+
+54. MỤC TIÊU TRẢI NGHIỆM CUỐI
+Sales mở Customer và biết:
+* khách hàng là ai;
+* đang nói chuyện qua kênh nào;
+* Chatbot đã trao đổi gì;
+* AI hiểu nhu cầu gì;
+* Opportunity ở đâu;
+* cần làm gì tiếp theo.
+Agent mở Inbox và biết:
+* khách hàng nào;
+* lịch sử mua hàng;
+* hội thoại trước;
+* Opportunity;
+* AI Summary;
+* Suggested Reply.
+Manager mở Dashboard và biết:
+* Pipeline;
+* Conversion;
+* Chatbot performance;
+* Omnichannel activity;
+* AI insights;
+* cơ hội có nguy cơ;
+* khách hàng cần chăm sóc.
+Khách hàng thì có trải nghiệm thống nhất dù liên hệ qua:
+Zalo → WhatsApp → Webchat → Email → Nhân viên Sales
+mà không phải cung cấp lại thông tin từ đầu.
+Đây là nguyên tắc cốt lõi của Omni CRM.

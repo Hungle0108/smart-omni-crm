@@ -1,0 +1,1343 @@
+{
+  "checked": 111,
+  "failures": [],
+  "height": 720,
+  "min": 5.2,
+  "overflow": false,
+  "page": "#/tasks",
+  "rows": [
+    {
+      "background": [
+        29,
+        78,
+        216
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "span.brand-mark",
+      "text": "iV"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 15.56,
+      "selector": "span.wordmark",
+      "text": "omni"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "small.",
+      "text": "CRM"
+    },
+    {
+      "background": [
+        34,
+        59,
+        93
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 11.34,
+      "selector": "strong.",
+      "text": "iViTech"
+    },
+    {
+      "background": [
+        34,
+        59,
+        93
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 6.54,
+      "selector": "div.who",
+      "text": "Bản thử nội bộ trên máy"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "div.nav-group-title",
+      "text": "KHÔNG GIAN LÀM VIỆC"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Tổng quan"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Danh bạ khách hàng"
+    },
+    {
+      "background": [
+        29,
+        78,
+        216
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "span.",
+      "text": "Kế hoạch tiếp xúc"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Tiến trình khách hàng"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "div.nav-group-title",
+      "text": "KẾT NỐI & BÁN HÀNG"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Hộp thư Zalo"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Cơ hội bán hàng"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Báo giá & phê duyệt"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "div.nav-group-title",
+      "text": "BOT & KÊNH KẾT NỐI"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Nội dung & bot FAQ"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Kênh kết nối"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "div.nav-group-title",
+      "text": "QUẢN TRỊ"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Mẫu & nhận diện"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Cấu hình công ty"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 12.62,
+      "selector": "span.",
+      "text": "Hướng dẫn kiểm thử"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "span.avatar ",
+      "text": "TH"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 15.56,
+      "selector": "strong.",
+      "text": "Nguyễn Thu Hoa"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "small.",
+      "text": "Trưởng nhóm"
+    },
+    {
+      "background": [
+        34,
+        59,
+        93
+      ],
+      "foreground": "rgb(226, 232, 240)",
+      "pass": true,
+      "ratio": 9.2,
+      "selector": "button.",
+      "text": "Đăng xuất"
+    },
+    {
+      "background": [
+        20,
+        36,
+        61
+      ],
+      "foreground": "rgb(184, 198, 217)",
+      "pass": true,
+      "ratio": 8.98,
+      "selector": "p.small",
+      "text": "Dữ liệu lưu trên máy · v0.5"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "Không gian làm việc"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.",
+      "text": "›"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "strong.",
+      "text": "Kế hoạch tiếp xúc"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "span.search-label",
+      "text": "Tìm kiếm…"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "kbd.",
+      "text": "Ctrl K"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.local-state",
+      "text": "Bản thử nội bộ"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "span.avatar ",
+      "text": "TH"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(29, 78, 216)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "span.account-label",
+      "text": "Đổi tài khoản"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "div.eyebrow",
+      "text": "SMART OMNI CRM / iViTech"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 14.85,
+      "selector": "h2.",
+      "text": "Kế hoạch tiếp xúc"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "p.lead",
+      "text": "Công việc được chia theo từng đơn vị / khách hàng. Mở từng mục để"
+    },
+    {
+      "background": [
+        29,
+        78,
+        216
+      ],
+      "foreground": "rgb(255, 255, 255)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "button.major",
+      "text": "Lên lịch tiếp xúc"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "label.",
+      "text": "Tìm trong mục này"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "summary.",
+      "text": "Lọc nhiều loại / trạng thái"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "label.",
+      "text": "Công việc"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "label.",
+      "text": "Đang xử lý"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "label.",
+      "text": "Hoàn thành"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Xóa bộ lọc"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "span.small",
+      "text": "5/5 mục trong danh sách hiện tại"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.31,
+      "selector": "small.filter-explanation",
+      "text": "Chọn nhiều giá trị để lấy các mục thuộc một trong các giá trị đó."
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "span.small",
+      "text": "Quản lý kế hoạch / công việc"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Lưu trữ…"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Đã lưu trữ / Khôi phục"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "div.",
+      "text": "việc hôm nay"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 14.85,
+      "selector": "strong.",
+      "text": "0"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "div.",
+      "text": "việc quá hạn"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 14.85,
+      "selector": "strong.",
+      "text": "0"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "div.",
+      "text": "đã hoàn thành"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 14.85,
+      "selector": "strong.",
+      "text": "3"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "button.selected",
+      "text": "Tất cả"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Hôm nay"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Quá hạn"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Đã hoàn thành"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "button.selected",
+      "text": "Theo đơn vị"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "Lịch tuần"
+    },
+    {
+      "background": [
+        226,
+        234,
+        244
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 13.41,
+      "selector": "strong.",
+      "text": "Đơn vị Bình Minh (mẫu)"
+    },
+    {
+      "background": [
+        226,
+        234,
+        244
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.2,
+      "selector": "small.",
+      "text": "Phụ trách: Trần Thị Lan · 4 công việc"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "span.tag status-info",
+      "text": "Đang xử lý"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "span.",
+      "text": "50%"
+    },
+    {
+      "background": [
+        226,
+        234,
+        244
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.2,
+      "selector": "span.task-unit-chevron",
+      "text": "⌃"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 15.55,
+      "selector": "h3.",
+      "text": "Công việc (4)"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.03,
+      "selector": "small.",
+      "text": "Đã hoàn thành 2/4 việc · Tỷ lệ tính trên toàn bộ việc của đơn vị "
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(29, 78, 216)",
+      "pass": true,
+      "ratio": 6.41,
+      "selector": "a.",
+      "text": "Hồ sơ đơn vị →"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "+ Thêm việc"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(29, 78, 216)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "button.circle-action",
+      "text": "○"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 15.55,
+      "selector": "strong.",
+      "text": "dfdf"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.03,
+      "selector": "small.",
+      "text": "Người thực hiện: Nguyễn Thu Hoa"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.03,
+      "selector": "small.task-due",
+      "text": "Thời gian: Chưa đặt hạn"
+    },
+    {
+      "background": [
+        226,
+        232,
+        240
+      ],
+      "foreground": "rgb(71, 85, 105)",
+      "pass": true,
+      "ratio": 6.15,
+      "selector": "span.tag status-neutral",
+      "text": "Công việc"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "span.tag status-info",
+      "text": "Đang xử lý"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(29, 78, 216)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "button.circle-action",
+      "text": "✓"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 15.55,
+      "selector": "strong.",
+      "text": "kkjkj"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.03,
+      "selector": "small.",
+      "text": "Người thực hiện: Nguyễn Thu Hoa"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.03,
+      "selector": "small.task-due",
+      "text": "Thời gian: 22:43 03-09"
+    },
+    {
+      "background": [
+        226,
+        232,
+        240
+      ],
+      "foreground": "rgb(71, 85, 105)",
+      "pass": true,
+      "ratio": 6.15,
+      "selector": "span.tag status-neutral",
+      "text": "Công việc"
+    },
+    {
+      "background": [
+        220,
+        252,
+        231
+      ],
+      "foreground": "rgb(22, 101, 52)",
+      "pass": true,
+      "ratio": 6.49,
+      "selector": "span.tag status-success",
+      "text": "Hoàn thành"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(29, 78, 216)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "button.circle-action",
+      "text": "✓"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 15.55,
+      "selector": "strong.",
+      "text": "đfdf"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.03,
+      "selector": "small.",
+      "text": "Người thực hiện: Trần Thị Lan"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.03,
+      "selector": "small.task-due",
+      "text": "Thời gian: 23:31 24-09"
+    },
+    {
+      "background": [
+        226,
+        232,
+        240
+      ],
+      "foreground": "rgb(71, 85, 105)",
+      "pass": true,
+      "ratio": 6.15,
+      "selector": "span.tag status-neutral",
+      "text": "Công việc"
+    },
+    {
+      "background": [
+        220,
+        252,
+        231
+      ],
+      "foreground": "rgb(22, 101, 52)",
+      "pass": true,
+      "ratio": 6.49,
+      "selector": "span.tag status-success",
+      "text": "Hoàn thành"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(29, 78, 216)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "button.circle-action",
+      "text": "○"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 15.55,
+      "selector": "strong.",
+      "text": "ddfdfdf"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.03,
+      "selector": "small.",
+      "text": "Người thực hiện: Trần Thị Lan"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.03,
+      "selector": "small.task-due",
+      "text": "Thời gian: 23:54 25-09"
+    },
+    {
+      "background": [
+        226,
+        232,
+        240
+      ],
+      "foreground": "rgb(71, 85, 105)",
+      "pass": true,
+      "ratio": 6.15,
+      "selector": "span.tag status-neutral",
+      "text": "Công việc"
+    },
+    {
+      "background": [
+        219,
+        234,
+        254
+      ],
+      "foreground": "rgb(30, 64, 175)",
+      "pass": true,
+      "ratio": 7.15,
+      "selector": "span.tag status-info",
+      "text": "Đang xử lý"
+    },
+    {
+      "background": [
+        226,
+        234,
+        244
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 13.41,
+      "selector": "strong.",
+      "text": "Công ty Sao Mai (mẫu)"
+    },
+    {
+      "background": [
+        226,
+        234,
+        244
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.2,
+      "selector": "small.",
+      "text": "Phụ trách: Trần Thị Lan · 1 công việc"
+    },
+    {
+      "background": [
+        220,
+        252,
+        231
+      ],
+      "foreground": "rgb(22, 101, 52)",
+      "pass": true,
+      "ratio": 6.49,
+      "selector": "span.tag status-success",
+      "text": "Hoàn thành"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "span.",
+      "text": "100%"
+    },
+    {
+      "background": [
+        226,
+        234,
+        244
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.2,
+      "selector": "span.task-unit-chevron",
+      "text": "⌃"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 15.55,
+      "selector": "h3.",
+      "text": "Công việc (1)"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.03,
+      "selector": "small.",
+      "text": "Đã hoàn thành 1/1 việc · Tỷ lệ tính trên toàn bộ việc của đơn vị "
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(29, 78, 216)",
+      "pass": true,
+      "ratio": 6.41,
+      "selector": "a.",
+      "text": "Hồ sơ đơn vị →"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 16.27,
+      "selector": "button.",
+      "text": "+ Thêm việc"
+    },
+    {
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "foreground": "rgb(29, 78, 216)",
+      "pass": true,
+      "ratio": 6.7,
+      "selector": "button.circle-action",
+      "text": "✓"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(23, 32, 51)",
+      "pass": true,
+      "ratio": 15.55,
+      "selector": "strong.",
+      "text": "Gọi lại xác nhận nhu cầu Sao Mai"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.03,
+      "selector": "small.",
+      "text": "Người thực hiện: Trần Thị Lan"
+    },
+    {
+      "background": [
+        248,
+        250,
+        252
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 6.03,
+      "selector": "small.task-due",
+      "text": "Thời gian: 16:00 20-09"
+    },
+    {
+      "background": [
+        226,
+        232,
+        240
+      ],
+      "foreground": "rgb(71, 85, 105)",
+      "pass": true,
+      "ratio": 6.15,
+      "selector": "span.tag status-neutral",
+      "text": "Công việc"
+    },
+    {
+      "background": [
+        220,
+        252,
+        231
+      ],
+      "foreground": "rgb(22, 101, 52)",
+      "pass": true,
+      "ratio": 6.49,
+      "selector": "span.tag status-success",
+      "text": "Hoàn thành"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "span.",
+      "text": "Dữ liệu lưu tại localhost · Xem trạng thái từng kênh trong Kênh k"
+    },
+    {
+      "background": [
+        241,
+        245,
+        249
+      ],
+      "foreground": "rgb(82, 97, 118)",
+      "pass": true,
+      "ratio": 5.76,
+      "selector": "span.",
+      "text": "Smart Omni CRM / iViTech"
+    }
+  ],
+  "width": 1280
+}

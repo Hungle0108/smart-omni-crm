@@ -1,0 +1,98 @@
+[
+  {
+    "page": "home",
+    "checked": 118,
+    "min": 5.76,
+    "overflow": false,
+    "failures": []
+  },
+  {
+    "page": "progress",
+    "checked": 193,
+    "min": 5.2,
+    "overflow": false,
+    "failures": []
+  },
+  {
+    "page": "quotes",
+    "checked": 84,
+    "min": 2.89,
+    "overflow": false,
+    "failures": [
+      {
+        "background": [
+          241,
+          245,
+          249
+        ],
+        "foreground": "rgb(132, 149, 135)",
+        "pass": false,
+        "ratio": 2.89,
+        "selector": "div.workflow-line",
+        "text": "→ → →"
+      },
+      {
+        "background": [
+          242,
+          246,
+          243
+        ],
+        "foreground": "rgb(132, 149, 135)",
+        "pass": false,
+        "ratio": 2.9,
+        "selector": "span.",
+        "text": "01 · Bản nháp"
+      },
+      {
+        "background": [
+          242,
+          246,
+          243
+        ],
+        "foreground": "rgb(132, 149, 135)",
+        "pass": false,
+        "ratio": 2.9,
+        "selector": "span.",
+        "text": "02 · Trình duyệt"
+      },
+      {
+        "background": [
+          242,
+          246,
+          243
+        ],
+        "foreground": "rgb(132, 149, 135)",
+        "pass": false,
+        "ratio": 2.9,
+        "selector": "span.",
+        "text": "03 · Đã duyệt"
+      },
+      {
+        "background": [
+          242,
+          246,
+          243
+        ],
+        "foreground": "rgb(132, 149, 135)",
+        "pass": false,
+        "ratio": 2.9,
+        "selector": "span.",
+        "text": "04 · Gửi thử"
+      }
+    ]
+  },
+  {
+    "page": "inbox",
+    "checked": 106,
+    "min": 5.17,
+    "overflow": false,
+    "failures": []
+  },
+  {
+    "page": "templates",
+    "checked": 201,
+    "min": 5.76,
+    "overflow": false,
+    "failures": []
+  }
+]

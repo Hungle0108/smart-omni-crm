@@ -1,0 +1,18 @@
+{
+  "at": "2026-09-21T17:28:04.503Z",
+  "checks": [
+    "Chỉ admin cấu hình; GET và SQLite không lộ mã bí mật",
+    "Chữ ký, App ID, chống nhận trùng và khách mới chờ phân công",
+    "Đúng sales, chống gửi trùng và chỉ báo tiếp nhận khi có mã Zalo",
+    "Timeout không tự gửi lại; lỗi Zalo không báo thành công",
+    "Kiểm tra lại cờ không liên hệ ngay trước khi gửi",
+    "FAQ chờ gửi dừng sau tiếp nhận hoặc thu hồi nội dung",
+    "Không trộn tin giả/báo giá mô phỏng vào hội thoại thật",
+    "Echo đến trước phản hồi API không tạo trùng hoặc dừng nhầm bot; trả lời thủ công dừng bot",
+    "Làm mới mã một lần khi đồng thời và dùng refresh token mới ở lần sau",
+    "Cổng webhook không công bố API đăng nhập/quản trị CRM",
+    "Tạm dừng chặn nhận/gửi",
+    "Adapter gọi đúng endpoint, header, người nhận và đọc mã làm mới"
+  ],
+  "liveOATested": false
+}

@@ -1,0 +1,31 @@
+{
+  "name": "smart-omni-crm",
+  "private": true,
+  "type": "module",
+  "version": "0.5.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js && node test-features.js",
+    "test:progress": "node test-progress.js",
+    "test:organizations": "node test-organizations.js",
+    "test:customer360": "node test-customer-360.js",
+    "test:workflow": "node test-workflow.js",
+    "test:catalog": "node test-catalog.js",
+    "test:zalo": "node test-zalo.js",
+    "test:lifecycle": "node test-lifecycle.js",
+    "test:service-content": "node test-service-content.js",
+    "test:approval-rules": "node test-approval-rules.js",
+    "test:template-imports": "node test-template-imports.js",
+    "test:channels": "node test-channel-connections.js",
+    "test:channel-access": "node test-channel-access.js",
+    "test:saas": "node test-saas.js",
+    "test:platform": "node test-platform.js"
+  },
+  "dependencies": {
+    "jszip": "3.10.1",
+    "xml-js": "1.6.11"
+  }
+}

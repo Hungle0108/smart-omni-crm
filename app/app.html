@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart Omni CRM</title>
+<style>
+/* Phát triển từ bản thiết kế đề xuất: docs/design/smart-omni-review.html */
+/* Semantic palette is defined in workspace.css. */
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.55 'Segoe UI',Arial,sans-serif;color:var(--ink);background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:1px solid var(--line);background:var(--paper);padding:8px 12px;border-radius:8px;cursor:pointer}
+button:hover{background:var(--soft)}button:disabled{opacity:.45;cursor:not-allowed}
+button.major{background:var(--brand);color:light-dark(#fff,#142239);border-color:var(--brand)}
+input,select,textarea{width:100%;padding:8px 10px;background:var(--paper);border:1px solid var(--line);border-radius:7px}
+label{display:block;margin-bottom:10px}label>span{display:block;color:var(--sub);font-size:12px;margin-bottom:4px}
+a{color:var(--brand)}
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+nav{background:var(--paper);border-right:1px solid var(--line);padding:14px}
+nav h1{font-size:15px;margin:0 0 4px}
+nav .who{color:var(--sub);font-size:12px;margin-bottom:14px}
+nav a{display:block;padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--ink);margin-bottom:2px}
+nav a.on{background:var(--soft);color:var(--brand);font-weight:600}
+main{padding:20px;max-width:1100px;min-width:0}
+h2{margin:0 0 4px;font-size:19px}.lead{color:var(--sub);margin:0 0 16px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;overflow-x:auto}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.kpi b{display:block;font-size:24px;margin-top:4px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--sub);font-size:12px;font-weight:600}
+.tag{display:inline-block;padding:2px 8px;border-radius:99px;border:1px solid var(--line);font-size:12px;background:var(--bg)}
+.tag.ok{color:var(--good);border-color:currentColor}.tag.warn{color:var(--warn);border-color:currentColor}
+.tag.bad{color:var(--bad);border-color:currentColor}
+.sim{background:light-dark(#fff6e5,#3a2d17);border:1px solid var(--warn);color:var(--warn);padding:8px 10px;border-radius:8px;font-size:12px;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.thread{max-height:46vh;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:4px}
+.msg{padding:8px 10px;border-radius:10px;max-width:78%;border:1px solid var(--line);background:var(--bg)}
+.msg.agent{align-self:flex-end;background:var(--soft);border-color:var(--brand)}
+.msg.system{align-self:center;font-size:12px;color:var(--sub);background:transparent;border:0}
+.msg small{display:block;color:var(--sub);font-size:11px}
+.err{color:var(--bad);margin:8px 0}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);max-width:460px;width:92%}
+@media(max-width:820px){.shell{grid-template-columns:1fr}nav{border-right:0;border-bottom:1px solid var(--line)}
+nav a{display:inline-block}main{padding:14px}}
+</style>
+<link rel="stylesheet" href="/workspace.css">
+</head>
+<body class="crm-theme">
+<div id="root"></div>
+<script>
+const $ = (h) => { const d = document.createElement('div'); d.innerHTML = h.trim(); return d.firstElementChild; };
+const esc = (s) => String(s ?? '').replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+const vnd = (n) => n == null ? '—' : new Intl.NumberFormat('vi-VN').format(n) + ' đ';
+const dt = (s) => s ? new Date(s).toLocaleString('vi-VN') : '—';
+let me = null, err = '';
+
+async function api(path, opts = {}) {
+  const r = await fetch('/api' + path, {
+    method: opts.method || (opts.body ? 'POST' : 'GET'),
+    headers: { 'Content-Type': 'application/json', ...(me?.company && !path.startsWith('/login') ? {'X-CRM-Company':me.company.code}: {}) },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || 'Lỗi không xác định');
+  return j;
+}
+const go = (h) => { location.hash = h; };
+const show = (msg) => { err = msg; render(); };
+
+const NAV = [
+  ['#/home', 'Trang chủ'], ['#/customers', 'Khách hàng'], ['#/pipeline', 'Cơ hội'],
+  ['#/inbox', 'Hộp thư'], ['#/quotes', 'Báo giá'], ['#/tasks', 'Công việc'], ['#/settings', 'Cấu hình'],
+];
+
+// ── Đăng nhập ──────────────────────────────────────────────────────────────
+function loginView() {
+  const accounts = [['hoa', 'Trưởng nhóm — hoa'], ['admin', 'Quản trị — admin'], ['duc', 'Giám đốc — duc'], ['lan', 'Sales Smart iVier — lan'], ['minh', 'Sales đào tạo AI — minh']];
+  const el = $(`<main style="max-width:440px;margin:8vh auto">
+    <h2>Smart Omni CRM</h2>
+    <p class="lead">Bản chạy thử nội bộ — dữ liệu mẫu.</p>
+    <form class="card" id="login-form">
+      <label><span>Chọn tài khoản để test</span><select id="quick-account"><option value="">Tự nhập tài khoản</option>${accounts.map(([username,label])=>`<option value="${username}" ${username==='hoa'?'selected':''}>${label}</option>`).join('')}</select></label>
+      <label><span>Tài khoản</span><input id="u" name="username" value="hoa" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+      <label><span>Mật khẩu</span><input id="p" name="password" type="password" value="123456" autocomplete="current-password" required></label>
+      <button class="major" id="go" type="submit">Đăng nhập</button>
+      <p class="lead" style="margin-top:12px;font-size:12px">Tài khoản mẫu: <b>lan</b>, <b>minh</b> (sales) ·
+      <b>hoa</b> (trưởng nhóm) · <b>duc</b> (giám đốc) · <b>admin</b>. Mật khẩu: 123456</p>
+      <p class="err" id="login-error" role="alert">${esc(err)}</p>
+    </form></main>`);
+  const username = el.querySelector('#u'), password = el.querySelector('#p'), chooser = el.querySelector('#quick-account');
+  chooser.onchange = () => { username.value = chooser.value; if(!chooser.value) username.focus(); };
+  username.oninput = () => { chooser.value = accounts.some(([u])=>u===username.value.trim()) ? username.value.trim() : ''; };
+  let submitting = false;
+  const submit = async () => {
+    if(submitting) return;
+    submitting = true;
+    const button = el.querySelector('#go');
+    button.disabled = true;
+    button.textContent = 'Đang đăng nhập…';
+    el.querySelector('#login-error').textContent = '';
+    try {
+      me = (await api('/login', { body: { username: username.value.trim(), password: password.value } })).user;
+      err = ''; go('#/home'); render();
+    } catch (e) { el.querySelector('#login-error').textContent = e.message; }
+    finally { submitting = false; button.disabled = false; button.textContent = 'Đăng nhập'; }
+  };
+  // Let native typing, deletion, paste and Enter work. A DOM0 key handler that
+  // returns false for non-Enter keys cancels the browser's text input.
+  el.querySelector('#login-form').onsubmit = e => { e.preventDefault(); submit(); };
+  return el;
+}
+
+// ── Màn hình ───────────────────────────────────────────────────────────────
+const views = {};
+
+views.home = async () => {
+  const d = await api('/home');
+  return $(`<div><h2>Trang chủ</h2><p class="lead">Số liệu tính theo phạm vi bạn được xem.</p>
+  <div class="grid">
+    <div class="card kpi">Giá trị cơ hội đang mở<b>${vnd(d.open_value)}</b></div>
+    <div class="card kpi">Tỷ lệ thắng<b>${d.win_rate === null ? '<span style="font-size:15px;color:var(--sub)">Chưa có dữ liệu</span>' : d.win_rate + '%'}</b>
+      <small style="color:var(--sub)">Thắng ${d.won} / Thua ${d.lost}</small></div>
+    <div class="card kpi">Công việc quá hạn<b>${d.overdue_tasks}</b></div>
+    <div class="card kpi">Hội thoại chưa phân công<b>${d.unassigned_conversations}</b></div>
+  </div>
+  <div class="card"><b>Phần chưa có trong bản này:</b> kết nối Zalo thật, chatbot, kho tri thức, AI và báo cáo nâng cao.
+  Xem <code>docs/planning/03_MVP_VA_CAC_MOC.md</code> để biết các mốc còn lại.</div></div>`);
+};
+
+views.customers = async () => {
+  const list = await api('/customers');
+  const el = $(`<div><h2>Khách hàng</h2>
+  <p class="lead">Doanh nghiệp và cá nhân. Khách cá nhân không bắt buộc có công ty.</p>
+  <div class="card"><div class="row"><input id="q" placeholder="Tìm theo tên hoặc số điện thoại" style="flex:1;min-width:200px">
+  <button id="new">+ Thêm khách hàng</button></div></div>
+  <div class="card"><table><thead><tr><th>Khách hàng</th><th>Loại</th><th>Điện thoại</th><th>Quan tâm</th><th>Phụ trách</th></tr></thead>
+  <tbody>${list.map((c) => `<tr><td><a href="#/customer/${c.id}">${esc(c.name)}</a></td>
+  <td><span class="tag">${c.kind === 'org' ? 'Tổ chức' : 'Cá nhân'}</span></td><td>${esc(c.phone || '—')}</td>
+  <td>${esc(c.interest || '—')}</td><td>${esc(c.owner_name || 'Chưa giao')}</td></tr>`).join('') ||
+    '<tr><td colspan="5" style="color:var(--sub)">Chưa có khách hàng nào trong phạm vi của bạn.</td></tr>'}</tbody></table></div></div>`);
+  el.querySelector('#q').oninput = async (e) => {
+    const r = await api('/customers?q=' + encodeURIComponent(e.target.value));
+    el.querySelector('tbody').innerHTML = r.map((c) => `<tr><td><a href="#/customer/${c.id}">${esc(c.name)}</a></td>
+      <td><span class="tag">${c.kind === 'org' ? 'Tổ chức' : 'Cá nhân'}</span></td><td>${esc(c.phone || '—')}</td>
+      <td>${esc(c.interest || '—')}</td><td>${esc(c.owner_name || 'Chưa giao')}</td></tr>`).join('');
+  };
+  el.querySelector('#new').onclick = () => form('Thêm khách hàng', [
+    ['kind', 'Loại khách', 'select', [['org', 'Tổ chức / doanh nghiệp'], ['person', 'Cá nhân']]],
+    ['name', 'Tên khách hàng'], ['phone', 'Điện thoại'], ['email', 'Email'],
+    ['interest', 'Sản phẩm quan tâm', 'select', [['Smart iVier', 'Smart iVier'], ['Đào tạo AI', 'Đào tạo AI']]],
+    ['has_pkg1', 'Đã đăng ký Gói 1', 'check'],
+  ], async (v) => { const r = await api('/customers', { body: v }); if (r.duplicate_warning) alert(r.duplicate_warning); render(); });
+  return el;
+};
+
+views.customer = async (id) => {
+  const d = await api('/customers/' + id);
+  const c = d.customer;
+  return $(`<div><h2>${esc(c.name)}</h2>
+  <p class="lead">${c.kind === 'org' ? 'Tổ chức' : 'Khách cá nhân'} · Phụ trách: ${esc(c.owner_name || 'Chưa giao')}
+   · ${c.has_pkg1 ? '<span class="tag ok">Đã có Gói 1</span>' : '<span class="tag">Chưa có Gói 1</span>'}</p>
+  <div class="grid">
+    <div class="card"><b>Thông tin</b><table>
+      <tr><th>Điện thoại</th><td>${esc(c.phone || '—')}</td></tr>
+      <tr><th>Email</th><td>${esc(c.email || '—')}</td></tr>
+      <tr><th>Mã số thuế</th><td>${esc(c.tax_code || '—')}</td></tr>
+      <tr><th>Loại tổ chức</th><td>${esc(c.org_type || '—')}</td></tr>
+      <tr><th>Quan tâm</th><td>${esc(c.interest || '—')}</td></tr></table></div>
+    <div class="card"><b>Cơ hội</b>${d.opportunities.map((o) => `<div style="margin-top:8px">
+      <a href="#/opportunity/${o.id}">${esc(o.title)}</a><br><span class="tag">${esc(o.stage)}</span> ${vnd(o.est_value)}</div>`).join('') || '<p class="lead">Chưa có cơ hội.</p>'}</div>
+    <div class="card"><b>Báo giá</b>${d.quotes.map((q) => `<div style="margin-top:8px">
+      <a href="#/quote/${q.id}">${esc(q.code)} v${q.version}</a> <span class="tag">${esc(q.status)}</span></div>`).join('') || '<p class="lead">Chưa có báo giá.</p>'}</div>
+    <div class="card"><b>Hội thoại</b>${d.conversations.map((v) => `<div style="margin-top:8px">
+      <a href="#/conversation/${v.id}">${esc(v.channel)}</a></div>`).join('') || '<p class="lead">Chưa có hội thoại.</p>'}</div>
+    <div class="card"><b>Công việc</b>${d.tasks.map((t) => `<div style="margin-top:8px">${esc(t.title)}
+      <span class="tag ${t.status === 'OPEN' && t.due_at < new Date().toISOString() ? 'bad' : ''}">${t.status === 'OPEN' ? 'Đang mở' : 'Xong'}</span></div>`).join('') || '<p class="lead">Chưa có công việc.</p>'}</div>
+  </div></div>`);
+};
+
+const STAGES = ['Mới', 'Xác định nhu cầu', 'Tư vấn/Demo', 'Gửi báo giá', 'Đàm phán', 'Thắng', 'Thua'];
+views.pipeline = async () => {
+  const list = await api('/opportunities');
+  const el = $(`<div><h2>Cơ hội bán hàng</h2>
+  <p class="lead">Các bước đã chốt: ${STAGES.slice(0, 5).join(' → ')} → Thắng/Thua.</p>
+  <div class="card"><table><thead><tr><th>Cơ hội</th><th>Khách hàng</th><th>Bước</th><th>Giá trị</th><th>Phụ trách</th></tr></thead>
+  <tbody>${list.map((o) => `<tr><td><a href="#/opportunity/${o.id}">${esc(o.title)}</a></td>
+  <td>${esc(o.customer_name)}</td><td><span class="tag ${o.stage === 'Thắng' ? 'ok' : o.stage === 'Thua' ? 'bad' : ''}">${esc(o.stage)}</span></td>
+  <td>${vnd(o.stage === 'Thắng' ? o.final_value : o.est_value)}</td><td>${esc(o.owner_name || '—')}</td></tr>`).join('') ||
+    '<tr><td colspan="5" style="color:var(--sub)">Chưa có cơ hội nào trong phạm vi của bạn.</td></tr>'}</tbody></table></div></div>`);
+  return el;
+};
+
+views.opportunity = async (id) => {
+  const d = await api('/opportunities/' + id);
+  const o = d.opportunity;
+  const el = $(`<div><h2>${esc(o.title)}</h2>
+  <p class="lead"><a href="#/customer/${o.customer_id}">${esc(d.customer.name)}</a> ·
+  <span class="tag ${o.stage === 'Thắng' ? 'ok' : o.stage === 'Thua' ? 'bad' : ''}">${esc(o.stage)}</span></p>
+  <div class="card"><div class="row">
+    ${STAGES.map((s) => `<button data-s="${esc(s)}" ${s === o.stage ? 'disabled' : ''}>${esc(s)}</button>`).join('')}
+  </div>
+  ${o.stage === 'Thua' ? `<p class="lead" style="margin-top:10px">Lý do thua: <b>${esc(o.lost_reason || '—')}</b></p>` : ''}
+  ${o.stage === 'Thắng' ? `<p class="lead" style="margin-top:10px">Giá trị chốt ${vnd(o.final_value)} · ngày ${dt(o.closed_at)} · đã ký hợp đồng.</p>` : ''}
+  </div>
+  <div class="card"><b>Lịch sử bước</b><table><thead><tr><th>Thời điểm</th><th>Từ → đến</th><th>Lý do</th><th>Người thao tác</th></tr></thead>
+  <tbody>${d.history.map((h) => `<tr><td>${dt(h.at)}</td><td>${esc(h.from_stage || '—')} → ${esc(h.to_stage)}</td>
+  <td>${esc(h.reason || '—')}</td><td>${esc(h.user_name || '—')}</td></tr>`).join('')}</tbody></table></div></div>`);
+
+  el.querySelectorAll('button[data-s]').forEach((b) => (b.onclick = () => {
+    const to = b.dataset.s;
+    const fields = [];
+    if (to === 'Thắng') fields.push(['contract_signed', 'Xác nhận hai bên đã ký hợp đồng', 'check'],
+      ['final_value', 'Giá trị chốt (đ)', 'number'], ['closed_at', 'Ngày chốt', 'date']);
+    if (to === 'Thua') fields.push(['reason', 'Lý do thua']);
+    if (o.stage === 'Thua' && to !== 'Thua') fields.push(['reason', 'Lý do mở lại cơ hội']);
+    const send = async (v) => { await api(`/opportunities/${o.id}/stage`, { body: { to, ...v } }); render(); };
+    fields.length ? form(`Chuyển sang: ${to}`, fields, send) : send({});
+  }));
+  return el;
+};
+
+views.inbox = async () => {
+  const list = await api('/conversations');
+  return $(`<div><h2>Hộp thư</h2>
+  <div class="sim">MÔ PHỎNG — chưa kết nối Zalo OA hoặc Zalo cá nhân. Tin nhắn chỉ lưu trong CRM, không gửi tới khách.</div>
+  <div class="card"><table><thead><tr><th>Khách hàng</th><th>Kênh</th><th>Tin cuối</th><th>Phụ trách</th><th>Bot</th></tr></thead>
+  <tbody>${list.map((v) => `<tr><td><a href="#/conversation/${v.id}">${esc(v.customer_name)}</a></td>
+  <td>${esc(v.channel)}</td><td style="color:var(--sub)">${esc((v.last_body || '').slice(0, 60))}</td>
+  <td>${v.assignee_name ? esc(v.assignee_name) : '<span class="tag warn">Chờ phân công</span>'}</td>
+  <td>${v.bot_active ? '<span class="tag">Bot đang trả lời</span>' : '<span class="tag ok">Người xử lý</span>'}</td></tr>`).join('') ||
+    '<tr><td colspan="5" style="color:var(--sub)">Chưa có hội thoại trong phạm vi của bạn.</td></tr>'}</tbody></table></div></div>`);
+};
+
+views.conversation = async (id) => {
+  const d = await api('/conversations/' + id);
+  const v = d.conversation;
+  const canAssign = ['leader', 'director', 'admin'].includes(me.role);
+  const el = $(`<div><h2>${esc(d.customer.name)}</h2>
+  <p class="lead">${esc(v.channel)} · <a href="#/customer/${d.customer.id}">Mở hồ sơ khách hàng</a></p>
+  <div class="sim">MÔ PHỎNG — tin nhắn không được gửi thật tới khách.</div>
+  <div class="card"><div class="thread">${d.messages.map((m) => `<div class="msg ${m.sender}">
+    ${m.sender === 'system' ? '' : `<small>${m.sender === 'customer' ? 'Khách' : m.sender === 'bot' ? 'Bot' : esc(m.user_name || 'Nhân viên')} · ${dt(m.at)}</small>`}
+    ${esc(m.body)}</div>`).join('')}</div>
+  ${v.assignee_id ? `<div class="row" style="margin-top:12px">
+    <input id="msg" placeholder="Nhập nội dung trả lời" style="flex:1;min-width:200px">
+    <button class="major" id="send">Gửi</button>
+    <button id="bot">${v.bot_active ? 'Nhân viên tiếp nhận' : 'Chuyển lại cho bot'}</button></div>`
+    : `<p class="lead" style="margin-top:12px">Hội thoại chưa được giao. ${canAssign ? 'Chọn nhân viên bên dưới.' : 'Chờ trưởng nhóm phân công.'}</p>`}
+  </div>
+  ${canAssign && !v.assignee_id ? '<div class="card" id="sug"><b>Gợi ý nhân viên</b><p class="lead">Đang tải…</p></div>' : ''}
+  </div>`);
+
+  el.querySelector('#send')?.addEventListener('click', async () => {
+    const box = el.querySelector('#msg');
+    if (!box.value.trim()) return;
+    try { const r = await api(`/conversations/${v.id}/messages`, { body: { body: box.value } }); alert(r.note); render(); }
+    catch (e) { show(e.message); }
+  });
+  el.querySelector('#bot')?.addEventListener('click', async () => {
+    await api(`/conversations/${v.id}/bot`, { body: { on: !v.bot_active } }); render();
+  });
+
+  if (canAssign && !v.assignee_id) {
+    api(`/conversations/${v.id}/suggest`).then((s) => {
+      const box = el.querySelector('#sug');
+      if (s.locked_to) { box.innerHTML = `<b>Khách đã có người phụ trách</b><p class="lead">Hội thoại chuyển về ${esc(s.locked_to.name)}.</p>`; return; }
+      box.innerHTML = `<b>Gợi ý nhân viên</b><p class="lead">Ưu tiên am hiểu "${esc(s.interest || '—')}", sau đó ít khách hơn. Trưởng nhóm quyết định.</p>`;
+      s.list.forEach((u) => {
+        const b = $(`<button style="margin:4px 4px 0 0">${esc(u.name)} — ${u.expert ? 'am hiểu sản phẩm' : 'khác chuyên môn'}, ${u.load} khách</button>`);
+        b.onclick = async () => { await api(`/conversations/${v.id}/assign`, { body: { user_id: u.id } }); render(); };
+        box.append(b);
+      });
+    });
+  }
+  return el;
+};
+
+views.quotes = async () => {
+  const [list, pending] = await Promise.all([api('/quotes'), api('/quotes/pending')]);
+  const el = $(`<div><h2>Báo giá</h2>
+  <p class="lead">Tạo, duyệt và gửi ngay trong CRM. Chưa gồm VAT — thuế suất chưa xác định.</p>
+  ${pending.length ? `<div class="card"><b>Chờ bạn duyệt</b>${pending.map((p) => `<div style="margin-top:8px">
+    <a href="#/quote/${p.id}">${esc(p.code)} v${p.version}</a> — ${esc(p.customer_name)} (người lập: ${esc(p.owner_name || '—')})</div>`).join('')}</div>` : ''}
+  <div class="card"><button id="new">+ Lập báo giá</button></div>
+  <div class="card"><table><thead><tr><th>Mã</th><th>Khách hàng</th><th>Mẫu</th><th>Trạng thái</th><th>Ngày tạo</th></tr></thead>
+  <tbody>${list.map((q) => `<tr><td><a href="#/quote/${q.id}">${esc(q.code)} v${q.version}</a></td><td>${esc(q.customer_name)}</td>
+  <td>${q.template === 'solution' ? 'Giải pháp phần mềm' : 'Đào tạo'}</td>
+  <td><span class="tag ${q.status === 'APPROVED' ? 'ok' : q.status === 'PENDING' ? 'warn' : ''}">${({ DRAFT: 'Nháp', PENDING: 'Chờ duyệt', APPROVED: 'Đã duyệt', SENT: 'Đã gửi' })[q.status]}</span></td>
+  <td>${dt(q.created_at)}</td></tr>`).join('') || '<tr><td colspan="5" style="color:var(--sub)">Chưa có báo giá.</td></tr>'}</tbody></table></div></div>`);
+
+  el.querySelector('#new').onclick = async () => {
+    const cs = await api('/customers');
+    form('Lập báo giá', [
+      ['customer_id', 'Khách hàng', 'select', cs.map((c) => [c.id, c.name])],
+      ['template', 'Mẫu', 'select', [['solution', 'Giải pháp phần mềm theo gói'], ['training', 'Đào tạo và chuyển giao']]],
+    ], async (v) => { const r = await api('/quotes', { body: v }); go('#/quote/' + r.id); });
+  };
+  return el;
+};
+
+views.quote = async (id) => {
+  const [d, products] = await Promise.all([api('/quotes/' + id), api('/products')]);
+  const q = d.quote, st = { DRAFT: 'Nháp', PENDING: 'Chờ duyệt', APPROVED: 'Đã duyệt', SENT: 'Đã gửi' }[q.status];
+  const fam = q.template === 'solution' ? 'solution' : 'training';
+  const editable = q.status !== 'SENT';
+  const el = $(`<div><h2>${esc(q.code)} <span class="tag">phiên bản ${q.version}</span></h2>
+  <p class="lead"><a href="#/customer/${d.customer.id}">${esc(d.customer.name)}</a> ·
+  ${q.template === 'solution' ? 'Mẫu giải pháp phần mềm' : 'Mẫu đào tạo'} ·
+  <span class="tag ${q.status === 'APPROVED' ? 'ok' : q.status === 'PENDING' ? 'warn' : ''}">${st}</span></p>
+  ${q.reject_note ? `<div class="sim">Người duyệt yêu cầu sửa: ${esc(q.reject_note)}</div>` : ''}
+
+  <div class="card"><b>Hạng mục</b>
+  ${editable ? `<div class="row" style="margin:10px 0">${products.filter((p) => p.family === fam).map((p) =>
+    `<label style="margin:0"><input type="checkbox" data-code="${p.code}" style="width:auto"
+    ${d.items.some((i) => i.code === p.code) ? 'checked' : ''}> ${esc(p.name)}</label>`).join('')}</div>` : ''}
+  <table><thead><tr><th>Hạng mục</th><th>Giá năm đầu</th><th>Gia hạn từ năm 2</th></tr></thead>
+  <tbody>${d.items.map((i) => `<tr><td>${esc(i.name)}</td><td>${vnd(i.first_year)}</td>
+  <td>${i.renewal == null ? '<span style="color:var(--sub)">Chưa nêu</span>' : vnd(i.renewal)}</td></tr>`).join('') ||
+    '<tr><td colspan="3" style="color:var(--sub)">Chưa chọn hạng mục.</td></tr>'}</tbody>
+  <tfoot><tr><th>Cộng năm đầu</th><th>${vnd(d.totals.first)}</th><th>${d.totals.renewalUnknown ? 'Một phần chưa nêu giá gia hạn' : vnd(d.totals.renewal)}</th></tr>
+  <tr><th>Sau giảm thêm ${q.discount_pct}%</th><th>${vnd(d.net_first_year)}</th><th></th></tr></tfoot></table>
+  <p class="lead" style="font-size:12px">Giá năm đầu và giá gia hạn tách riêng, không cộng gộp. Chưa gồm VAT.</p>
+  </div>
+
+  ${editable ? `<div class="card"><b>Điều kiện</b>
+    <label><span>Giảm thêm (%)</span><input id="disc" type="number" min="0" max="100" value="${q.discount_pct}"></label>
+    ${fam === 'training' ? `<label><span>Ngày kích hoạt (đào tạo tính 12 tháng từ ngày này)</span>
+      <input id="act" type="date" value="${q.activation_date || ''}"></label>` : ''}
+    <button id="save">Lưu bản nháp</button></div>` : ''}
+
+  <div class="card"><b>Duyệt và gửi</b>
+  ${d.route?.blocked ? `<p class="err">${esc(d.route.blocked)}</p>` : d.route ? `<p class="lead">
+    Cấp duyệt: <b>${d.route.level === 'director' ? 'Giám đốc' : 'Trưởng nhóm'}</b>
+    ${d.route.overAmount ? '(vượt ngưỡng tiền)' : d.route.overDiscount ? '(vượt ngưỡng chiết khấu)' : '(trong ngưỡng)'}</p>` : ''}
+  <div class="row">
+    ${q.status === 'DRAFT' ? '<button class="major" id="submit">Gửi duyệt</button>' : ''}
+    ${q.status === 'PENDING' ? '<button class="major" id="ok">Duyệt</button><button id="rev">Yêu cầu sửa</button>' : ''}
+    ${q.status === 'APPROVED' ? '<button class="major" id="send">Gửi khách</button>' : ''}
+    ${q.status === 'SENT' ? '<button id="revise">Tạo bản sửa (phiên bản mới)</button>' : ''}
+  </div>
+  ${q.approved_at ? `<p class="lead" style="margin-top:8px">Đã duyệt lúc ${dt(q.approved_at)}. Bản được duyệt đã lưu lại, đổi danh mục sau không làm thay đổi bản này.</p>` : ''}
+  ${q.sent_at ? `<p class="lead">Ghi nhận gửi lúc ${dt(q.sent_at)} — MÔ PHỎNG, chưa gửi thật qua Zalo. Đã gửi không có nghĩa khách đã đọc hoặc đã đồng ý.</p>` : ''}
+  </div></div>`);
+
+  const save = async () => {
+    const codes = [...el.querySelectorAll('input[data-code]:checked')].map((c) => ({ code: c.dataset.code, qty: 1 }));
+    await api('/quotes/' + id, {
+      method: 'PUT',
+      body: { items: codes, discount_pct: el.querySelector('#disc')?.value || 0, activation_date: el.querySelector('#act')?.value || null },
+    });
+  };
+  el.querySelector('#save')?.addEventListener('click', async () => { try { await save(); render(); } catch (e) { show(e.message); } });
+  el.querySelectorAll('input[data-code]').forEach((c) => (c.onchange = async () => { try { await save(); render(); } catch (e) { c.checked = !c.checked; show(e.message); } }));
+  el.querySelector('#submit')?.addEventListener('click', async () => {
+    try { const r = await api(`/quotes/${id}/submit`, { body: {} }); alert(`Đã gửi duyệt. Cấp duyệt: ${r.level === 'director' ? 'Giám đốc' : 'Trưởng nhóm'} — ${r.reason}.`); render(); }
+    catch (e) { show(e.message); }
+  });
+  el.querySelector('#ok')?.addEventListener('click', async () => {
+    try { await api(`/quotes/${id}/approve`, { body: { decision: 'approve' } }); render(); } catch (e) { show(e.message); }
+  });
+  el.querySelector('#rev')?.addEventListener('click', () =>
+    form('Yêu cầu sửa', [['note', 'Nội dung cần sửa']], async (v) => { await api(`/quotes/${id}/approve`, { body: { decision: 'revise', ...v } }); render(); }));
+  el.querySelector('#send')?.addEventListener('click', async () => {
+    // Mã chống gửi trùng: bấm lại do chờ lâu không tạo hai lần gửi.
+    const key = `q${id}-v${q.version}`;
+    try { const r = await api(`/quotes/${id}/send`, { body: { send_key: key } }); alert(r.already_sent ? 'Báo giá này đã được ghi nhận gửi trước đó.' : r.note); render(); }
+    catch (e) { show(e.message); }
+  });
+  el.querySelector('#revise')?.addEventListener('click', async () => {
+    const r = await api(`/quotes/${id}/revise`, { body: {} }); go('#/quote/' + r.id);
+  });
+  return el;
+};
+
+views.tasks = async () => {
+  const list = await api('/tasks');
+  const el = $(`<div><h2>Công việc</h2><p class="lead">Quá hạn tính theo hạn chót so với hiện tại.</p>
+  <div class="card"><button id="new">+ Thêm công việc</button></div>
+  <div class="card"><table><thead><tr><th>Việc</th><th>Khách hàng</th><th>Hạn</th><th>Trạng thái</th><th></th></tr></thead>
+  <tbody>${list.map((t) => `<tr><td>${esc(t.title)}</td><td>${esc(t.customer_name || '—')}</td><td>${dt(t.due_at)}</td>
+  <td>${t.status === 'COMPLETED' ? '<span class="tag ok">Đã xong</span>'
+    : t.due_at && t.due_at < new Date().toISOString() ? '<span class="tag bad">Quá hạn</span>' : '<span class="tag">Đang mở</span>'}</td>
+  <td>${t.status === 'OPEN' ? `<button data-done="${t.id}">Đánh dấu xong</button>` : ''}</td></tr>`).join('') ||
+    '<tr><td colspan="5" style="color:var(--sub)">Chưa có công việc.</td></tr>'}</tbody></table></div></div>`);
+  el.querySelectorAll('[data-done]').forEach((b) => (b.onclick = async () => { await api(`/tasks/${b.dataset.done}/done`, { body: {} }); render(); }));
+  el.querySelector('#new').onclick = async () => {
+    const cs = await api('/customers');
+    form('Thêm công việc', [['title', 'Tên công việc'], ['customer_id', 'Khách hàng', 'select', [['', '— không gắn —'], ...cs.map((c) => [c.id, c.name])]],
+      ['due_at', 'Hạn chót', 'datetime-local']], async (v) => {
+        await api('/tasks', { body: { ...v, due_at: v.due_at ? new Date(v.due_at).toISOString() : null } }); render();
+      });
+  };
+  return el;
+};
+
+views.settings = async () => {
+  const s = await api('/settings');
+  const admin = me.role === 'admin';
+  const el = $(`<div><h2>Cấu hình</h2>
+  <p class="lead">Công ty tự nhập ngưỡng duyệt. <b>Để trống nghĩa là chưa cấu hình, khác với ngưỡng bằng 0.</b>
+  Khi chưa cấu hình, báo giá vẫn lập nháp được nhưng chưa gửi duyệt được.</p>
+  <div class="card">
+    <label><span>Ngưỡng giá trị cần giám đốc duyệt (đ)</span><input id="a" type="number" value="${s.amount ?? ''}" ${admin ? '' : 'disabled'}></label>
+    <label><span>Ngưỡng chiết khấu cần giám đốc duyệt (%)</span><input id="d" type="number" value="${s.discount ?? ''}" ${admin ? '' : 'disabled'}></label>
+    <label><span>Giờ làm việc đội sales</span><input id="w" value="${esc(s.work_hours)}" ${admin ? '' : 'disabled'}></label>
+    ${admin ? '<button class="major" id="save">Lưu</button>' : '<p class="lead">Chỉ quản trị hệ thống sửa được mục này.</p>'}
+  </div>
+  <div class="card"><b>Cơ sở xét ngưỡng đang dùng</b><p class="lead">Giá năm đầu sau giảm thêm. Đây là đề xuất trong
+  <code>docs/planning/06</code>, chưa phải công thức công ty đã chốt.</p></div></div>`);
+  el.querySelector('#save')?.addEventListener('click', async () => {
+    await api('/settings', { method: 'PUT', body: { amount: el.querySelector('#a').value, discount: el.querySelector('#d').value, work_hours: el.querySelector('#w').value } });
+    render();
+  });
+  return el;
+};
+
+// ── Hộp thoại nhập liệu dùng chung ─────────────────────────────────────────
+function form(title, fields, onSave) {
+  const d = $(`<dialog><form method="dialog" style="padding:16px">
+    <h3 style="margin:0 0 12px">${esc(title)}</h3>
+    ${fields.map(([k, label, type, opts]) => type === 'select'
+      ? `<label><span>${esc(label)}</span><select name="${k}">${opts.map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join('')}</select></label>`
+      : type === 'check'
+        ? `<label class="row"><input type="checkbox" name="${k}" style="width:auto"> <span style="margin:0">${esc(label)}</span></label>`
+        : `<label><span>${esc(label)}</span><input name="${k}" type="${type || 'text'}"></label>`).join('')}
+    <div class="row" style="margin-top:12px"><button class="major" value="ok">Lưu</button><button value="no">Huỷ</button></div>
+  </form></dialog>`);
+  document.body.append(d);
+  d.showModal();
+  d.querySelector('form').onsubmit = async (e) => {
+    if (e.submitter?.value !== 'ok') return d.remove();
+    const v = {};
+    for (const [k] of fields) {
+      const f = d.querySelector(`[name="${k}"]`);
+      v[k] = f.type === 'checkbox' ? f.checked : f.value;
+    }
+    d.remove();
+    try { await onSave(v); } catch (er) { show(er.message); }
+  };
+  d.addEventListener('close', () => d.remove());
+}
+
+// ── Khung và định tuyến ────────────────────────────────────────────────────
+async function render() {
+  const root = document.getElementById('root');
+  if (!me) { root.replaceChildren(loginView()); return; }
+  const [, name, id] = (location.hash || '#/home').split('/');
+  const view = views[name] || views.home;
+  const shell = $(`<div class="shell"><nav>
+    <h1>Smart Omni CRM</h1><div class="who">${esc(me.name)} · ${({ sales: 'Nhân viên sales', leader: 'Trưởng nhóm', director: 'Giám đốc', admin: 'Quản trị' })[me.role]}</div>
+    ${NAV.map(([h, t]) => `<a href="${h}" class="${h.startsWith('#/' + name) ? 'on' : ''}">${t}</a>`).join('')}
+    <button id="out" style="margin-top:14px;width:100%">Đăng xuất</button>
+    <p class="who" style="margin-top:14px">Bản thử nội bộ · quản lý dữ liệu trên máy này.</p>
+  </nav><main id="main"><p class="lead">Đang tải…</p></main></div>`);
+  root.replaceChildren(shell);
+  shell.querySelector('#out').onclick = async () => { await api('/logout', { body: {} }); me = null; go('#/home'); render(); };
+  try {
+    const el = await view(id);
+    if (err) el.prepend($(`<div class="card err">${esc(err)}</div>`));
+    err = '';
+    shell.querySelector('#main').replaceChildren(el);
+  } catch (e) {
+    shell.querySelector('#main').replaceChildren($(`<div class="card"><h2>Không mở được</h2><p class="err">${esc(e.message)}</p></div>`));
+  }
+}
+
+addEventListener('hashchange', render);
+api('/me').then((u) => { me = u; render(); }).catch(() => render());
+</script>
+<script src="/features-ui.js"></script>
+<script src="/workspace-ui.js"></script>
+<script src="/zalo-ui.js"></script>
+<script src="/progress-ui.js"></script>
+<script src="/organizations-ui.js"></script>
+<script src="/directory-ui.js"></script>
+<script src="/catalog-ui.js"></script>
+<script src="/lifecycle-ui.js"></script>
+<script src="/approval-ui.js"></script>
+<script src="/template-import-ui.js"></script>
+<script src="/channels-ui.js"></script>
+<script src="/company-ui.js"></script>
+<script src="/channel-assignments-ui.js"></script>
+<script src="/filters-ui.js"></script>
+<link rel="stylesheet" href="/filters.css">
+<script src="/customer-360-ui.js"></script>
+<link rel="stylesheet" href="/customer-360.css">
+</body>
+</html>

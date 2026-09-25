@@ -1,0 +1,3255 @@
+﻿OMNI CRM – SYSTEM ARCHITECTURE + API SPECIFICATION v2.0
+Phạm vi: CRM Core + Sales + Omnichannel + Chatbot + AI + Knowledge Hub + Automation
+Tài liệu liên quan: Database Schema v2.0, Screen Architecture v2.0, User Flow v2.0
+Mục tiêu: Làm chuẩn kiến trúc kỹ thuật và hợp đồng API để Claude triển khai frontend, backend, integration, messaging, chatbot, AI và RAG theo một kiến trúc thống nhất.
+________________
+
+
+1. MỤC TIÊU KIẾN TRÚC
+Hệ thống Omni CRM phải được thiết kế theo nguyên tắc:
+One Platform – Shared Customer Data – Shared Conversation – Shared Intelligence
+Hệ thống không được xây theo kiểu:
+CRM riêng
++
+Inbox riêng
++
+Chatbot riêng
++
+AI riêng
+
+
+Mà phải là một nền tảng thống nhất với các domain độc lập nhưng liên kết chặt chẽ.
+________________
+
+
+2. KIẾN TRÚC CẤP CAO
+┌─────────────────────────────────────────────────────┐
+│                    CLIENT LAYER                     │
+│ Web App / Responsive Web / Future Mobile App        │
+└───────────────────────┬─────────────────────────────┘
+                        │ HTTPS / WebSocket
+                        ▼
+┌─────────────────────────────────────────────────────┐
+│                  API GATEWAY / BFF                  │
+│ Auth / Rate Limit / Tenant / Request Context        │
+└───────────────┬───────────────────────┬─────────────┘
+                │                       │
+                ▼                       ▼
+┌────────────────────────┐   ┌────────────────────────┐
+│    CORE APP SERVICES   │   │   REALTIME SERVICE     │
+│ CRM / Sales / Tasks    │   │ WS / SSE / Events     │
+│ Quotes / Contracts     │   │ Inbox / Notifications │
+└────────────┬───────────┘   └────────────────────────┘
+             │
+             ├─────────────────────────────────────────────┐
+             │                                             │
+             ▼                                             ▼
+┌─────────────────────────────┐            ┌─────────────────────────────┐
+│     MESSAGING SERVICES      │            │      AI / CHATBOT LAYER     │
+│ Conversation / Message      │            │ AI Gateway                  │
+│ Channel Connector           │            │ AI Orchestrator             │
+│ Webhook Processor           │            │ Chatbot Engine              │
+└─────────────┬───────────────┘            │ Tool Calling                │
+              │                            │ RAG                          │
+              │                            └─────────────┬───────────────┘
+              │                                          │
+              ▼                                          ▼
+┌─────────────────────────────┐            ┌─────────────────────────────┐
+│    EXTERNAL CHANNELS        │            │       KNOWLEDGE LAYER       │
+│ Zalo / WhatsApp / Viber     │            │ Documents / Chunks / Vector│
+│ Email / SMS / Webchat       │            │ Retrieval / Reranker        │
+└─────────────────────────────┘            └─────────────────────────────┘
+
+
+                        │
+                        ▼
+┌─────────────────────────────────────────────────────┐
+│                  DATA & INFRA LAYER                 │
+│ PostgreSQL / Object Storage / Redis / Queue         │
+│ Vector Store / Audit / Observability                │
+└─────────────────────────────────────────────────────┘
+
+
+________________
+
+
+3. KIẾN TRÚC TRIỂN KHAI ĐỀ XUẤT
+Trong giai đoạn MVP, không nên triển khai microservices quá sớm.
+Khuyến nghị:
+Modular Monolith + Background Workers + Connector Services
+Cấu trúc:
+Frontend
+   ↓
+Backend Application
+   ├ CRM Module
+   ├ Sales Module
+   ├ Messaging Module
+   ├ Chatbot Module
+   ├ AI Module
+   ├ Knowledge Module
+   ├ Automation Module
+   └ Admin Module
+
+
+Background Workers
+   ├ Webhook Worker
+   ├ Message Delivery Worker
+   ├ AI Worker
+   ├ Knowledge Indexing Worker
+   └ Automation Worker
+
+
+Lợi ích:
+* dễ lập trình;
+* dễ debug;
+* ít DevOps;
+* vẫn giữ domain boundary;
+* có thể tách service sau này.
+________________
+
+
+4. KHI NÀO TÁCH MICROSERVICE
+Chỉ nên tách khi có nhu cầu scale độc lập.
+Ứng viên tách đầu tiên:
+1. Messaging Service.
+2. AI Service.
+3. Knowledge/RAG Service.
+4. Webhook Processing.
+5. Notification Service.
+CRM Core nên giữ ổn định lâu nhất.
+________________
+
+
+5. CLIENT ARCHITECTURE
+Frontend sử dụng:
+Web Application
+
+
+Kiến trúc:
+App Shell
+ ├ Navigation
+ ├ Global Search
+ ├ Notifications
+ ├ AI Copilot
+ └ Domain Modules
+
+
+Domain frontend:
+crm
+sales
+activities
+messaging
+chatbot
+ai
+knowledge
+automation
+reports
+settings
+
+
+________________
+
+
+6. API STYLE
+Khuyến nghị REST API cho nghiệp vụ chính.
+Base URL:
+/api/v1
+
+
+Ví dụ:
+GET /api/v1/organizations
+GET /api/v1/organizations/:id
+POST /api/v1/opportunities
+PATCH /api/v1/opportunities/:id
+
+
+________________
+
+
+7. API VERSIONING
+Bắt buộc version:
+/api/v1
+
+
+Không publish endpoint production dạng:
+/api/customers
+
+
+không có version.
+________________
+
+
+8. RESPONSE FORMAT CHUNG
+Success:
+{
+  "success": true,
+  "data": {},
+  "meta": {},
+  "request_id": "uuid"
+}
+
+
+Error:
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request",
+    "details": {}
+  },
+  "request_id": "uuid"
+}
+
+
+________________
+
+
+9. ERROR CODE CHUẨN
+Ví dụ:
+AUTH_REQUIRED
+ACCESS_DENIED
+RESOURCE_NOT_FOUND
+VALIDATION_ERROR
+DUPLICATE_RECORD
+CONFLICT
+RATE_LIMITED
+CHANNEL_UNAVAILABLE
+AI_UNAVAILABLE
+KNOWLEDGE_NOT_FOUND
+APPROVAL_REQUIRED
+INTEGRATION_ERROR
+INTERNAL_ERROR
+
+
+________________
+
+
+10. HTTP STATUS
+200 OK
+201 Created
+202 Accepted
+204 No Content
+
+
+400 Bad Request
+401 Unauthorized
+403 Forbidden
+404 Not Found
+409 Conflict
+422 Validation Error
+429 Too Many Requests
+
+
+500 Internal Server Error
+502 External Provider Error
+503 Service Unavailable
+
+
+________________
+
+
+11. AUTHENTICATION
+Khuyến nghị:
+Access Token
++
+Refresh Token
+
+
+Có thể dùng JWT hoặc secure session architecture.
+API:
+POST /auth/login
+POST /auth/refresh
+POST /auth/logout
+POST /auth/forgot-password
+POST /auth/reset-password
+GET  /auth/me
+
+
+________________
+
+
+12. REQUEST CONTEXT
+Mỗi request backend phải xác định:
+user_id
+tenant_id
+roles
+permissions
+timezone
+request_id
+
+
+Frontend không được tự quyết tenant.
+________________
+
+
+13. AUTHORIZATION
+Mỗi API phải kiểm tra:
+Authentication
+↓
+Tenant
+↓
+Permission
+↓
+Record Scope
+
+
+Record Scope:
+OWN
+TEAM
+DEPARTMENT
+ALL
+
+
+________________
+
+
+14. API PAGINATION
+List API dùng:
+?page=1
+&page_size=50
+
+
+Response:
+{
+  "meta": {
+    "page": 1,
+    "page_size": 50,
+    "total": 1250,
+    "total_pages": 25
+  }
+}
+
+
+Inbox/message có thể dùng cursor pagination.
+________________
+
+
+15. FILTERING
+Ví dụ:
+GET /organizations?owner_id=&industry_id=&status=&tag_id=
+
+
+Không tạo quá nhiều endpoint chỉ để filter.
+________________
+
+
+16. SORTING
+Format:
+?sort=-last_activity_at,name
+
+
+Dấu - = descending.
+________________
+
+
+17. FIELD SELECTION
+Optional:
+?fields=id,name,owner,last_activity_at
+
+
+Có thể triển khai sau MVP.
+________________
+
+
+18. IDEMPOTENCY
+Các API tạo dữ liệu nhạy cảm phải hỗ trợ:
+Idempotency-Key
+
+
+Ví dụ:
+* send message;
+* create payment;
+* AI tool create task;
+* webhook processing.
+________________
+
+
+19. AUDIT HEADER
+Backend tự tạo:
+request_id
+user_id
+source
+ip
+user_agent
+
+
+không yêu cầu frontend gửi audit data tùy ý.
+________________
+
+
+20. CRM – ORGANIZATION API
+List
+GET /api/v1/organizations
+
+
+Filters:
+search
+owner_id
+industry_id
+organization_type_id
+tag_id
+status
+city
+last_activity_from
+last_activity_to
+
+
+________________
+
+
+21. CREATE ORGANIZATION
+POST /api/v1/organizations
+
+
+Payload:
+{
+  "name": "ABC Company",
+  "short_name": "ABC",
+  "tax_code": "0123456789",
+  "industry_id": "uuid",
+  "organization_type_id": "uuid",
+  "phone": "0909123456",
+  "email": "info@abc.com",
+  "owner_id": "uuid",
+  "source_id": "uuid",
+  "tag_ids": ["uuid"]
+}
+
+
+________________
+
+
+22. ORGANIZATION DETAIL
+GET /api/v1/organizations/:id
+PATCH /api/v1/organizations/:id
+DELETE /api/v1/organizations/:id
+POST /api/v1/organizations/:id/restore
+
+
+DELETE = soft delete.
+________________
+
+
+23. CUSTOMER 360 API
+GET /api/v1/organizations/:id/360
+
+
+Response aggregate:
+{
+  "organization": {},
+  "contacts": [],
+  "open_opportunities": [],
+  "upcoming_tasks": [],
+  "recent_activities": [],
+  "recent_conversations": [],
+  "commercial_summary": {},
+  "ai_summary": {},
+  "next_best_actions": []
+}
+
+
+Đây là read model, không phải bảng DB riêng.
+________________
+
+
+24. ORGANIZATION TIMELINE
+GET /api/v1/organizations/:id/timeline
+
+
+Params:
+types
+from
+to
+cursor
+limit
+
+
+________________
+
+
+25. CONTACT API
+GET    /api/v1/contacts
+POST   /api/v1/contacts
+GET    /api/v1/contacts/:id
+PATCH  /api/v1/contacts/:id
+DELETE /api/v1/contacts/:id
+
+
+________________
+
+
+26. CONTACT IDENTITIES
+GET  /api/v1/contacts/:id/identities
+POST /api/v1/contacts/:id/identities
+DELETE /api/v1/contacts/:id/identities/:identityId
+
+
+________________
+
+
+27. DUPLICATE CHECK API
+POST /api/v1/identity/check
+
+
+Payload:
+{
+  "phone": "+84909123456",
+  "email": "user@abc.com",
+  "channel_id": "uuid",
+  "external_user_id": "abc123"
+}
+
+
+Response:
+{
+  "matches": [
+    {
+      "entity_type": "CONTACT",
+      "entity_id": "uuid",
+      "confidence": 0.98,
+      "reasons": ["PHONE_EXACT"]
+    }
+  ]
+}
+
+
+________________
+
+
+28. MERGE API
+POST /api/v1/contacts/merge
+
+
+Payload:
+{
+  "source_contact_id": "uuid",
+  "target_contact_id": "uuid",
+  "field_strategy": {}
+}
+
+
+Backend dùng transaction.
+________________
+
+
+29. LEAD API
+GET    /api/v1/leads
+POST   /api/v1/leads
+GET    /api/v1/leads/:id
+PATCH  /api/v1/leads/:id
+DELETE /api/v1/leads/:id
+
+
+________________
+
+
+30. LEAD QUALIFY
+POST /api/v1/leads/:id/qualify
+
+
+________________
+
+
+31. LEAD CONVERT
+POST /api/v1/leads/:id/convert
+
+
+Payload:
+{
+  "organization": {
+    "mode": "EXISTING",
+    "id": "uuid"
+  },
+  "contact": {
+    "mode": "CREATE",
+    "data": {}
+  },
+  "opportunity": {
+    "create": true,
+    "name": "Omni CRM Project",
+    "pipeline_id": "uuid"
+  }
+}
+
+
+Backend transaction.
+________________
+
+
+32. SALES PIPELINE API
+GET /api/v1/pipelines
+POST /api/v1/pipelines
+GET /api/v1/pipelines/:id
+PATCH /api/v1/pipelines/:id
+
+
+Stages:
+GET  /api/v1/pipelines/:id/stages
+POST /api/v1/pipelines/:id/stages
+PATCH /api/v1/pipeline-stages/:id
+
+
+________________
+
+
+33. PIPELINE BOARD
+GET /api/v1/pipelines/:id/board
+
+
+Filters:
+owner_id
+team_id
+product_id
+close_from
+close_to
+
+
+________________
+
+
+34. OPPORTUNITY API
+GET    /api/v1/opportunities
+POST   /api/v1/opportunities
+GET    /api/v1/opportunities/:id
+PATCH  /api/v1/opportunities/:id
+DELETE /api/v1/opportunities/:id
+
+
+________________
+
+
+35. CHANGE STAGE API
+POST /api/v1/opportunities/:id/change-stage
+
+
+Payload:
+{
+  "stage_id": "uuid",
+  "reason": "",
+  "final_value": null,
+  "actual_close_date": null,
+  "lost_reason_id": null
+}
+
+
+Backend xử lý Won/Lost validation.
+________________
+
+
+36. OPPORTUNITY PRODUCTS
+GET    /api/v1/opportunities/:id/products
+POST   /api/v1/opportunities/:id/products
+PATCH  /api/v1/opportunity-products/:id
+DELETE /api/v1/opportunity-products/:id
+
+
+________________
+
+
+37. OPPORTUNITY AI ANALYSIS
+POST /api/v1/opportunities/:id/ai-analysis
+
+
+Có thể trả 202 Accepted nếu chạy background.
+________________
+
+
+38. ACTIVITY API
+GET  /api/v1/activities
+POST /api/v1/activities
+GET  /api/v1/activities/:id
+
+
+Activity là normalized timeline event.
+________________
+
+
+39. TASK API
+GET    /api/v1/tasks
+POST   /api/v1/tasks
+GET    /api/v1/tasks/:id
+PATCH  /api/v1/tasks/:id
+DELETE /api/v1/tasks/:id
+
+
+Complete:
+POST /api/v1/tasks/:id/complete
+
+
+________________
+
+
+40. CALENDAR API
+GET /api/v1/calendar/events
+
+
+Params:
+from
+to
+user_id
+types
+
+
+Response hợp nhất:
+* tasks;
+* meetings;
+* deadlines;
+* payment due;
+* quote expiry.
+________________
+
+
+41. MEETING API
+GET    /api/v1/meetings
+POST   /api/v1/meetings
+GET    /api/v1/meetings/:id
+PATCH  /api/v1/meetings/:id
+DELETE /api/v1/meetings/:id
+
+
+Complete:
+POST /api/v1/meetings/:id/complete
+
+
+________________
+
+
+42. MEETING TRANSCRIPT
+POST /api/v1/meetings/:id/transcript
+GET  /api/v1/meetings/:id/transcript
+
+
+________________
+
+
+43. AI MEETING SUMMARY
+POST /api/v1/meetings/:id/ai-summary
+
+
+Approval:
+POST /api/v1/meetings/:id/ai-summary/apply
+
+
+________________
+
+
+44. PRODUCT API
+GET    /api/v1/products
+POST   /api/v1/products
+GET    /api/v1/products/:id
+PATCH  /api/v1/products/:id
+DELETE /api/v1/products/:id
+
+
+________________
+
+
+45. QUOTE API
+GET    /api/v1/quotes
+POST   /api/v1/quotes
+GET    /api/v1/quotes/:id
+PATCH  /api/v1/quotes/:id
+DELETE /api/v1/quotes/:id
+
+
+________________
+
+
+46. QUOTE VERSION
+POST /api/v1/quotes/:id/clone-version
+
+
+________________
+
+
+47. QUOTE PDF
+POST /api/v1/quotes/:id/generate-pdf
+
+
+Returns:
+202 Accepted
+
+
+if background.
+________________
+
+
+48. QUOTE APPROVAL
+POST /api/v1/quotes/:id/submit-approval
+
+
+________________
+
+
+49. QUOTE SEND
+POST /api/v1/quotes/:id/send
+
+
+Payload:
+{
+  "channel_id": "uuid",
+  "recipient_contact_id": "uuid",
+  "message": "Kính gửi...",
+  "attachment": true
+}
+
+
+________________
+
+
+50. CONTRACT API
+GET    /api/v1/contracts
+POST   /api/v1/contracts
+GET    /api/v1/contracts/:id
+PATCH  /api/v1/contracts/:id
+DELETE /api/v1/contracts/:id
+
+
+________________
+
+
+51. PAYMENT SCHEDULE API
+GET  /api/v1/contracts/:id/payment-schedules
+POST /api/v1/contracts/:id/payment-schedules
+
+
+________________
+
+
+52. PAYMENT API
+GET  /api/v1/payments
+POST /api/v1/payments
+GET  /api/v1/payments/:id
+
+
+POST phải idempotent.
+________________
+
+
+53. MESSAGING ARCHITECTURE
+Luồng inbound:
+External Channel
+    ↓
+Webhook Endpoint
+    ↓
+Signature Validation
+    ↓
+Webhook Event Store
+    ↓
+Message Normalizer
+    ↓
+Identity Resolution
+    ↓
+Conversation Resolver
+    ↓
+Message Store
+    ↓
+Chatbot / Agent Routing
+    ↓
+Realtime Event
+
+
+________________
+
+
+54. OUTBOUND MESSAGE ARCHITECTURE
+Frontend / Bot / AI
+      ↓
+Message API
+      ↓
+Permission
+      ↓
+Consent
+      ↓
+Create Message
+      ↓
+Outbound Queue
+      ↓
+Connector
+      ↓
+External Provider
+      ↓
+Delivery Webhook
+
+
+________________
+
+
+55. CHANNEL CONNECTOR INTERFACE
+Mọi connector phải implement interface tương đương:
+connect()
+disconnect()
+
+
+sendMessage()
+sendTemplate()
+sendFile()
+
+
+normalizeInbound()
+normalizeDeliveryEvent()
+
+
+verifyWebhook()
+
+
+getConversationIdentity()
+
+
+healthCheck()
+
+
+________________
+
+
+56. CHANNEL API
+GET  /api/v1/channels
+POST /api/v1/channels
+GET  /api/v1/channels/:id
+PATCH /api/v1/channels/:id
+
+
+________________
+
+
+57. CHANNEL CONNECT
+POST /api/v1/channels/:id/connect
+POST /api/v1/channels/:id/test
+POST /api/v1/channels/:id/disconnect
+
+
+________________
+
+
+58. WEBHOOK ENDPOINT
+Không nằm dưới authenticated user API.
+Ví dụ:
+POST /webhooks/zalo/:channelId
+POST /webhooks/whatsapp/:channelId
+POST /webhooks/viber/:channelId
+
+
+Bắt buộc:
+* signature check;
+* idempotency;
+* rate protection;
+* raw payload logging;
+* async processing.
+________________
+
+
+59. CONVERSATION API
+GET  /api/v1/conversations
+GET  /api/v1/conversations/:id
+PATCH /api/v1/conversations/:id
+
+
+________________
+
+
+60. CONVERSATION ASSIGN
+POST /api/v1/conversations/:id/assign
+
+
+Payload:
+{
+  "user_id": "uuid",
+  "team_id": null,
+  "reason": "Manual assignment"
+}
+
+
+________________
+
+
+61. CONVERSATION CLOSE
+POST /api/v1/conversations/:id/close
+POST /api/v1/conversations/:id/reopen
+
+
+________________
+
+
+62. MESSAGES API
+GET /api/v1/conversations/:id/messages
+POST /api/v1/conversations/:id/messages
+
+
+Use cursor pagination:
+?before=<cursor>&limit=50
+
+
+________________
+
+
+63. SEND MESSAGE PAYLOAD
+{
+  "message_type": "TEXT",
+  "content": "Xin chào anh/chị",
+  "attachment_ids": [],
+  "template_id": null,
+  "reply_to_message_id": null
+}
+
+
+________________
+
+
+64. SUGGEST REPLY
+POST /api/v1/conversations/:id/ai-suggest-reply
+
+
+Response:
+{
+  "draft": "...",
+  "sources": [],
+  "confidence": "HIGH",
+  "generation_id": "uuid"
+}
+
+
+Không tự gửi.
+________________
+
+
+65. MESSAGE TEMPLATES API
+GET    /api/v1/message-templates
+POST   /api/v1/message-templates
+GET    /api/v1/message-templates/:id
+PATCH  /api/v1/message-templates/:id
+DELETE /api/v1/message-templates/:id
+
+
+________________
+
+
+66. CHATBOT ARCHITECTURE
+Inbound Message
+   ↓
+Conversation Service
+   ↓
+Chatbot Router
+   ↓
+Load Bot Config
+   ↓
+Load Session
+   ↓
+Detect Intent
+   ↓
+Flow Engine
+   ↓
+Optional RAG / AI
+   ↓
+Action
+   ↓
+Response
+
+
+________________
+
+
+67. CHATBOT API
+GET    /api/v1/chatbots
+POST   /api/v1/chatbots
+GET    /api/v1/chatbots/:id
+PATCH  /api/v1/chatbots/:id
+DELETE /api/v1/chatbots/:id
+
+
+________________
+
+
+68. CHATBOT CHANNEL API
+GET  /api/v1/chatbots/:id/channels
+POST /api/v1/chatbots/:id/channels
+PATCH /api/v1/chatbot-channels/:id
+
+
+________________
+
+
+69. CHATBOT INTENT API
+GET    /api/v1/chatbots/:id/intents
+POST   /api/v1/chatbots/:id/intents
+GET    /api/v1/chatbot-intents/:id
+PATCH  /api/v1/chatbot-intents/:id
+DELETE /api/v1/chatbot-intents/:id
+
+
+________________
+
+
+70. INTENT TEST
+POST /api/v1/chatbots/:id/intents/test
+
+
+Payload:
+{
+  "message": "Tôi muốn xem bảng giá"
+}
+
+
+________________
+
+
+71. CHATBOT FLOW API
+GET    /api/v1/chatbots/:id/flows
+POST   /api/v1/chatbots/:id/flows
+GET    /api/v1/chatbot-flows/:id
+PATCH  /api/v1/chatbot-flows/:id
+
+
+________________
+
+
+72. CHATBOT FLOW TEST
+POST /api/v1/chatbot-flows/:id/test
+
+
+Test mode không ghi dữ liệu production mặc định.
+________________
+
+
+73. CHATBOT FLOW PUBLISH
+POST /api/v1/chatbot-flows/:id/publish
+
+
+Backend tạo immutable version.
+________________
+
+
+74. CHATBOT SESSION API
+GET /api/v1/chatbot-sessions
+GET /api/v1/chatbot-sessions/:id
+
+
+Admin/debug only.
+________________
+
+
+75. HANDOFF API
+GET  /api/v1/handoffs
+GET  /api/v1/handoffs/:id
+POST /api/v1/handoffs/:id/accept
+POST /api/v1/handoffs/:id/reassign
+POST /api/v1/handoffs/:id/resolve
+POST /api/v1/handoffs/:id/return-to-bot
+
+
+________________
+
+
+76. AI ARCHITECTURE
+AI không được gọi trực tiếp từ frontend tới provider.
+Luồng:
+Frontend
+  ↓
+AI API
+  ↓
+AI Orchestrator
+  ↓
+Permission Guard
+  ↓
+Context Builder
+  ↓
+Prompt Manager
+  ↓
+Model Router
+  ↓
+Tool / RAG / LLM
+  ↓
+Audit
+  ↓
+Response
+
+
+________________
+
+
+77. AI GATEWAY
+AI Gateway chịu trách nhiệm:
+* provider abstraction;
+* model routing;
+* retry;
+* timeout;
+* cost tracking;
+* token tracking;
+* logging;
+* provider fallback.
+________________
+
+
+78. AI ORCHESTRATOR
+Chịu trách nhiệm:
+* assistant selection;
+* context;
+* tool calling;
+* approval;
+* RAG;
+* structured output;
+* audit.
+________________
+
+
+79. AI MODEL ROUTER
+Routing example:
+Intent classification
+→ lightweight model
+
+
+Embedding
+→ embedding model
+
+
+Customer summary
+→ standard reasoning model
+
+
+Complex manager analysis
+→ stronger model
+
+
+________________
+
+
+80. AI ASSISTANT API
+GET    /api/v1/ai/assistants
+POST   /api/v1/ai/assistants
+GET    /api/v1/ai/assistants/:id
+PATCH  /api/v1/ai/assistants/:id
+
+
+Admin.
+________________
+
+
+81. AI COPILOT API
+POST /api/v1/ai/copilot
+
+
+Payload:
+{
+  "assistant_id": "uuid",
+  "conversation_id": "uuid",
+  "message": "Khách hàng nào cần follow-up hôm nay?",
+  "page_context": {
+    "entity_type": "ORGANIZATION",
+    "entity_id": "uuid"
+  }
+}
+
+
+________________
+
+
+82. AI COPILOT RESPONSE
+{
+  "message": "...",
+  "cards": [],
+  "tool_actions": [],
+  "sources": [],
+  "conversation_id": "uuid"
+}
+
+
+________________
+
+
+83. AI TOOL ARCHITECTURE
+Tool không gọi repository trực tiếp từ LLM.
+Flow:
+LLM Tool Request
+↓
+Tool Registry
+↓
+Permission Check
+↓
+Approval Policy
+↓
+Application Service
+↓
+Audit
+
+
+________________
+
+
+84. TOOL REGISTRY
+Ví dụ:
+search_customer
+get_customer_360
+search_opportunity
+get_pipeline
+create_task
+create_meeting
+draft_message
+create_lead
+update_opportunity
+
+
+________________
+
+
+85. AI TOOL API INTERNAL
+Không nhất thiết expose trực tiếp ra public REST.
+Internal interface:
+executeTool(
+  tool_code,
+  actor_context,
+  input,
+  idempotency_key
+)
+
+
+________________
+
+
+86. AI INSIGHTS API
+GET /api/v1/ai/insights
+GET /api/v1/ai/insights/:id
+
+
+Generate:
+POST /api/v1/organizations/:id/ai-summary
+POST /api/v1/opportunities/:id/ai-analysis
+POST /api/v1/conversations/:id/ai-summary
+
+
+________________
+
+
+87. AI ACTION API
+GET  /api/v1/ai/actions
+POST /api/v1/ai/actions/:id/approve
+POST /api/v1/ai/actions/:id/reject
+POST /api/v1/ai/actions/:id/execute
+
+
+________________
+
+
+88. AI FEEDBACK API
+POST /api/v1/ai/feedback
+
+
+Payload:
+{
+  "ai_message_id": "uuid",
+  "rating": -1,
+  "comment": "Không chính xác"
+}
+
+
+________________
+
+
+89. AI PROVIDER API
+Admin:
+GET    /api/v1/settings/ai/providers
+POST   /api/v1/settings/ai/providers
+PATCH  /api/v1/settings/ai/providers/:id
+POST   /api/v1/settings/ai/providers/:id/test
+
+
+Secret không trả về client.
+________________
+
+
+90. AI PROMPT API
+GET  /api/v1/settings/ai/prompts
+POST /api/v1/settings/ai/prompts
+GET  /api/v1/settings/ai/prompts/:id
+POST /api/v1/settings/ai/prompts/:id/publish
+POST /api/v1/settings/ai/prompts/:id/test
+
+
+________________
+
+
+91. KNOWLEDGE ARCHITECTURE
+Knowledge Source
+   ↓
+Ingestion
+   ↓
+Extraction
+   ↓
+Normalization
+   ↓
+Version
+   ↓
+Chunking
+   ↓
+Embedding
+   ↓
+Index
+
+
+Runtime:
+Query
+ ↓
+Permission Filter
+ ↓
+Search
+ ↓
+Rerank
+ ↓
+Context
+ ↓
+LLM
+
+
+________________
+
+
+92. KNOWLEDGE BASE API
+GET    /api/v1/knowledge-bases
+POST   /api/v1/knowledge-bases
+GET    /api/v1/knowledge-bases/:id
+PATCH  /api/v1/knowledge-bases/:id
+DELETE /api/v1/knowledge-bases/:id
+
+
+________________
+
+
+93. KNOWLEDGE DOCUMENT API
+GET  /api/v1/knowledge-bases/:id/documents
+POST /api/v1/knowledge-bases/:id/documents
+GET  /api/v1/knowledge-documents/:id
+POST /api/v1/knowledge-documents/:id/new-version
+POST /api/v1/knowledge-documents/:id/reprocess
+POST /api/v1/knowledge-documents/:id/disable
+
+
+________________
+
+
+94. KNOWLEDGE UPLOAD
+Multipart:
+POST /api/v1/knowledge-bases/:id/documents/upload
+
+
+Returns:
+{
+  "status": "PROCESSING",
+  "job_id": "uuid"
+}
+
+
+________________
+
+
+95. KNOWLEDGE TEST API
+POST /api/v1/knowledge-bases/:id/test
+
+
+Payload:
+{
+  "query": "Omni CRM có WhatsApp không?"
+}
+
+
+Response:
+{
+  "answer": "...",
+  "retrieved_chunks": [],
+  "sources": [],
+  "scores": {}
+}
+
+
+________________
+
+
+96. KNOWLEDGE SEARCH INTERNAL API
+Internal service:
+retrieve(
+ query,
+ actor_context,
+ knowledge_base_ids,
+ filters,
+ top_k
+)
+
+
+________________
+
+
+97. AUTOMATION ARCHITECTURE
+Flow:
+Business Event
+   ↓
+Event Dispatcher
+   ↓
+Automation Rules
+   ↓
+Workflow Engine
+   ↓
+Actions
+
+
+________________
+
+
+98. DOMAIN EVENTS
+Ví dụ:
+organization.created
+contact.updated
+lead.converted
+opportunity.stage_changed
+opportunity.won
+quote.sent
+payment.received
+conversation.message_received
+conversation.closed
+handoff.requested
+meeting.completed
+
+
+________________
+
+
+99. EVENT BUS
+MVP có thể dùng:
+In-process event bus
++
+Queue for async jobs
+
+
+Scale lớn:
+Kafka / RabbitMQ / similar
+
+
+________________
+
+
+100. AUTOMATION API
+GET    /api/v1/automation/rules
+POST   /api/v1/automation/rules
+GET    /api/v1/automation/rules/:id
+PATCH  /api/v1/automation/rules/:id
+DELETE /api/v1/automation/rules/:id
+
+
+________________
+
+
+101. WORKFLOW API
+GET    /api/v1/workflows
+POST   /api/v1/workflows
+GET    /api/v1/workflows/:id
+PATCH  /api/v1/workflows/:id
+POST   /api/v1/workflows/:id/test
+POST   /api/v1/workflows/:id/publish
+
+
+________________
+
+
+102. APPROVAL API
+GET  /api/v1/approvals
+GET  /api/v1/approvals/:id
+POST /api/v1/approvals/:id/approve
+POST /api/v1/approvals/:id/reject
+
+
+________________
+
+
+103. NOTIFICATION API
+GET  /api/v1/notifications
+POST /api/v1/notifications/:id/read
+POST /api/v1/notifications/read-all
+
+
+________________
+
+
+104. REALTIME ARCHITECTURE
+Realtime dùng cho:
+* Inbox;
+* handoff;
+* notification;
+* optional pipeline updates.
+Khuyến nghị:
+WebSocket
+
+
+hoặc:
+SSE
+
+
+________________
+
+
+105. REALTIME EVENTS
+Ví dụ:
+message.received
+message.updated
+conversation.assigned
+conversation.closed
+handoff.created
+handoff.updated
+notification.created
+opportunity.updated
+
+
+________________
+
+
+106. REALTIME AUTH
+Client phải authenticate socket.
+Không broadcast tenant data chung.
+Channel scope ví dụ:
+tenant:{tenantId}
+user:{userId}
+conversation:{conversationId}
+
+
+________________
+
+
+107. FILE ARCHITECTURE
+Files không lưu binary trong PostgreSQL.
+Dùng:
+Object Storage
+
+
+DB lưu metadata.
+________________
+
+
+108. FILE API
+POST   /api/v1/files
+GET    /api/v1/files/:id
+DELETE /api/v1/files/:id
+
+
+Upload có thể dùng signed URL.
+________________
+
+
+109. FILE LINK API
+POST /api/v1/files/:id/link
+
+
+________________
+
+
+110. GLOBAL SEARCH API
+GET /api/v1/search?q=
+
+
+Optional:
+&type=contact,organization,opportunity
+
+
+________________
+
+
+111. SEARCH RESPONSE
+{
+  "organizations": [],
+  "contacts": [],
+  "leads": [],
+  "opportunities": [],
+  "conversations": [],
+  "quotes": [],
+  "contracts": []
+}
+
+
+________________
+
+
+112. DASHBOARD ARCHITECTURE
+Dashboard không query trực tiếp rất nhiều bảng ở frontend.
+Backend cung cấp aggregated API.
+________________
+
+
+113. HOME DASHBOARD API
+GET /api/v1/dashboard/home
+
+
+________________
+
+
+114. SALES DASHBOARD API
+GET /api/v1/dashboard/sales
+
+
+Params:
+from
+to
+owner_id
+team_id
+pipeline_id
+
+
+________________
+
+
+115. OMNICHANNEL DASHBOARD
+GET /api/v1/dashboard/omnichannel
+
+
+________________
+
+
+116. CHATBOT DASHBOARD
+GET /api/v1/dashboard/chatbot
+
+
+________________
+
+
+117. AI DASHBOARD
+GET /api/v1/dashboard/ai
+
+
+________________
+
+
+118. REPORTING STRATEGY
+MVP:
+Query PostgreSQL + optimized indexes.
+Sau scale:
+* materialized views;
+* read models;
+* analytics warehouse.
+Không để dashboard gây tải quá lớn lên transaction DB.
+________________
+
+
+119. BACKGROUND JOB ARCHITECTURE
+Jobs dùng cho:
+* knowledge indexing;
+* PDF generation;
+* AI long-running;
+* bulk scoring;
+* export;
+* message retry;
+* webhook processing;
+* automation.
+________________
+
+
+120. QUEUE TYPES
+Đề xuất logical queues:
+webhook
+messages
+ai
+knowledge
+automation
+notifications
+exports
+
+
+________________
+
+
+121. RETRY POLICY
+Mỗi queue có policy riêng.
+Ví dụ outbound message:
+attempt 1
+↓
+30 sec
+↓
+attempt 2
+↓
+2 min
+↓
+attempt 3
+↓
+10 min
+
+
+Không retry vô hạn.
+________________
+
+
+122. DEAD LETTER
+Sau max retries:
+DEAD / FAILED
+
+
+Admin có thể:
+Retry
+Inspect
+Dismiss
+
+
+________________
+
+
+123. WEBHOOK IDEMPOTENCY
+Unique:
+channel_id + external_event_id
+
+
+Nếu duplicate:
+Return 200/ack.
+Không xử lý lại.
+________________
+
+
+124. MESSAGE IDEMPOTENCY
+Unique:
+channel_id + external_message_id
+
+
+________________
+
+
+125. API RATE LIMIT
+Áp dụng:
+* login;
+* AI;
+* search;
+* send message;
+* webhooks;
+* public webchat.
+Rate limit theo:
+user
+tenant
+IP
+channel
+
+
+________________
+
+
+126. TENANT ISOLATION
+Tất cả repository queries:
+WHERE tenant_id = current_tenant
+
+
+Tenant lấy từ auth context.
+________________
+
+
+127. RECORD SCOPE
+Service layer xác định scope:
+Own
+Team
+Department
+All
+
+
+Không cho frontend quyết định.
+________________
+
+
+128. AI DATA SECURITY
+AI Context Builder phải lọc dữ liệu trước khi gửi model.
+Không gửi:
+* dữ liệu ngoài quyền;
+* secret;
+* password;
+* token;
+* dữ liệu không liên quan.
+________________
+
+
+129. AI TOOL SAFETY
+Mỗi tool có:
+required_permission
+risk_level
+approval_policy
+
+
+Ví dụ:
+search_customer
+risk LOW
+AUTO
+
+
+create_task
+risk MEDIUM
+USER_CONFIRM
+
+
+record_payment
+risk HIGH
+DISABLED
+
+
+________________
+
+
+130. RAG SECURITY
+RAG filter:
+tenant
+knowledge permission
+document status
+effective date
+scope
+
+
+trước vector retrieval.
+________________
+
+
+131. PUBLIC CHATBOT DATA BOUNDARY
+Public Chatbot không được truy cập:
+* internal notes;
+* internal contracts;
+* full customer list;
+* sales confidential data.
+Chỉ context customer hiện tại + approved public KB.
+________________
+
+
+132. API PERMISSION NAMING
+Chuẩn:
+domain.resource.action
+
+
+Ví dụ:
+crm.organization.view
+crm.contact.edit
+sales.opportunity.assign
+messaging.message.send
+chatbot.flow.publish
+ai.assistant.use
+knowledge.document.upload
+settings.role.manage
+
+
+________________
+
+
+133. API VALIDATION
+Backend phải validate:
+* type;
+* required;
+* length;
+* enum;
+* monetary range;
+* date;
+* relationship;
+* tenant;
+* permission.
+Frontend validation chỉ nhằm UX.
+________________
+
+
+134. CONCURRENCY CONTROL
+Đối với record dễ xung đột:
+Có thể dùng:
+updated_at
+
+
+hoặc:
+version
+
+
+Optimistic locking.
+Ví dụ Opportunity/Quote.
+________________
+
+
+135. QUOTE CONCURRENCY
+Nếu user A và B edit cùng version:
+Backend trả:
+409 CONFLICT
+
+
+với thông báo record đã thay đổi.
+________________
+
+
+136. TRANSACTION BOUNDARIES
+Các nghiệp vụ phải transaction:
+* lead conversion;
+* merge contact;
+* opportunity won;
+* payment record;
+* quote version;
+* handoff accept;
+* ownership transfer.
+________________
+
+
+137. SERVICE LAYER
+Mỗi domain:
+Controller
+↓
+Application Service
+↓
+Domain Logic
+↓
+Repository
+
+
+Không đặt business logic lớn trong Controller.
+________________
+
+
+138. REPOSITORY RULE
+Repository chỉ:
+* query;
+* persist;
+* transaction primitives.
+Không chứa AI hoặc workflow business rules.
+________________
+
+
+139. EXTERNAL ADAPTER LAYER
+External provider dùng adapter.
+Ví dụ:
+ZaloAdapter
+WhatsAppAdapter
+ViberAdapter
+EmailAdapter
+AIProviderAdapter
+StorageAdapter
+
+
+Không gọi provider API trực tiếp trong controller.
+________________
+
+
+140. API DTO
+Không expose ORM entity trực tiếp.
+Dùng:
+Request DTO
+Response DTO
+
+
+Để kiểm soát field.
+________________
+
+
+141. SENSITIVE FIELD MASKING
+Ví dụ API settings:
+api_key: "********"
+
+
+Không return raw secret.
+________________
+
+
+142. OBSERVABILITY
+Bắt buộc:
+* structured logs;
+* request ID;
+* error logs;
+* queue metrics;
+* webhook metrics;
+* AI metrics;
+* provider health.
+________________
+
+
+143. METRICS ĐỀ XUẤT
+api_latency
+api_error_rate
+message_delivery_rate
+webhook_processing_latency
+queue_depth
+ai_latency
+ai_error_rate
+rag_latency
+knowledge_indexing_failures
+
+
+________________
+
+
+144. HEALTH ENDPOINT
+GET /health
+GET /health/ready
+
+
+Admin internal health:
+GET /api/v1/system/health
+
+
+________________
+
+
+145. AUDIT ARCHITECTURE
+Audit gọi từ application service.
+Không dựa hoàn toàn vào DB trigger.
+Audit fields:
+actor
+action
+entity
+before
+after
+source
+request_id
+
+
+________________
+
+
+146. EVENT AUDIT VS BUSINESS AUDIT
+Technical event:
+webhook received
+queue retry
+
+
+không nhất thiết vào business audit.
+Business mutation:
+opportunity value changed
+contact merged
+role changed
+
+
+phải audit.
+________________
+
+
+147. CACHE
+Có thể dùng Redis cho:
+* session;
+* rate limit;
+* short-lived cache;
+* realtime presence;
+* queue.
+Không cache Customer data lâu mà không invalidation.
+________________
+
+
+148. AI CACHE
+Có thể cache:
+* embedding;
+* static knowledge result;
+* prompt config.
+Không cache dynamic customer summary quá lâu.
+________________
+
+
+149. CUSTOMER 360 CACHE
+Có thể cache ngắn:
+30–120 sec
+
+
+và invalidate khi major event.
+Optional MVP.
+________________
+
+
+150. API SECURITY
+Bắt buộc:
+* HTTPS;
+* secure cookies nếu dùng;
+* CORS policy;
+* CSRF khi cần;
+* input validation;
+* prepared statements/ORM;
+* output encoding;
+* rate limit;
+* file validation;
+* webhook signature;
+* secret manager.
+________________
+
+
+151. FILE SECURITY
+Upload:
+* size limit;
+* MIME validation;
+* extension validation;
+* malware scan nếu production;
+* signed URL;
+* access control.
+________________
+
+
+152. PUBLIC WEBCHAT ARCHITECTURE
+Webchat client:
+Website Widget
+ ↓
+Public Chat API
+ ↓
+Session Token
+ ↓
+Conversation
+ ↓
+Chatbot
+
+
+Không dùng CRM employee auth.
+________________
+
+
+153. PUBLIC CHATBOT API
+Ví dụ:
+POST /public/v1/chat/session
+POST /public/v1/chat/session/:id/messages
+GET  /public/v1/chat/session/:id/messages
+
+
+Session token scoped.
+________________
+
+
+154. WEBCHAT SESSION SECURITY
+Token chỉ cho:
+* đúng conversation;
+* thời gian giới hạn;
+* public chatbot scope.
+Không truy cập CRM API khác.
+________________
+
+
+155. API IMPORT
+POST /api/v1/imports
+GET  /api/v1/imports/:id
+POST /api/v1/imports/:id/confirm
+
+
+Async job.
+________________
+
+
+156. API EXPORT
+POST /api/v1/exports
+GET  /api/v1/exports/:id
+
+
+Large export async.
+________________
+
+
+157. SYSTEM SETTINGS API
+GET   /api/v1/settings/system
+PATCH /api/v1/settings/system
+
+
+________________
+
+
+158. USER API
+GET    /api/v1/users
+POST   /api/v1/users
+GET    /api/v1/users/:id
+PATCH  /api/v1/users/:id
+POST   /api/v1/users/:id/disable
+POST   /api/v1/users/:id/enable
+
+
+________________
+
+
+159. DEPARTMENT API
+GET    /api/v1/departments
+POST   /api/v1/departments
+PATCH  /api/v1/departments/:id
+DELETE /api/v1/departments/:id
+
+
+________________
+
+
+160. ROLE API
+GET    /api/v1/roles
+POST   /api/v1/roles
+GET    /api/v1/roles/:id
+PATCH  /api/v1/roles/:id
+DELETE /api/v1/roles/:id
+
+
+Permissions:
+GET /api/v1/permissions
+PUT /api/v1/roles/:id/permissions
+
+
+________________
+
+
+161. TAG API
+GET    /api/v1/tags
+POST   /api/v1/tags
+PATCH  /api/v1/tags/:id
+DELETE /api/v1/tags/:id
+
+
+________________
+
+
+162. MASTER DATA API
+Generic approach optional:
+GET /api/v1/master-data/:type
+
+
+Nhưng các danh mục quan trọng có thể có endpoint riêng.
+________________
+
+
+163. API NAMING RULE
+Dùng plural resource:
+/organizations
+/contacts
+/opportunities
+
+
+Không:
+/getOrganizations
+/createCustomer
+
+
+________________
+
+
+164. ACTION ENDPOINT RULE
+Action endpoint dùng khi không thuần CRUD:
+/opportunities/:id/change-stage
+/leads/:id/convert
+/quotes/:id/send
+/handoffs/:id/accept
+
+
+________________
+
+
+165. DATE FORMAT
+ISO 8601:
+2026-09-17T16:00:00Z
+
+
+Frontend convert timezone.
+________________
+
+
+166. CURRENCY FORMAT
+API trả numeric + currency:
+{
+  "amount": "480000000.00",
+  "currency": "VND"
+}
+
+
+Tránh float.
+________________
+
+
+167. ENUM FORMAT
+API dùng uppercase snake-case:
+IN_PROGRESS
+WAITING_CUSTOMER
+
+
+UI translate sang nhãn thân thiện.
+________________
+
+
+168. REQUEST ID
+Mỗi request:
+X-Request-ID
+
+
+Backend tạo nếu client không có.
+________________
+
+
+169. API LOGGING
+Không log:
+* password;
+* secret;
+* raw credential.
+Message content có thể cần masking tùy policy.
+________________
+
+
+170. MESSAGE CONTENT RETENTION
+Configurable.
+Conversation data retention không hard-code.
+________________
+
+
+171. ARCHITECTURE – CUSTOMER SUMMARY
+Customer 360 API
+ ↓
+Aggregation Service
+ ↓
+CRM Repository
+Sales Repository
+Conversation Repository
+Activity Repository
+AI Insight Repository
+
+
+Không frontend gọi 15 API rồi tự aggregate nếu không cần.
+________________
+
+
+172. ARCHITECTURE – UNIFIED INBOX
+Inbox API
+ ↓
+Conversation Service
+ ↓
+Message Repository
+Identity Service
+Customer Context Service
+AI Insight Service
+
+
+________________
+
+
+173. ARCHITECTURE – CHATBOT
+Inbound Event
+ ↓
+Conversation Service
+ ↓
+Chatbot Session Service
+ ↓
+Flow Engine
+ ↓
+Knowledge / AI / Tool
+ ↓
+Message Service
+
+
+________________
+
+
+174. ARCHITECTURE – AI COPILOT
+User
+ ↓
+Copilot API
+ ↓
+Assistant
+ ↓
+Context Builder
+ ↓
+Tool Planner
+ ↓
+Permission
+ ↓
+CRM Services
+ ↓
+Response
+
+
+________________
+
+
+175. ARCHITECTURE – KNOWLEDGE
+Upload
+ ↓
+Storage
+ ↓
+Extractor
+ ↓
+Chunker
+ ↓
+Embedding
+ ↓
+Vector Index
+
+
+Runtime:
+Query
+ ↓
+Retriever
+ ↓
+Reranker
+ ↓
+Context
+ ↓
+AI
+
+
+________________
+
+
+176. DOMAIN EVENT EXAMPLE
+When Opportunity stage changed:
+OpportunityService
+ ↓
+DB Transaction
+ ↓
+Save Stage History
+ ↓
+Commit
+ ↓
+Publish domain event
+
+
+Subscribers:
+Timeline
+Notification
+Automation
+AI Risk Invalidation
+Realtime
+
+
+________________
+
+
+177. OUTBOX PATTERN
+Production recommendation:
+Use Transactional Outbox for important async events.
+Example:
+Business DB change
++
+outbox_event
+
+
+same transaction.
+Worker publishes event after commit.
+This prevents lost events.
+________________
+
+
+178. OUTBOX TABLE
+Optional but recommended:
+outbox_events
+
+
+id
+tenant_id
+event_type
+aggregate_type
+aggregate_id
+payload
+status
+created_at
+published_at
+
+
+________________
+
+
+179. INBOX PATTERN
+For external events:
+Webhook idempotency table acts as inbox.
+Prevents duplicate processing.
+________________
+
+
+180. EVENTUAL CONSISTENCY
+Acceptable for:
+* dashboard;
+* AI insight;
+* notifications;
+* analytics.
+Not acceptable for:
+* payment;
+* stage update;
+* contract;
+* message send state.
+________________
+
+
+181. AI ASYNC PATTERN
+For long request:
+POST /ai/...
+→ 202
+→ job_id
+
+
+Then:
+GET /jobs/:id
+
+
+hoặc realtime completion event.
+________________
+
+
+182. JOB API
+GET /api/v1/jobs/:id
+
+
+Response:
+{
+  "status": "PROCESSING",
+  "progress": 60
+}
+
+
+________________
+
+
+183. API CONTRACT TEST
+Claude phải tạo:
+* request validation tests;
+* authorization tests;
+* response contract tests;
+* integration tests.
+________________
+
+
+184. CONNECTOR TEST
+Mỗi Channel connector phải có:
+* mock provider;
+* inbound normalization test;
+* outbound send test;
+* delivery event test;
+* signature validation test.
+________________
+
+
+185. AI TESTING
+Tách:
+deterministic tests
+* permission;
+* tool input;
+* structured output parser.
+evaluation tests
+* summary quality;
+* RAG grounding;
+* hallucination rate.
+________________
+
+
+186. RAG TESTING
+Test cases:
+Known answer
+Unknown answer
+Expired document
+Unauthorized document
+Conflicting documents
+
+
+________________
+
+
+187. API DOCUMENTATION
+Claude phải generate OpenAPI.
+Endpoint:
+/docs
+/openapi.json
+
+
+________________
+
+
+188. OPENAPI REQUIREMENT
+Mỗi endpoint phải có:
+* description;
+* auth;
+* permission;
+* request schema;
+* response schema;
+* error schema;
+* examples.
+________________
+
+
+189. FRONTEND API CLIENT
+Không gọi fetch tùy tiện ở component.
+Dùng:
+API Client
+↓
+Domain Service
+↓
+Hooks / Query Layer
+
+
+________________
+
+
+190. FRONTEND STATE
+Server state:
+dùng query/cache layer.
+Local UI state:
+* drawer;
+* filter;
+* selected row.
+Không copy toàn bộ server data vào global store.
+________________
+
+
+191. REALTIME FRONTEND
+Realtime event nhận xong:
+* patch cache;
+* invalidate query;
+* append message.
+Không reload cả app.
+________________
+
+
+192. API TIMEOUT
+External provider:
+phải timeout rõ.
+Không để request treo vô hạn.
+________________
+
+
+193. PROVIDER CIRCUIT BREAKER
+Production later:
+Nếu external provider lỗi liên tục:
+OPEN CIRCUIT
+
+
+tránh gọi liên tục.
+________________
+
+
+194. FALLBACK PRINCIPLE
+CRM phải hoạt động dù:
+* AI lỗi;
+* chatbot lỗi;
+* channel lỗi.
+Messaging integration có thể degraded nhưng core CRM vẫn dùng được.
+________________
+
+
+195. DEPENDENCY RULE
+Không để:
+CRM Core → AI mandatory dependency
+
+
+Mà:
+AI → CRM services
+
+
+AI là capability layer.
+________________
+
+
+196. MODULE DEPENDENCY
+Khuyến nghị:
+IAM
+ ↓
+CRM Core
+ ↓
+Sales
+ ↓
+Messaging
+ ↓
+Chatbot
+ ↓
+AI / Knowledge
+ ↓
+Automation / Analytics
+
+
+Nhưng không circular dependency.
+________________
+
+
+197. TECH STACK ĐỀ XUẤT
+Có thể chốt khi viết Master Prompt.
+Một stack hợp lý:
+Frontend:
+Next.js + TypeScript
+
+
+Backend:
+Node.js + NestJS
+hoặc
+Python + FastAPI
+
+
+Database:
+PostgreSQL
+
+
+ORM:
+Prisma / SQLAlchemy
+
+
+Queue:
+Redis + BullMQ
+hoặc tương đương
+
+
+Realtime:
+WebSocket
+
+
+Storage:
+S3-compatible
+
+
+Vector:
+pgvector trước
+
+
+API docs:
+OpenAPI
+
+
+________________
+
+
+198. NẾU DÙNG NESTJS
+Module example:
+AuthModule
+IAMModule
+CRMModule
+SalesModule
+ActivityModule
+MessagingModule
+ChatbotModule
+AIModule
+KnowledgeModule
+AutomationModule
+ReportingModule
+
+
+________________
+
+
+199. NẾU DÙNG FASTAPI
+Package tương đương:
+auth
+iam
+crm
+sales
+activities
+messaging
+chatbot
+ai
+knowledge
+automation
+reports
+
+
+________________
+
+
+200. DIRECTORY BACKEND GỢI Ý
+src/
+  modules/
+    auth/
+    iam/
+    crm/
+    sales/
+    activities/
+    messaging/
+    chatbot/
+    ai/
+    knowledge/
+    automation/
+    reporting/
+
+
+  shared/
+    database/
+    queue/
+    cache/
+    storage/
+    security/
+    events/
+    observability/
+
+
+  integrations/
+    zalo/
+    whatsapp/
+    viber/
+    email/
+    sms/
+    ai-providers/
+
+
+________________
+
+
+201. API ENDPOINT SUMMARY
+Các nhóm chính:
+/auth
+
+
+/users
+/roles
+/departments
+
+
+/organizations
+/contacts
+/leads
+
+
+/pipelines
+/opportunities
+/products
+/quotes
+/contracts
+/payments
+
+
+/activities
+/tasks
+/meetings
+/calendar
+
+
+/channels
+/conversations
+/messages
+/message-templates
+
+
+/chatbots
+/chatbot-intents
+/chatbot-flows
+/handoffs
+
+
+/ai
+/ai/insights
+/ai/actions
+
+
+/knowledge-bases
+/knowledge-documents
+
+
+/workflows
+/automation
+/approvals
+
+
+/dashboard
+/search
+/files
+/notifications
+/settings
+/audit
+
+
+________________
+
+
+202. MVP API PRIORITY – P0
+Claude phải làm trước:
+Auth
+IAM
+
+
+Organizations
+Contacts
+Leads
+
+
+Activities
+Tasks
+Meetings
+
+
+Pipelines
+Opportunities
+
+
+Channels
+Conversations
+Messages
+
+
+Chatbots
+Sessions
+Handoff
+
+
+AI Copilot
+AI Insight
+AI Tool Framework
+
+
+Knowledge Base
+Knowledge Document
+RAG
+
+
+Notifications
+Audit
+
+
+________________
+
+
+203. P1
+Sau P0:
+Products
+Quotes
+Approval
+Contracts
+Payments
+Workflow
+Advanced Dashboards
+SLA
+Advanced AI Scoring
+
+
+________________
+
+
+204. END-TO-END TECHNICAL FLOW
+Ví dụ khách hàng gửi WhatsApp:
+WhatsApp
+ ↓
+Webhook
+ ↓
+Webhook Validation
+ ↓
+Webhook Event Store
+ ↓
+Queue
+ ↓
+WhatsApp Adapter
+ ↓
+Normalized Message
+ ↓
+Identity Resolution
+ ↓
+Conversation Resolver
+ ↓
+Message Persisted
+ ↓
+Realtime Inbox Update
+ ↓
+Chatbot Router
+ ↓
+RAG / AI
+ ↓
+Outbound Message Queue
+ ↓
+WhatsApp Adapter
+ ↓
+Customer
+
+
+________________
+
+
+205. END-TO-END SALES FLOW
+Lead
+ ↓
+Convert Transaction
+ ↓
+Organization + Contact + Opportunity
+ ↓
+Stage Update
+ ↓
+Meeting
+ ↓
+AI Summary
+ ↓
+Quote
+ ↓
+Approval
+ ↓
+Send
+ ↓
+Won
+ ↓
+Contract
+ ↓
+Payment
+
+
+________________
+
+
+206. END-TO-END AI FLOW
+User asks AI
+ ↓
+Copilot API
+ ↓
+Assistant
+ ↓
+Context Builder
+ ↓
+Permission Guard
+ ↓
+Tool / Knowledge
+ ↓
+Model
+ ↓
+Structured Response
+ ↓
+Audit
+ ↓
+UI
+
+
+________________
+
+
+207. END-TO-END RAG FLOW
+Question
+ ↓
+Knowledge Scope
+ ↓
+Permission
+ ↓
+Query Embedding
+ ↓
+Vector Search
+ ↓
+Metadata Filter
+ ↓
+Rerank
+ ↓
+Prompt Context
+ ↓
+LLM
+ ↓
+Answer + Sources
+
+
+________________
+
+
+208. DEFINITION OF DONE – API ENDPOINT
+Một API chỉ hoàn thành khi có:
+1. Route.
+2. Auth.
+3. Permission.
+4. Tenant guard.
+5. Validation.
+6. Service logic.
+7. Repository logic.
+8. Transaction nếu cần.
+9. Audit nếu cần.
+10. Domain event nếu cần.
+11. Error mapping.
+12. OpenAPI.
+13. Unit test.
+14. Integration test.
+15. Logging.
+16. Performance hợp lý.
+________________
+
+
+209. DEFINITION OF DONE – CONNECTOR
+Connector hoàn thành khi:
+1. Authentication.
+2. Connection test.
+3. Webhook verification.
+4. Inbound message.
+5. Outbound text.
+6. Attachment nếu provider hỗ trợ.
+7. Delivery status.
+8. Idempotency.
+9. Retry.
+10. Error mapping.
+11. Audit/log.
+12. Health check.
+13. Mock tests.
+________________
+
+
+210. DEFINITION OF DONE – AI FEATURE
+AI feature hoàn thành khi:
+1. Assistant configured.
+2. Prompt versioned.
+3. Model routing.
+4. Permission filtering.
+5. Context builder.
+6. RAG nếu cần.
+7. Structured output.
+8. Tool policy.
+9. Human approval nếu cần.
+10. Audit.
+11. Cost log.
+12. Error fallback.
+13. Feedback.
+14. Evaluation test.
+________________
+
+
+211. DEFINITION OF DONE – CHATBOT
+Chatbot hoàn thành khi:
+1. Channel attached.
+2. Session created.
+3. Conversation linked.
+4. Intent detection.
+5. Flow execution.
+6. RAG.
+7. Lead capture.
+8. Identity resolution.
+9. Handoff.
+10. Bot/Human state.
+11. Analytics events.
+12. Fallback.
+13. Test mode.
+14. Versioning.
+________________
+
+
+212. CÁC NGUYÊN TẮC CLAUDE PHẢI TUÂN THỦ
+Claude không được:
+* gọi DB trực tiếp từ frontend;
+* gọi AI provider trực tiếp từ frontend;
+* gọi Zalo/WhatsApp trực tiếp trong controller;
+* hard-code tenant;
+* hard-code role;
+* hard-code pipeline;
+* hard-code bot flow;
+* hard-code prompt production;
+* bỏ qua webhook idempotency;
+* bỏ qua permission trước AI tool;
+* để AI ghi dữ liệu quan trọng không approval;
+* trả ORM object raw;
+* lưu secret trong source.
+Claude phải:
+* dùng module boundary;
+* dùng service layer;
+* dùng adapter layer;
+* dùng DTO/schema validation;
+* dùng transaction;
+* dùng audit;
+* dùng event;
+* dùng background jobs cho tác vụ dài;
+* generate OpenAPI;
+* có tests.
+________________
+
+
+213. KIẾN TRÚC CHỐT CHO OMNI CRM
+Mô hình cuối:
+              OMNI CRM PLATFORM
+
+
+                 API GATEWAY
+                      │
+     ┌────────────────┼────────────────┐
+     │                │                │
+     ▼                ▼                ▼
+ CRM CORE         OMNICHANNEL       SALES
+     │                │                │
+     └──────────────┬─┴────────────────┘
+                    │
+              CUSTOMER 360
+                    │
+        ┌───────────┴───────────┐
+        ▼                       ▼
+     CHATBOT                   AI
+        │                       │
+        └──────────────┬────────┘
+                       ▼
+                KNOWLEDGE HUB
+                       │
+                       ▼
+                AUTOMATION
+
+
+________________
+
+
+214. NGUYÊN TẮC CUỐI CÙNG
+Omni CRM phải bảo đảm:
+Một khách hàng có thể chuyển từ Zalo sang WhatsApp, từ Chatbot sang Sales, từ Sales sang CSKH và từ hội thoại sang cơ hội bán hàng mà không mất context.
+AI không phải module trang trí.
+AI phải được tích hợp vào:
+* Customer 360;
+* Inbox;
+* Pipeline;
+* Meeting;
+* Lead;
+* Quote;
+* Knowledge;
+* Dashboard.
+Chatbot không phải website widget riêng biệt.
+Chatbot phải là một actor trong cùng hệ thống Conversation.
+API không chỉ phục vụ frontend.
+API là xương sống cho:
+* Web App;
+* Chatbot;
+* AI Tools;
+* Integration;
+* Mobile App tương lai;
+* các hệ thống bên ngoài.
+Mục tiêu kiến trúc cuối cùng:
+Unified Customer Data + Unified Conversation + Unified Sales Process + Shared AI Intelligence + Extensible Integration Layer.

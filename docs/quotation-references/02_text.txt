@@ -1,0 +1,90 @@
+PART word/document.xml
+[1] BẢNG BÁO GIÁ
+[2] ĐÀO TẠO & CHUYỂN GIAO ỨNG DỤNG AICHO CÁN BỘ XÃ/PHƯỜNG
+[3] Chương trình đào tạo thực hành, trang bị công cụ AI và đồng hành ứng dụng trong 12 tháng
+[4] Kính gửi
+[5] ỦY BAN NHÂN DÂN PHƯỜNG TÂN THUẬN
+[6] Đơn vị báo giá
+[7] CÔNG TY CỔ PHẦN CÔNG NGHỆ IVITECH
+[8] Thời hạn cung cấp
+[9] 12 tháng kể từ ngày nghiệm thu đưa hệ thống vào sử dụng
+[10] Ngày báo giá
+[11] 15/08/2026
+[12] Hiệu lực báo giá: 30 ngày
+[13] 1. Phạm vi chương trình
+[14] iViTech cung cấp chương trình đào tạo và chuyển giao kỹ năng ứng dụng trí tuệ nhân tạo (AI) cho cán bộ xã/phường, kết hợp tài khoản ChatGPT Plus phục vụ đào tạo, thực hành và ứng dụng công việc trong thời hạn 12 tháng. Chương trình tập trung vào khả năng áp dụng ngay trong công việc hành chính và truyền thông tại đơn vị.
+[15] 2. 05 chuyên đề đào tạo
+[16] 01
+[17] Tổng quan AI và ứng dụng AI trong cơ quan hành chính
+[18] 02
+[19] Kỹ năng sử dụng ChatGPT và xây dựng câu lệnh (Prompt) hiệu quả
+[20] 03
+[21] Ứng dụng AI trong công việc văn phòng - hành chính
+[22] 04
+[23] Ứng dụng AI trong truyền thông và phục vụ người dân
+[24] 05
+[25] An toàn thông tin và sử dụng AI có trách nhiệm
+[26] 3. Các gói dịch vụ
+[27] Hạng mục
+[28] GÓI AI 05
+[29] GÓI AI 10
+[30] GÓI AI 20
+[31] Đào tạo ứng dụng AI
+[32] Có
+[33] Có
+[34] Có
+[35] Số chuyên đề
+[36] 05
+[37] 05
+[38] 05
+[39] Tài liệu đào tạo & bộ Prompt mẫu
+[40] Có
+[41] Có
+[42] Có
+[43] Tài khoản ChatGPT Plus đi kèm
+[44] 05 tài khoản
+[45] 10 tài khoản
+[46] 20 tài khoản
+[47] Thời gian sử dụng tài khoản
+[48] 12 tháng
+[49] 12 tháng
+[50] 12 tháng
+[51] Hướng dẫn kích hoạt & sử dụng
+[52] Có
+[53] Có
+[54] Có
+[55] Hỗ trợ trong quá trình sử dụng
+[56] 12 tháng
+[57] 12 tháng
+[58] 12 tháng
+[59] GIÁ GÓI / NĂM
+[60] 90.000.000 VNĐ
+[61] 125.000.000 VNĐ
+[62] 219.000.000 VNĐ
+[63] Gợi ý lựa chọn: Gói AI 10 phù hợp với mô hình triển khai tiêu chuẩn tại xã/phường, đáp ứng nhóm cán bộ nòng cốt và các bộ phận chuyên môn.
+[64] 4. Nội dung bàn giao & hỗ trợ
+[65] • Tổ chức đào tạo theo 05 chuyên đề nêu trên.
+[66] • Cung cấp tài liệu học tập và bộ câu lệnh (Prompt) mẫu phục vụ công việc.
+[67] • Cung cấp quyền sử dụng ChatGPT Plus theo số lượng của từng gói, thời hạn 12 tháng.
+[68] • Hướng dẫn kích hoạt, sử dụng và nguyên tắc bảo mật tài khoản.
+[69] • Hỗ trợ sử dụng trong suốt thời gian hiệu lực của gói dịch vụ.
+[70] 5. Điều kiện thương mại
+[71] Đơn giá
+[72] Giá trên chưa bao gồm VAT.
+[73] Thanh toán
+[74] Theo thỏa thuận/hợp đồng giữa hai bên.
+[75] Thời gian dịch vụ
+[76] 12 tháng kể từ thời điểm kích hoạt theo biên bản hoặc xác nhận bàn giao.
+[77] Hiệu lực báo giá
+[78] 30 ngày kể từ ngày phát hành.
+[79] Phạm vi chi phí
+[80] Chưa bao gồm chi phí đi lại, lưu trú nếu khách hàng yêu cầu đào tạo trực tiếp ngoài địa bàn triển khai tiêu chuẩn; các khoản này sẽ được thống nhất riêng nếu phát sinh.
+[81] Lưu ý dịch vụ bên thứ ba
+[82] Quyền sử dụng ChatGPT Plus tuân theo điều khoản, chính sách và khả năng cung cấp dịch vụ của OpenAI tại từng thời điểm. Trường hợp nhà cung cấp thay đổi chính sách hoặc giá, hai bên sẽ thống nhất phương án phù hợp.
+[85] CÔNG TY CỔ PHẦN CÔNG NGHỆ iViTech
+[86] Đối tác phát triển phần mềm, AI và chuyển đổi số cho tổ chức và doanh nghiệp
+PART word/footnotes.xml
+PART word/endnotes.xml
+PART word/header1.xml
+[1] iViTech  |  Smart iVier
+[2] GovTech - HRTech - EdTech

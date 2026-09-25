@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-09-19T07:18:49.021Z",
+  "status": "passed",
+  "scope": "Prototype only; no real CRM, Zalo, PDF or backend tested",
+  "checks": [
+    "parse",
+    "assignment",
+    "sales isolation",
+    "human/bot handoff",
+    "approval thresholds",
+    "G1 prerequisite",
+    "director escalation",
+    "content version approval",
+    "signed contract gate",
+    "reopen history",
+    "mobile overflow 7 screens",
+    "runtime errors"
+  ],
+  "errors": []
+}

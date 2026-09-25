@@ -1,0 +1,47 @@
+[
+  {
+    "source": "G:\\My Drive\\Version 4\\iViTech\\Smart Omni CRM Develop\\01_PRD_Omni_CRM.docx",
+    "sha256": "df574f98447ccebdc84213828ce6abe49335e41fe662dedd6bc355d04042aabf",
+    "extracted": "docs/source-text/01_PRD_Omni_CRM.txt",
+    "characters": 18728,
+    "lines": 1248,
+    "top_level_last_section": "54. MỤC TIÊU TRẢI NGHIỆM CUỐI",
+    "project_original": "docs/source-original/01_PRD_Omni_CRM.docx"
+  },
+  {
+    "source": "G:\\My Drive\\Version 4\\iViTech\\Smart Omni CRM Develop\\02_Database_Schema_v2.0.docx",
+    "sha256": "13bb62d20db7ed67376852e4fa2563ea37cc507823eae35285b0baec1b9b3da5",
+    "extracted": "docs/source-text/02_Database_Schema_v2.0.txt",
+    "characters": 49592,
+    "lines": 3815,
+    "top_level_last_section": "176. KẾT LUẬN",
+    "project_original": "docs/source-original/02_Database_Schema_v2.0.docx"
+  },
+  {
+    "source": "G:\\My Drive\\Version 4\\iViTech\\Smart Omni CRM Develop\\03_Screen_Architecture_v2.0.txt",
+    "sha256": "d89979e636680a7ddfbcc6831fb1a8363745c212681db9ee091ddc0cdeefc8f2",
+    "extracted": "docs/source-text/03_Screen_Architecture_v2.0.txt",
+    "characters": 36887,
+    "lines": 3062,
+    "top_level_last_section": "161. KẾT LUẬN KIẾN TRÚC MÀN HÌNH",
+    "project_original": "docs/source-original/03_Screen_Architecture_v2.0.txt"
+  },
+  {
+    "source": "G:\\My Drive\\Version 4\\iViTech\\Smart Omni CRM Develop\\04_User_Flow_v2.0.txt",
+    "sha256": "b5bc0bc74d410011bbaedd56126d5de9a43db0d329e040f402288238cf91041f",
+    "extracted": "docs/source-text/04_User_Flow_v2.0.txt",
+    "characters": 48175,
+    "lines": 4872,
+    "top_level_last_section": "# 203. KẾT LUẬN",
+    "project_original": "docs/source-original/04_User_Flow_v2.0.txt"
+  },
+  {
+    "source": "G:\\My Drive\\Version 4\\iViTech\\Smart Omni CRM Develop\\05_System_Architecture_API_v2.0.txt",
+    "sha256": "7fc483214f52d140ededf74172d708ab8ac96020ac18ddd57421e380c3e80e50",
+    "extracted": "docs/source-text/05_System_Architecture_API_v2.0.txt",
+    "characters": 44332,
+    "lines": 3255,
+    "top_level_last_section": "214. NGUYÊN TẮC CUỐI CÙNG",
+    "project_original": "docs/source-original/05_System_Architecture_API_v2.0.txt"
+  }
+]

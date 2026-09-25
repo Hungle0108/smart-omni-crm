@@ -1,0 +1,12 @@
+{
+  "at": "2026-09-21T17:28:10.354Z",
+  "checks": [
+    "Thông tin triển khai dùng đúng phạm vi khách và vai trò",
+    "Mẫu có công việc con, phân quyền sửa mẫu, áp dụng chống trùng",
+    "Việc cha tự cập nhật; lịch không thể bỏ qua việc con chưa xong",
+    "Chặn sửa ngoài quyền, giao sai người và thời gian đảo ngược",
+    "Lưu trữ/khôi phục cả nhánh, giữ lịch sử và đồng bộ danh sách lịch",
+    "Sửa mẫu không đổi các tiến trình khách đã tạo",
+    "API cấu hình OA mặc định tắt và chỉ admin được sửa"
+  ]
+}

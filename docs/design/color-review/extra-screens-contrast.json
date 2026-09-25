@@ -1,0 +1,30 @@
+[
+  {
+    "page": "quotes",
+    "checked": 84,
+    "min": 5.76,
+    "overflow": false,
+    "failures": []
+  },
+  {
+    "page": "pipeline",
+    "checked": 94,
+    "min": 5.76,
+    "overflow": false,
+    "failures": []
+  },
+  {
+    "page": "channels",
+    "checked": 63,
+    "min": 5.76,
+    "overflow": false,
+    "failures": []
+  },
+  {
+    "page": "settings",
+    "checked": 58,
+    "min": 5.12,
+    "overflow": false,
+    "failures": []
+  }
+]

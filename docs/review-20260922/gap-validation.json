@@ -1,0 +1,76 @@
+{
+  "at": "2026-09-21T17:27:36.154Z",
+  "mode": "isolated SQLite fixture; no external services; original CRM untouched",
+  "results": [
+    {
+      "id": "G01",
+      "requirement": "DB §104–106: cùng điện thoại/email phải nhận diện nhất quán",
+      "observed": [
+        {
+          "phone": "0909123456",
+          "email": "AUDIT@EXAMPLE.TEST "
+        },
+        {
+          "phone": "84909123456",
+          "email": " audit@example.test"
+        },
+        {
+          "phone": "0909123456",
+          "email": "audit@example.test"
+        }
+      ],
+      "warnings": [
+        null,
+        null,
+        "Trùng số điện thoại với Khách kiểm tra định danh A"
+      ],
+      "matched": false
+    },
+    {
+      "id": "G02",
+      "requirement": "DB §41: WAITING và CANCELLED",
+      "observed": {
+        "waiting": {
+          "status": 400,
+          "data": {
+            "error": "Trạng thái không hợp lệ."
+          }
+        },
+        "cancelled": {
+          "status": 400,
+          "data": {
+            "error": "Trạng thái không hợp lệ."
+          }
+        }
+      },
+      "matched": false
+    },
+    {
+      "id": "G03",
+      "requirement": "Lưu trữ loại khỏi danh sách đang làm",
+      "matched": true
+    },
+    {
+      "id": "G04",
+      "requirement": "Cam kết bản 0.4: mẫu tối đa sáu cấp",
+      "observed": {
+        "status": 400,
+        "data": {
+          "error": "Mẫu tối đa 40 việc mỗi cấp và 6 cấp."
+        }
+      },
+      "matched": false
+    },
+    {
+      "id": "G05",
+      "requirement": "ARCH §52 và DB §28: có quản lý Lead",
+      "observed": {
+        "status": 404,
+        "data": {
+          "error": "Không có endpoint này."
+        }
+      },
+      "matched": false
+    }
+  ]
+}
